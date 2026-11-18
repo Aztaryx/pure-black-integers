@@ -114,8 +114,8 @@ const card = (kicker, title, body = '', q = false, o = {}) => {
 
 const BEATS = [
   // PORTION 2: PRELIMINARIES & NUMERACY DRILLS
-  { portion: 'Portion 2 — Preliminaries', beat: '2.1', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('', 'Prayer', '', false, { center: true }) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.1', html: card('', 'Prayer', '', false, { center: true }) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p>') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.3', html: card('Classroom Management', 'MATH Rules') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.4', html: card('MATH Rule 1 · M', 'Motivated', '<p>Always do your best in every Mathematics activity.</p>') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.5', html: card('MATH Rule 2 · A', 'Active', '<p>Participate in class discussions and activities.</p>') },
@@ -157,7 +157,7 @@ const BEATS = [
 
   // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
   { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
-  { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p><h2>Keep the sign!</h2><div class="split"><div><h3>3 + 2 = 5</h3>' + numberLine(-1, 6, { hop: [3, 5] }) + '</div><div><h3>(−4) + (−2) = −6</h3>' + numberLine(-7, 1, { hop: [-4, -6] }) + '</div></div>') },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p>') },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Case 3', 'Different Signs', '<p>Pair each positive chip with one negative chip to make zero pairs, remove them, and count what remains.</p>') },
 
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
@@ -251,77 +251,6 @@ function frame(now) {
 const iv = $('#iv'), gl = $('#gl'), ia = $('#ia'), gx = gl.getContext('2d'), I = $('#intro');
 let phase = 0, vfail = false, playing = false, fbOn = false;
 function black() { gl.width = innerWidth; gl.height = innerHeight; gx.fillStyle = '#000'; gx.fillRect(0, 0, gl.width, gl.height); gl.style.display = 'block' }
-function glitch(cb) {
-  const w = gl.width = innerWidth, h = gl.height = innerHeight;
-  gl.style.display = 'block'; ia.style.filter = 'url(#ca)';
-  const gw = $('#gw');
-  if (gw) {
-    gw.innerHTML = '';
-    const gwinData = [
-      { y: '0vh', h: '100vh', w: '5vw', tx: '-115vw', dur: 1.1, del: 0.02 },
-      { y: '14vh', h: '42vh', w: '18vw', tx: '-100vw', dur: 1.25, del: 0.12 },
-      { y: '65vh', h: '25vh', w: '35vw', tx: '-110vw', dur: 1.35, del: 0.22 },
-      { y: '3vh', h: '18vh', w: '8vw', tx: '-90vw', dur: 1.05, del: 0.35 },
-      { y: '30vh', h: '65vh', w: '12vw', tx: '-105vw', dur: 1.3, del: 0.48 },
-      { y: '0vh', h: '100vh', w: '26vw', tx: '-120vw', dur: 1.45, del: 0.62 },
-      { y: '22vh', h: '30vh', w: '6vw', tx: '-85vw', dur: 1.1, del: 0.78 },
-      { y: '55vh', h: '40vh', w: '22vw', tx: '-105vw', dur: 1.3, del: 0.95 },
-      { y: '8vh', h: '84vh', w: '4vw', tx: '-95vw', dur: 1.15, del: 1.12 },
-      { y: '42vh', h: '16vh', w: '28vw', tx: '-100vw', dur: 1.2, del: 1.30 }
-    ];
-    gwinData.forEach(d => {
-      const div = document.createElement('div');
-      div.className = 'gwin';
-      div.style.cssText = `--y:${d.y};--h:${d.h};--w:${d.w};--tx:${d.tx};--dur:${d.dur}s;--del:${d.del}s;`;
-      gw.appendChild(div);
-    });
-  }
-  const deadPixels = [];
-  for (let i = 0; i < 400; i++) {
-    const x = Math.random() * w, rx = (w - x) / w;
-    deadPixels.push({ x, y: Math.random() * h, w: Math.random() < 0.6 ? 2 + Math.floor(Math.random() * 4) : 6 + Math.floor(Math.random() * 8), h: Math.random() < 0.6 ? 2 + Math.floor(Math.random() * 4) : 4 + Math.floor(Math.random() * 10), t: 0.08 + Math.pow(rx, 1.15) * 1.9 + (Math.random() - .5) * 0.2, col: Math.random() < 0.75 ? '#000' : '#fff' });
-  }
-  const deadStrips = [];
-  for (let i = 0; i < 110; i++) {
-    const x = Math.random() * w, rx = (w - x) / w, isHoriz = Math.random() < 0.7;
-    deadStrips.push({ x, y: Math.random() * h, w: isHoriz ? 30 + Math.random() * 260 : 2 + Math.random() * 5, h: isHoriz ? 1 + Math.random() * 4 : 25 + Math.random() * 160, t: 0.12 + Math.pow(rx, 1.15) * 1.85 + (Math.random() - .5) * 0.22, col: Math.random() < 0.7 ? '#000' : '#fff' });
-  }
-  const deadBlocks = [];
-  for (let i = 0; i < 75; i++) {
-    const x = Math.random() * w, rx = (w - x) / w;
-    deadBlocks.push({ x, y: Math.random() * h, w: 16 + Math.random() * 90, h: 8 + Math.random() * 55, t: 0.18 + Math.pow(rx, 1.15) * 1.8 + (Math.random() - .5) * 0.25, col: Math.random() < 0.8 ? '#000' : '#fff' });
-  }
-  const deadMacro = [];
-  for (let i = 0; i < 22; i++) {
-    const x = Math.random() * w, rx = (w - x) / w;
-    deadMacro.push({ x, y: Math.random() * h, w: 90 + Math.random() * 320, h: 40 + Math.random() * 180, t: 0.35 + Math.pow(rx, 1.2) * 1.75 + (Math.random() - .5) * 0.25, col: Math.random() < 0.85 ? '#000' : '#fff' });
-  }
-  const t0 = performance.now();
-  (function f(now) {
-    const t = (now - t0) / 1000, g = Math.min(1, t / 1.6);
-    if (t > 2.75) { black(); return cb() }
-    requestAnimationFrame(f);
-    const shake = g * g, drift = Math.sin(t * 3.7) * 5 * shake, sway = Math.sin(t * 2.3) * 2.5 * shake;
-    ia.style.transform = `translate(${drift + (Math.random() - .5) * 3 * shake}px,${sway + (Math.random() - .5) * 2 * shake}px) skewX(${Math.sin(t * 5.1) * 1.5 * shake}deg)`;
-    const caOff = Math.sin(t * 4.3) * (2 + 5 * g) + (Math.random() - .5) * 2 * g;
-    $('#or').setAttribute('dx', -Math.abs(caOff)); $('#or').setAttribute('dy', Math.sin(t * 2.9) * 1.2 * g);
-    $('#oc').setAttribute('dx', Math.abs(caOff)); $('#oc').setAttribute('dy', -Math.sin(t * 2.9) * 1.2 * g);
-    gx.clearRect(0, 0, w, h);
-    const frontX = w * (1 - Math.min(1.1, Math.pow(t / 2.1, 1.15)));
-    deadPixels.forEach(p => { if (t >= p.t) { gx.fillStyle = p.col; gx.fillRect(p.x, p.y, p.w, p.h) } });
-    deadStrips.forEach(s => { if (t >= s.t) { gx.fillStyle = s.col; gx.fillRect(s.x, s.y, s.w, s.h) } });
-    deadBlocks.forEach(b => { if (t >= b.t) { const scale = Math.min(1, (t - b.t) * 12); gx.fillStyle = b.col; gx.fillRect(b.x, b.y, b.w * scale, b.h * scale) } });
-    deadMacro.forEach(m => { if (t >= m.t) { const scale = Math.min(1, (t - m.t) * 8); gx.fillStyle = m.col; gx.fillRect(m.x, m.y, m.w * scale, m.h * scale) } });
-    if (frontX > -50 && frontX < w + 50) {
-      for (let i = 0; i < 35; i++) {
-        const px = frontX + (Math.random() - .35) * 70, py = Math.random() * h;
-        const pw = Math.random() < 0.7 ? 2 + Math.random() * 4 : 10 + Math.random() * 40;
-        const ph = Math.random() < 0.7 ? 2 + Math.random() * 4 : 1 + Math.random() * 3;
-        gx.fillStyle = Math.random() < 0.6 ? '#000' : '#fff'; gx.fillRect(px, py, pw, ph);
-      }
-    }
-  })(t0);
-}
 function fb() { if (fbOn) return; fbOn = true; I.classList.add('fb'); gl.style.display = ia.style.display = 'none'; T0 = performance.now(); done = false; requestAnimationFrame(frame); setTimeout(() => { if (phase == 2) reveal() }, 5200) }
 function playV() {
   if (playing || fbOn) return; playing = true; I.classList.add('vid'); iv.currentTime = 0;
@@ -335,7 +264,7 @@ iv.addEventListener('error', () => { vfail = true; if (phase == 2 && !playing) f
 iv.addEventListener('ended', () => { if (phase == 2) reveal() });
 function reveal() {
   if (phase == 3) return; phase = 3; const s = $('#s1'); s.classList.add('show'); show(1);
-  setTimeout(() => { I.style.display = 'none'; iv.pause(); done = true; const gw = $('#gw'); if (gw) gw.innerHTML = ''; }, 400);
+  setTimeout(() => { I.style.display = 'none'; iv.pause(); done = true; }, 400);
   setTimeout(() => s.classList.add('txt'), reduce ? 0 : 300);
   setTimeout(() => {
     s.classList.add('rev');
@@ -344,7 +273,7 @@ function reveal() {
   }, reduce ? 0 : 2200);
 }
 function begin() {
-  if (phase == 0) { phase = 1; if (reduce) { black(); return startVid() } return glitch(startVid) }
+  if (phase == 0) { phase = 1; black(); return startVid() }
   if (phase == 2) reveal()
 }
 

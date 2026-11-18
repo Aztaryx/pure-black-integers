@@ -116,3 +116,17 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - Next: batch 3 (Portion 7 and 8 pairs, and the 9.2 to 9.7 quiz fold).
   - 2026-11-19: Batch 3 built. Portion 7 problems are `7.3–7.4` and `7.5–7.6`: the problem first, tap 1 swaps the title to the answer and adds the chips and equation, tap 2 adds the thermometer or elevator (enlarged). Portion 8 pairs are `8.4–8.5`, `8.6–8.7`, `8.8–8.9`, `8.10–8.11`: tap 1 swaps the title to the expression and stamps the answer (8.4–8.5 fills the answers into the two expressions). Quiz is five slides, `9.2–9.3`, `9.4`, `9.5`, `9.6`, `9.7`, one per item: items 1 and 2 show the answer on tap 1; items 3 and 4 cross out the zero pairs on tap 1 and show the answer on tap 2; item 5 draws the route on tap 1 and shows the answer on tap 2. Deck is now 51 slides. Node data check only; not looked at in a browser.
 
+### [In progress] Teacher requests from the chat screenshots (2026-11-19)
+- Source: screenshots from Joshua Philip (original teacher), relayed by the project owner, in Tagalog/English. The lesson-plan photos in them are too blurry to read, so anything that depends on their content is listed as open.
+- Files: script.js (`BEATS`), style.css, index.html, project-info/
+- Done 2026-11-19:
+  - Start: the glitch transition before the intro video is removed (`glitch()`, the `#gw` windows and the `#ca` color-split filter). The first click now goes to black and then plays the video, with the same fallback if the video fails.
+  - Order: Prayer comes first (2.1), then Good Morning (2.2).
+  - Same Signs (6.5): "Keep the sign!" and the two worked number lines are removed, because they gave the method away when this slide comes before Different Signs.
+- Open, waiting on the project owner:
+  - Examples after Same Signs ("the one with two each"): which two examples, and as chips or number lines? Default if not told: 3 + 2 and (−4) + (−2) as chip rows, answers on tap.
+  - Complete rubric: replace the five 5-point cards on 8.3 with the full rubric table from the photo. Needs the readable table text or the `.docx`.
+  - 5-minute timer after the rubric: default is a new slide after 8.3 with a large mm:ss countdown and Start/Pause and Reset buttons (buttons do not advance the slide).
+  - Title slide ("Adding INTEGERS using integer chips") after Guide Question 4 (4.7): confirm what the opening becomes (intro video, then straight to Prayer?).
+  - 5.2 Integer Chips: the circled "Red / Inversion Window" text with the note "May nakalagay n text" ("there is already text"): what should change?
+
