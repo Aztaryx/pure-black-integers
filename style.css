@@ -1415,30 +1415,6 @@
     /* ---------- batch 5: MATH strip, labelled chips, group badges, card icons ---------- */
     @keyframes b-pop { from { opacity: 0; transform: scale(.6) rotate(-6deg) } }
 
-    .math-strip {
-      display: flex;
-      gap: 1.2vw
-    }
-
-    .math-strip span {
-      width: clamp(54px, 7vw, 100px);
-      aspect-ratio: 1;
-      display: grid;
-      place-items: center;
-      border: 3px solid #111;
-      background: #fff;
-      box-shadow: 4px 4px 0 #111;
-      font: clamp(30px, 4.4vw, 64px) var(--h);
-      opacity: .4;
-      animation: b-pop .45s calc(.3s + var(--i, 0)*80ms) cubic-bezier(.2, 1.5, .4, 1) both
-    }
-
-    .math-strip span.on {
-      opacity: 1;
-      background: var(--b);
-      color: #fff
-    }
-
     .labelled {
       display: flex;
       gap: 3vw;
@@ -1584,14 +1560,12 @@
 
     /* one lift on hover and one press, for every card-like block */
     .icon-row figure,
-    .math-strip span,
     .badges span,
     .board {
       transition: translate .15s, box-shadow .15s
     }
 
     .icon-row figure:hover,
-    .math-strip span:hover,
     .badges span:hover,
     .board:hover {
       translate: 0 -4px;
@@ -1599,11 +1573,48 @@
     }
 
     .icon-row figure:active,
-    .math-strip span:active,
     .badges span:active,
     .board:active {
       translate: 2px 2px;
       box-shadow: 2px 2px 0 #111
+    }
+
+    /* ---------- MATH rules: one slide, one rule per tap ---------- */
+    .rules {
+      display: grid;
+      gap: 2.2vh;
+      width: 100%
+    }
+
+    .rule {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 2vw
+    }
+
+    .rule b {
+      width: clamp(52px, 6.4vw, 92px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 3px solid #111;
+      background: var(--b);
+      color: #fff;
+      box-shadow: 4px 4px 0 #111;
+      font: clamp(30px, 4vw, 60px) var(--h)
+    }
+
+    .rule h2 {
+      line-height: 1
+    }
+
+    .rule p {
+      margin-top: .6vh
+    }
+
+    .rule[data-step].shown {
+      animation: d-up .45s 0s cubic-bezier(.2, .7, .2, 1) both
     }
 
     @media(prefers-reduced-motion:reduce) {

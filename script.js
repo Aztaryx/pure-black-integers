@@ -94,8 +94,8 @@ const iconSvg = (name, cls = '') => `<svg class="icon${cls ? ' ' + cls : ''}" vi
 const iconRow = items => `<div class="icon-row">${items.map(([n, l], i) => `<figure style="--i:${i}">${iconSvg(n)}<figcaption>${l}</figcaption></figure>`).join('')}</div>`;
 // duo(textHtml, visualHtml): text left, graphic right in .deck-visual; stacks on narrow viewports.
 const duo = (text, visual) => `<div class="duo"><div class="duo-text">${text}</div><div class="deck-visual">${visual}</div></div>`;
-// mathStrip(on): the four MATH letter tiles; `on` is the 0-based letter to highlight, or -1 for none.
-const mathStrip = on => `<div class="math-strip" aria-hidden="true">${[...'MATH'].map((c, i) => `<span class="${i === on ? 'on' : ''}" style="--i:${i}">${c}</span>`).join('')}</div>`;
+// rules(items): the MATH rules in one slide. Each [letter, word, text] row appears on its own tap (data-step 1, 2, ...).
+const rules = items => `<div class="rules">${items.map(([l, w, t], i) => `<div class="rule" data-step="${i + 1}"><b aria-hidden="true">${l}</b><div><h2>${w}</h2><p>${t}</p></div></div>`).join('')}</div>`;
 // badges(n): numbered group badges (blue, red, black, white).
 const badges = n => `<div class="badges" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<span style="--i:${i}">${i + 1}</span>`).join('')}</div>`;
 const labelled = (...items) => `<div class="labelled">${items.map(([cls, t]) => `<figure><span class="chip-mini ${cls}"></span><figcaption>${t}</figcaption></figure>`).join('')}</div>`;
@@ -209,11 +209,12 @@ const BEATS = [
   // PORTION 2: PRELIMINARIES & NUMERACY DRILLS
   { portion: 'Portion 2 — Preliminaries', beat: '2.1', html: card('', 'Prayer', '', false, { center: true }) },
   { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p><div class="head-icons">' + iconSvg('sun') + iconSvg('desk') + '</div>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.3', html: card('Classroom Management', 'MATH Rules', mathStrip(-1)) },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.4', html: card('MATH Rule 1 · M', 'Motivated', '<p>Always do your best in every Mathematics activity.</p>' + mathStrip(0)) },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.5', html: card('MATH Rule 2 · A', 'Active', '<p>Participate in class discussions and activities.</p>' + mathStrip(1)) },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.6', html: card('MATH Rule 3 · T', 'Teamwork', '<p>Cooperate and help your classmates.</p>' + mathStrip(2)) },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.7', html: card('MATH Rule 4 · H', 'Honest', '<p>Be truthful and do your own work.</p>' + mathStrip(3)) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.3–2.7', html: card('Classroom Management', 'MATH Rules', rules([
+    ['M', 'Motivated', 'Always do your best in every Mathematics activity.'],
+    ['A', 'Active', 'Participate in class discussions and activities.'],
+    ['T', 'Teamwork', 'Cooperate and help your classmates.'],
+    ['H', 'Honest', 'Be truthful and do your own work.']
+  ])) },
   { portion: 'Portion 2 — Preliminaries', beat: '2.8', html: card('Check-in', 'Attendance & MATHkamustahan', '<h2>How are you feeling today?</h2><div class="head-icons">' + iconSvg('check', 'blue') + '</div>') },
   { portion: 'Portion 2 — Warm-up', beat: '2.9', html: card('Activity 1', 'Numeracy Drills', '<p>Multiply as fast as you can.</p>') },
   ...[[5, 6], [7, 6], [11, 5], [8, 8], [10, 14]].map(([r, c], k) => ({
