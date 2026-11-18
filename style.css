@@ -1412,6 +1412,93 @@
       .ex { grid-template-columns: 1fr }
     }
 
+    /* ---------- batch 5: MATH strip, labelled chips, group badges, card icons ---------- */
+    @keyframes b-pop { from { opacity: 0; transform: scale(.6) rotate(-6deg) } }
+
+    .math-strip {
+      display: flex;
+      gap: 1.2vw
+    }
+
+    .math-strip span {
+      width: clamp(54px, 7vw, 100px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 3px solid #111;
+      background: #fff;
+      box-shadow: 4px 4px 0 #111;
+      font: clamp(30px, 4.4vw, 64px) var(--h);
+      opacity: .4;
+      animation: b-pop .45s calc(.3s + var(--i, 0)*80ms) cubic-bezier(.2, 1.5, .4, 1) both
+    }
+
+    .math-strip span.on {
+      opacity: 1;
+      background: var(--b);
+      color: #fff
+    }
+
+    .labelled {
+      display: flex;
+      gap: 3vw;
+      align-items: flex-end
+    }
+
+    .labelled figure {
+      display: grid;
+      justify-items: center;
+      gap: 1.2vh
+    }
+
+    .labelled .chip-mini {
+      width: clamp(56px, 7vw, 100px)
+    }
+
+    .labelled figcaption {
+      font-size: clamp(16px, 1.9vw, 26px);
+      font-weight: 800
+    }
+
+    .badges {
+      display: flex;
+      gap: 1.6vw;
+      flex-wrap: wrap
+    }
+
+    .badges span {
+      width: clamp(56px, 7vw, 100px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      border: 3px solid #111;
+      border-radius: 50%;
+      color: #fff;
+      font: clamp(26px, 3.6vw, 52px) var(--h);
+      box-shadow: 4px 4px 0 #111;
+      animation: b-pop .45s calc(.3s + var(--i, 0)*90ms) cubic-bezier(.2, 1.5, .4, 1) both
+    }
+
+    .badges span:nth-child(1) { background: var(--b) }
+    .badges span:nth-child(2) { background: var(--r) }
+    .badges span:nth-child(3) { background: #111 }
+    .badges span:nth-child(4) { background: #fff; color: #111 }
+
+    .grid-cards article .icon {
+      display: block;
+      width: clamp(40px, 4.6vw, 68px);
+      margin-bottom: 1vh
+    }
+
+    .head-icons {
+      display: flex;
+      gap: 2vw
+    }
+
+    .head-icons .icon {
+      width: clamp(56px, 7vw, 100px)
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

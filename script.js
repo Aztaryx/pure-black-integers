@@ -91,6 +91,11 @@ const iconSvg = (name, cls = '') => `<svg class="icon${cls ? ' ' + cls : ''}" vi
 const iconRow = items => `<div class="icon-row">${items.map(([n, l], i) => `<figure style="--i:${i}">${iconSvg(n)}<figcaption>${l}</figcaption></figure>`).join('')}</div>`;
 // duo(textHtml, visualHtml): text left, graphic right in .deck-visual; stacks on narrow viewports.
 const duo = (text, visual) => `<div class="duo"><div class="duo-text">${text}</div><div class="deck-visual">${visual}</div></div>`;
+// mathStrip(on): the four MATH letter tiles; `on` is the 0-based letter to highlight, or -1 for none.
+const mathStrip = on => `<div class="math-strip" aria-hidden="true">${[...'MATH'].map((c, i) => `<span class="${i === on ? 'on' : ''}" style="--i:${i}">${c}</span>`).join('')}</div>`;
+// badges(n): numbered group badges (blue, red, black, white).
+const badges = n => `<div class="badges" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<span style="--i:${i}">${i + 1}</span>`).join('')}</div>`;
+const labelled = (...items) => `<div class="labelled">${items.map(([cls, t]) => `<figure><span class="chip-mini ${cls}"></span><figcaption>${t}</figcaption></figure>`).join('')}</div>`;
 function runDemos(root) {
   if (reduce) return;
   root.querySelectorAll('[data-auto]').forEach(z => setTimeout(() => { if (z.isConnected) z.classList.add('cancel') }, 1500));
@@ -129,13 +134,13 @@ const card = (kicker, title, body = '', q = false, o = {}) => {
 const BEATS = [
   // PORTION 2: PRELIMINARIES & NUMERACY DRILLS
   { portion: 'Portion 2 — Preliminaries', beat: '2.1', html: card('', 'Prayer', '', false, { center: true }) },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.3', html: card('Classroom Management', 'MATH Rules') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.4', html: card('MATH Rule 1 · M', 'Motivated', '<p>Always do your best in every Mathematics activity.</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.5', html: card('MATH Rule 2 · A', 'Active', '<p>Participate in class discussions and activities.</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.6', html: card('MATH Rule 3 · T', 'Teamwork', '<p>Cooperate and help your classmates.</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.7', html: card('MATH Rule 4 · H', 'Honest', '<p>Be truthful and do your own work.</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.8', html: card('Check-in', 'Attendance & MATHkamustahan', '<h2>How are you feeling today?</h2>') },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p><div class="head-icons">' + iconSvg('sun') + iconSvg('desk') + '</div>') },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.3', html: card('Classroom Management', 'MATH Rules', mathStrip(-1)) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.4', html: card('MATH Rule 1 · M', 'Motivated', '<p>Always do your best in every Mathematics activity.</p>' + mathStrip(0)) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.5', html: card('MATH Rule 2 · A', 'Active', '<p>Participate in class discussions and activities.</p>' + mathStrip(1)) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.6', html: card('MATH Rule 3 · T', 'Teamwork', '<p>Cooperate and help your classmates.</p>' + mathStrip(2)) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.7', html: card('MATH Rule 4 · H', 'Honest', '<p>Be truthful and do your own work.</p>' + mathStrip(3)) },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.8', html: card('Check-in', 'Attendance & MATHkamustahan', '<h2>How are you feeling today?</h2><div class="head-icons">' + iconSvg('check', 'blue') + '</div>') },
   { portion: 'Portion 2 — Warm-up', beat: '2.9', html: card('Activity 1', 'Numeracy Drills', '<p>Multiply as fast as you can.</p>') },
   ...[[5, 6], [7, 6], [11, 5], [8, 8], [10, 14]].map(([r, c], k) => ({
     portion: 'Portion 2 — Warm-up', beat: `2.${10 + 2 * k}–2.${11 + 2 * k}`,
@@ -149,7 +154,7 @@ const BEATS = [
     html: card(`Word ${k + 1} of 3`, `<span data-hide="1">Unscramble the word</span><span data-step="1">${q}</span>`,
       `<div class="stack">${tiles(scr, '', 'data-hide="1"')}${tiles(word, scr, 'data-step="1"')}</div>` + step(2, numberLine(-5, 5, { shade })), true, { swap: true })
   })),
-  { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
+  { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>' + labelled(['', 'Positive'], ['red', 'Negative'])) },
 
   // PORTION 4: SITUATIONAL ANALYSIS — THE SCORE BOARD
   { portion: 'Portion 4 — Situational Analysis', beat: '4.1–4.3', html: card('Activity 3 · The Score Board',
@@ -167,7 +172,7 @@ const BEATS = [
 
   // PORTION 5: VOCABULARY UNLOCK
   { portion: 'Portion 5 — Vocabulary', beat: '5.1', html: card('Unlocking Vocabulary', 'Integers', '<p>Numbers that include positive whole numbers, negative whole numbers, and zero.</p><h2>…, −3, −2, −1, 0, 1, 2, 3, …</h2>' + numberLine(-5, 5)) },
-  { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Unlocking Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + chipRow(chips(1), chips(1, true)) + '<p>Blue = Positive (+1) · Red = Negative (−1)</p>') },
+  { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Unlocking Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + labelled(['', '+1'], ['red', '−1']) + '<p>Blue = Positive (+1) · Red = Negative (−1)</p>') },
   { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Unlocking Vocabulary', 'Zero Pair', '<p>A combination of one positive chip and one negative chip that cancel each other out.</p>' + zeroPair(true) + '<h2>(+1) + (−1) = <span class="lit">0</span></h2>') },
 
   // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
@@ -179,8 +184,8 @@ const BEATS = [
   { portion: 'Portion 6 — Chip Mat', beat: '6.6a', html: card('Case 3 · Examples', 'Different Signs', '<div class="ex-list">' + exRow('4 + (−2) =', crossRow(4, 2, false, 1), '2', 2) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4) + '</div>', false, { big: true }) },
 
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
-  { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Mechanics', 'How We Work', '<ol><li>Model and solve the problem independently using integer chips.</li><li>Pair up to compare representations and explain your solutions.</li><li>Selected pairs share with the class.</li></ol>') },
+  { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve', iconRow([['think', 'Think'], ['pair', 'Pair'], ['share', 'Share']])) },
+  { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Mechanics', 'How We Work', '<ol><li>Model and solve the problem independently using integer chips.</li><li>Pair up to compare representations and explain your solutions.</li><li>Selected pairs share with the class.</li></ol>' + iconRow([['think', 'Think'], ['pair', 'Pair'], ['share', 'Share']])) },
   { portion: 'Portion 7 — Familiarize', beat: '7.3–7.4', html: card('Problem 1',
     '<span data-hide="1">Laboratory Temperature</span><span data-step="1">−2°C</span>',
     duo('<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>' +
@@ -192,7 +197,7 @@ const BEATS = [
 
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
-  { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
+  { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', badges(4) + '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
   { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', rubric(), true) },
   { portion: 'Portion 8 — Decide', beat: '8.3a', html: card('Group Activity', '5 Minutes', timerHtml(300)) },
   { portion: 'Portion 8 — Decide', beat: '8.4–8.5', html: card('Group 1 · Simple Expressions',
@@ -219,10 +224,10 @@ const BEATS = [
     '<div class="step cap-680" data-step="1">' + numberLine(0, 10, { hops: [[0, 7], [7, 9], [9, 3]] }) + '</div><h2 class="answer" data-step="2">3 km back to start</h2>', false, { swap: true }) },
 
   // PORTION 10: REFLECTION & EXTENDED LEARNING
-  { portion: 'Portion 10 — Reflection', beat: '10.1', html: card('Everyday Situations', 'Where Do We Use Integers?', '<div class="grid-cards"><article>Attendance</article><article>Temperature Changes</article><article>Money Transactions</article><article>Basketball Scores</article></div>') },
+  { portion: 'Portion 10 — Reflection', beat: '10.1', html: card('Everyday Situations', 'Where Do We Use Integers?', '<div class="grid-cards"><article>' + iconSvg('check', 'blue') + 'Attendance</article><article>' + iconSvg('thermo', 'red') + 'Temperature Changes</article><article>' + iconSvg('coin') + 'Money Transactions</article><article>' + iconSvg('ball', 'blue') + 'Basketball Scores</article></div>') },
   { portion: 'Portion 10 — Reflection', beat: '10.2', html: card('Reflective Question', 'How can we use the addition of integers to solve problems in our everyday situations?', '', true) },
-  { portion: 'Portion 10 — Ways Forward', beat: '10.3', html: card('Explore Digital Learning Resources', 'Addition of Integers', '<p>Grade 7 MATATAG Educational Video</p><h2><a href="https://youtu.be/gLQoEzKKTyQ?si=Y_CoLReMDYs05oWk" target="_blank" rel="noopener">youtu.be/gLQoEzKKTyQ</a></h2>') },
-  { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you!', 'Grade 7 – St. Joseph', '<p>Prepared by: Joshua Philip M. Aure</p>') }
+  { portion: 'Portion 10 — Ways Forward', beat: '10.3', html: card('Explore Digital Learning Resources', 'Addition of Integers', '<div class="head-icons">' + iconSvg('play', 'red') + '</div><p>Grade 7 MATATAG Educational Video</p><h2><a href="https://youtu.be/gLQoEzKKTyQ?si=Y_CoLReMDYs05oWk" target="_blank" rel="noopener">youtu.be/gLQoEzKKTyQ</a></h2>') },
+  { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you!', 'Grade 7 – St. Joseph', '<p>Prepared by: Joshua Philip M. Aure</p>' + chipRow(chips(3), chips(3, true))) }
 ];
 
 const MAT_IDX = BEATS.findIndex(b => b.mat), TITLE_IDX = BEATS.findIndex(b => b.title);

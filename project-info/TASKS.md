@@ -122,6 +122,7 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - Acceptance criteria: those slides carry the graphics from the Graphics plan, adapted to the no-faces rule (see DECISIONS.md); no change to 6.5 and 6.6, which stay text only so the method is not given away; no dependencies; reduced motion shows static end states.
 - Validation: `node --check script.js` only, by request.
 - Plan: 2.2 sun and desk icons beside the greeting; 2.3–2.7 a MATH letter strip with the current letter in blue (2.3 shows all four); 2.8 `check` icon; 3.8 one blue and one red chip with labels; 5.2 keeps its chips, adds labels under each; 7.1 and 7.2 `iconRow` think, pair, share; 8.2 four numbered group badges; 10.1 `check`, `thermo`, `coin`, `ball` icons inside the four cards; 10.3 `play` icon; 10.4 a row of blue and red chips.
+- 2026-11-19: Built. 2.2 sun and desk icons; 2.3–2.7 `mathStrip()` (2.3 all dim, 2.4–2.7 the current letter lit blue); 2.8 `check` icon; 3.8 and 5.2 `labelled()` chips; 7.1 and 7.2 `iconRow` think, pair, share; 8.2 `badges(4)`; 10.1 icons inside the four cards; 10.3 `play` icon; 10.4 three blue and three red chips. 6.5 and 6.6 left text only on purpose. Only `node --check` run.
 - After this batch: a browser pass is the main open item (nothing since the first layout commit has been looked at visually), then fixing whatever it shows.
 
 ### [In progress] Teacher requests from the chat screenshots (2026-11-19)
