@@ -74,5 +74,38 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - Constraint: no faces, people, or body parts in any asset (see DECISIONS.md).
 - Validation: `node --check script.js` only, by request; no browser testing.
 - Batch 1 (2026-11-18): `iconSvg`, `iconRow`, `duo` helpers and their CSS. `numberLine`, `scoreboard`, `pips` and `zeroPair` already existed. Not wired into slides yet.
-- Next: batch 2 Portions 4 to 7, batch 3 Portions 2, 3, 8, 9, 10.
+- Next: on hold until the format change below lands (it changes which slides exist). Then resume Portions 4 to 7, then 2, 3, 8, 9, 10, adapted to the merged slides.
+
+### [Planned] Format change: merge repeat slides into click-order reveals, enlarge sparse assets
+- Owner: Claude
+- Source: request from the original teacher, relayed by the project owner, 2026-11-18. Do this before more graphics work.
+- Files: script.js (`BEATS`, `card()`, `renderDeck`, `deckNext`, `deckBack`), style.css (step reveal, `.big` sizing), index.html (none expected), project-info/
+- Acceptance criteria:
+  - A slide that repeats the previous slide's asset (same drill array, same tiles, same scoreboard, same chip row or diagram) becomes one slide. Each tap (click, Next, Space, Enter, Right Arrow) reveals the next step in order; the tap after the last step goes to the next slide.
+  - Back hides the last revealed step first; at step 0 it goes to the previous slide with all of its steps shown.
+  - Steps are marked in slide HTML with `data-step="1"`, `"2"`, and so on. Unrevealed steps are hidden and keep their space, so the layout does not jump.
+  - Interactive demos (chip flip, zero pair) still do not advance the slide when clicked.
+  - Reduced motion: steps still reveal one per tap, with no animation. The Next nudge still waits 8 s.
+  - Sparse slides (a title plus one asset, with little or no text) get a `.big` modifier that scales the asset to fill the free area: larger dot arrays, chips, number lines, thermometer and elevator, with sizes from viewport units, not fixed pixels.
+  - Merged slides keep the first beat id as a range (for example `2.10–2.11`, like `6.1–6.4`), so notes and `MAT_IDX` still work.
+  - No faces, people or body parts, except the `pair` silhouette (see DECISIONS.md).
+- Validation: `node --check script.js` only, by request. No browser testing.
+- Merge list (slides before, then after):
+  - Drills 2.10 to 2.19 (question + answer, 10 slides): 5 slides. Tap 1 shows the array and question, tap 2 stamps the answer. Arrays use `.big`.
+  - Unscramble 3.2 to 3.7 (6 slides): 3 slides. Tap 1 scrambled tiles, tap 2 tiles slide into order and the title becomes the question, tap 3 the number line shading sweeps in.
+  - Score board 4.1 to 4.3 (3 slides): 1 slide. Tap 1 Round 1 (+5), tap 2 Round 2 (−3) with the total counting, tap 3 the chip groups. Guide questions 4.4 to 4.7 stay separate and become large solo question slides.
+  - Problems 7.3/7.4 and 7.5/7.6: 2 slides. Tap 1 the problem, tap 2 chips and equation, tap 3 the thermometer or elevator.
+  - Group answers 8.4/8.5, 8.6/8.7, 8.8/8.9, 8.10/8.11: 4 slides. Tap 1 the problem, tap 2 the answer.
+  - 9.2 to 9.7: keep 9.2 as the five-item overview and make 9.3 to 9.7 answers appear on tap (zero pairs cross out first, then the answer). Open question below.
+  - Unchanged: Portions 2.1 to 2.8, 5, 6, 7.1 to 7.2, 8.1 to 8.3, 10.
+- Open questions for the project owner:
+  - 9.2 overview plus 9.3 to 9.7: keep all six slides, or drop the 9.2 grid and fold each item into its own question-then-answer slide?
+  - Teacher's note on the chat screenshot (Tagalog): is it asking that blue chips show no "+" and red chips no "−" on the chip mat? Not acting on it until confirmed.
+  - Teacher's note on the prayer slide: only the word "Prayer" is needed, since the class has its own prayer. The current slide says "Let us pray."; change the title to "Prayer"?
+- Batches (push after each):
+  1. Step-reveal engine: `data-step` markup, `deckNext` and `deckBack` step logic, CSS, README note.
+  2. Merge drills, unscramble and score board.
+  3. Merge Portion 7 and Portion 8 pairs; 9.x per the answer above.
+  4. `.big` enlargement across sparse slides.
+  5. Resume the graphics plan on the merged deck.
 

@@ -53,3 +53,9 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-18: Icon helpers in `script.js`: `iconSvg(name, cls)` (names: sun, desk, thermo, elevator, coin, ball, check, play, think, link, share; cls `blue` or `red`), `iconRow(items)` for captioned icon cards, and `duo(text, visual)` for the two-column body (text left, `.deck-visual` right, stacks under 820px). Icons are decorative (`aria-hidden`); meaning stays in the text.
 - 2026-11-18 (update): Exception to the rule above, requested by the owner: the "pair" icon is two faceless default-avatar silhouettes (solid head and shoulders, no features) side by side. `iconSvg('pair')` replaces the earlier `link` icon, so 7.1 and 7.2 use `iconRow([['think','Think'],['pair','Pair'],['share','Share']])`. Everything else in the rule still holds: no faces, no other people shapes, no body parts, no mood faces, no group icons.
 
+## Click-order reveals and merged slides (planned, 2026-11-18)
+
+- 2026-11-18: Teacher request: when a slide repeats the previous slide's asset, merge them into one slide and reveal the changes by tap, in order. See the task "Format change" in TASKS.md for the merge list and batches.
+- 2026-11-18: When a slide has little text, enlarge its asset to fill the free area (`.big`, viewport-unit sizing) rather than leaving empty space.
+- 2026-11-18: Step markup is `data-step="n"` on elements inside a slide's body. Next reveals the next step, then advances. Back hides the last step, then goes to the previous slide fully revealed. Merged slides use a beat id range such as `2.10–2.11`.
+
