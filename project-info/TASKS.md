@@ -120,10 +120,16 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - Source: screenshots from Joshua Philip (original teacher), relayed by the project owner, in Tagalog/English. The lesson-plan photos in them are too blurry to read, so anything that depends on their content is listed as open.
 - Files: script.js (`BEATS`), style.css, index.html, project-info/
 - Done 2026-11-19:
-  - Start: the glitch transition before the intro video is removed (`glitch()`, the `#gw` windows and the `#ca` color-split filter). The first click now goes to black and then plays the video, with the same fallback if the video fails.
-  - Order: Prayer comes first (2.1), then Good Morning (2.2).
-  - Same Signs (6.5): "Keep the sign!" and the two worked number lines are removed, because they gave the method away when this slide comes before Different Signs.
-- Open, waiting on the project owner:
+  - Start: the opening glitch, the intro video and its canvas fallback are removed; the deck opens at Prayer.
+  - Order: Prayer first (2.1), then Good Morning (2.2).
+  - Same Signs (6.5): "Keep the sign!" and the two worked number lines are removed, because they gave the method away.
+  - Storyboard (answered 2026-11-19): the title slide ("Adding INTEGERS using integer chips", with the moving inversion windows) is now a deck beat after Guide Question 4 (4.7) and before the vocabulary (5.1). Everything before it is preliminary questions; the title reveals the topic. The windows stand for negatives, so the slide is part of the lesson, not a theme.
+  - Text: "Inversion Window" removed from the 5.2 legend; the chip mat captions now say "overlay".
+- Open (answers received 2026-11-19; still to build):
+  - Examples after Same Signs (from the lesson plan PDF): Case 1 `3 + 2 = 5`, `5 + 2 = 7`; Case 2 `(−4) + (−2) = −6`, `(−3) + (−1) = −4`; Case 3 `4 + (−2) = 2`, `(−4) + 3 = −1` (zero pairs crossed out).
+  - Full rubric table on 8.3 (the PDF crops the table after the "3 Points" column).
+  - 5-minute timer after the rubric, started manually (Start, Pause, Reset).
+- Superseded questions (kept for history):
   - Examples after Same Signs ("the one with two each"): which two examples, and as chips or number lines? Default if not told: 3 + 2 and (−4) + (−2) as chip rows, answers on tap.
   - Complete rubric: replace the five 5-point cards on 8.3 with the full rubric table from the photo. Needs the readable table text or the `.docx`.
   - 5-minute timer after the rubric: default is a new slide after 8.3 with a large mm:ss countdown and Start/Pause and Reset buttons (buttons do not advance the slide).

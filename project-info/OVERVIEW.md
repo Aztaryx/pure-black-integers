@@ -13,7 +13,6 @@ A two-part instructional presentation:
 - CSS3
 - Vanilla JavaScript
 - Canvas 2D
-- MP4 media
 
 No package manager or build step is currently configured.
 
@@ -29,7 +28,7 @@ Examples are declared in the `EX` array. Each example contains an equation and p
 
 ## Key flows
 
-- Opening media and visual fallback
+- Title slide with moving inversion windows (a deck beat after Guide Question 4)
 - Slide reveal and wipe transitions
 - Example navigation
 - Chip pairing and cancellation
@@ -38,6 +37,6 @@ Examples are declared in the `EX` array. Each example contains an equation and p
 
 ## Constraints
 
-- Preserve a working fallback when `intro.mp4` cannot play.
+- The deck opens at the Prayer slide; there is no opening video.
 - Preserve `prefers-reduced-motion` behavior.
 - Keep controls and content readable at desktop presentation sizes.

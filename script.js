@@ -149,10 +149,11 @@ const BEATS = [
   { portion: 'Portion 4 — Situational Analysis', beat: '4.5', html: card('Guide Question 2', 'Why do you think Team A has two different kinds of chips?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.6', html: card('Guide Question 3', 'In the context of integers for gained and deducted points, which one is positive and which one is negative?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.7', html: card('Guide Question 4', 'How can we organize these chips to understand the team’s score?', '', true) },
+  { portion: 'Title', beat: 'Title', title: true },
 
   // PORTION 5: VOCABULARY UNLOCK
   { portion: 'Portion 5 — Vocabulary', beat: '5.1', html: card('Unlocking Vocabulary', 'Integers', '<p>Numbers that include positive whole numbers, negative whole numbers, and zero.</p><h2>…, −3, −2, −1, 0, 1, 2, 3, …</h2>' + numberLine(-5, 5)) },
-  { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Unlocking Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + chipRow(chips(1), chips(1, true)) + '<p>Blue = Positive (+1) · Red / Inversion Window = Negative (−1)</p>') },
+  { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Unlocking Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + chipRow(chips(1), chips(1, true)) + '<p>Blue = Positive (+1) · Red = Negative (−1)</p>') },
   { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Unlocking Vocabulary', 'Zero Pair', '<p>A combination of one positive chip and one negative chip that cancel each other out.</p>' + zeroPair(true) + '<h2>(+1) + (−1) = <span class="lit">0</span></h2>') },
 
   // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
@@ -206,75 +207,21 @@ const BEATS = [
   { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you!', 'Grade 7 – St. Joseph', '<p>Prepared by: Joshua Philip M. Aure</p>') }
 ];
 
-const MAT_IDX = BEATS.findIndex(b => b.mat);
+const MAT_IDX = BEATS.findIndex(b => b.mat), TITLE_IDX = BEATS.findIndex(b => b.title);
 const sum = a => a.reduce((x, y) => x + y, 0), fmt = n => (n < 0 ? '−' : '') + Math.abs(n);
 const X = (k, g) => .6 + k * 1.1 + g * .35, YS = .3, YM = 1.825;
-let st = { sl: 0, ex: 0, i: 0 }, M;
+let st = { sl: 3, ex: 0, i: 0 }, M;
 
-/* ---------- opening: the star and the portal, drawn in code ---------- */
-const ic = $('#ic'), ix = ic.getContext('2d');
-const SL = [...Array(120)].map(() => ({ a: Math.random() * 6.283, r: .28 + Math.random() * .45, l: .06 + Math.random() * .22, o: .1 + Math.random() * .3, v: .02 + Math.random() * .06 }));
-let T0 = 0, done = true;
-(() => {
-  const g = document.createElement('canvas'); g.width = g.height = 160; const c = g.getContext('2d'), d = c.createImageData(160, 160);
-  for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255 }
-  c.putImageData(d, 0, 0); $('#gr').style.backgroundImage = `url(${g.toDataURL()})`
-})();
-function rot(x, y, z, a, b, c) {
-  const y1 = y * Math.cos(a) - z * Math.sin(a), z1 = y * Math.sin(a) + z * Math.cos(a), x2 = x * Math.cos(b) + z1 * Math.sin(b);
-  return [x2 * Math.cos(c) - y1 * Math.sin(c), x2 * Math.sin(c) + y1 * Math.cos(c)]
-}
-function ring(a, b, c, R, lw, dash, al) {
-  ix.beginPath(); for (let i = 0; i <= 96; i++) { const t = i / 96 * 6.2832, p = rot(Math.cos(t), Math.sin(t), 0, a, b, c); i ? ix.lineTo(p[0] * R, p[1] * R) : ix.moveTo(p[0] * R, p[1] * R) }
-  ix.lineWidth = lw; ix.setLineDash(dash || []); ix.strokeStyle = `rgba(255,255,255,${al})`; ix.stroke()
-}
-function star(R) { ix.beginPath(); for (let i = 0; i <= 64; i++) { const t = i / 64 * 6.2832, x = R * Math.cos(t) ** 3, y = R * Math.sin(t) ** 3; i ? ix.lineTo(x, y) : ix.moveTo(x, y) } ix.closePath() }
-function frame(now) {
-  if (done) return;
-  const t = (now - T0) / 1000, w = ic.width = innerWidth, h = ic.height = innerHeight;
-  ix.clearRect(0, 0, w, h); ix.save(); ix.translate(w / 2, h / 2);
-  const minD = Math.min(w, h);
-  ix.fillStyle = '#fff'; star(minD * .12); ix.fill();
-  ring(t * .7, t * .5, t * .3, minD * .2, 1.5, [4, 6], .7);
-  ring(t * .4, -t * .6, t * .2, minD * .28, 2, [8, 8], .5);
-  ring(-t * .5, t * .3, -t * .4, minD * .38, 1, [], .3);
-  SL.forEach(s => {
-    s.r += s.v * 0.02; if (s.r > 1) s.r -= .7;
-    const r1 = s.r * minD * .5, r2 = (s.r + s.l) * minD * .5;
-    ix.beginPath(); ix.lineWidth = 1.5; ix.strokeStyle = `rgba(255,255,255,${s.o})`;
-    ix.moveTo(Math.cos(s.a) * r1, Math.sin(s.a) * r1); ix.lineTo(Math.cos(s.a) * r2, Math.sin(s.a) * r2); ix.stroke()
-  });
-  ix.restore();
-  requestAnimationFrame(frame);
-}
-
-const iv = $('#iv'), gl = $('#gl'), ia = $('#ia'), gx = gl.getContext('2d'), I = $('#intro');
-let phase = 0, vfail = false, playing = false, fbOn = false;
-function black() { gl.width = innerWidth; gl.height = innerHeight; gx.fillStyle = '#000'; gx.fillRect(0, 0, gl.width, gl.height); gl.style.display = 'block' }
-function fb() { if (fbOn) return; fbOn = true; I.classList.add('fb'); gl.style.display = ia.style.display = 'none'; T0 = performance.now(); done = false; requestAnimationFrame(frame); setTimeout(() => { if (phase == 2) reveal() }, 5200) }
-function playV() {
-  if (playing || fbOn) return; playing = true; I.classList.add('vid'); iv.currentTime = 0;
-  iv.play().then(() => setTimeout(() => { gl.style.display = ia.style.display = 'none' }, 80)).catch(fb)
-}
-function startVid() {
-  phase = 2; if (vfail) return fb();
-  if (iv.readyState >= 2) playV(); else { iv.addEventListener('loadeddata', playV, { once: true }); setTimeout(() => { if (phase == 2 && !playing) fb() }, 3500) }
-}
-iv.addEventListener('error', () => { vfail = true; if (phase == 2 && !playing) fb() });
-iv.addEventListener('ended', () => { if (phase == 2) reveal() });
-function reveal() {
-  if (phase == 3) return; phase = 3; const s = $('#s1'); s.classList.add('show'); show(1);
-  setTimeout(() => { I.style.display = 'none'; iv.pause(); done = true; }, 400);
-  setTimeout(() => s.classList.add('txt'), reduce ? 0 : 300);
-  setTimeout(() => {
-    s.classList.add('rev');
-    document.body.classList.add('ready');
-    setTimeout(startWinSpawner, reduce ? 0 : 3000);
-  }, reduce ? 0 : 2200);
-}
-function begin() {
-  if (phase == 0) { phase = 1; black(); return startVid() }
-  if (phase == 2) reveal()
+/* ---------- title slide: a deck beat between Guide Question 4 and the vocabulary ---------- */
+let titleT1 = 0, titleT2 = 0, titleT3 = 0;
+function showTitle() {
+  const s = $('#s1');
+  clearTimeout(titleT1); clearTimeout(titleT2); clearTimeout(titleT3);
+  show(1);
+  s.classList.add('reset'); s.classList.remove('show', 'txt', 'rev'); void s.offsetWidth;
+  s.classList.remove('reset'); s.classList.add('show');
+  titleT1 = setTimeout(() => s.classList.add('txt'), reduce ? 0 : 300);
+  titleT2 = setTimeout(() => { s.classList.add('rev'); titleT3 = setTimeout(startWinSpawner, reduce ? 0 : 3000) }, reduce ? 0 : 2200);
 }
 
 /* ---------- dynamic parallax inversion window spawner ---------- */
@@ -320,12 +267,12 @@ function build(i) {
 }
 function cap(s) {
   const { P, N, m, R, ex } = M, d = N - P, pl = n => n > 1 ? 's' : '';
-  if (!N) return s < 4 ? 'Blue chips are positive. Two groups: ' + ex.p.join(' and ') + '.' : 'No window needed. Count every blue chip: ' + R + '.';
+  if (!N) return s < 4 ? 'Blue chips are positive. Two groups: ' + ex.p.join(' and ') + '.' : 'No overlay needed. Count every blue chip: ' + R + '.';
   return [
     P ? `${P} blue chip${pl(P)} on the mat: +${P}.` : 'The mat is empty.',
-    `The negative arrives as ${ex.n.length > 1 ? 'inversion windows' : 'an inversion window'}: ${N} cells, −${N}.`,
-    !P ? `Windows invert the empty mat: ${N} red chips appear.` : d <= 0 ? 'Overlay it. Everything under the window inverts: blue becomes red.' : `Overlay it. ${P} chip${pl(P)} invert to red. The extra ${d === 1 ? 'cell is' : d + ' cells are'} over empty space, so ${d === 1 ? 'a red chip is' : 'red chips are'} born.`,
-    m ? 'Inverted chips cancel their cells. These are zero pairs, and they fade away.' : 'The windows close. The red chips stay.',
+    `The negative arrives as ${ex.n.length > 1 ? 'overlays' : 'an overlay'}: ${N} cells, −${N}.`,
+    !P ? `The overlay flips the empty mat: ${N} red chips appear.` : d <= 0 ? 'Overlay it. Everything under the overlay flips: blue becomes red.' : `Overlay it. ${P} chip${pl(P)} invert to red. The extra ${d === 1 ? 'cell is' : d + ' cells are'} over empty space, so ${d === 1 ? 'a red chip is' : 'red chips are'} born.`,
+    m ? 'Inverted chips cancel their cells. These are zero pairs, and they fade away.' : 'The overlays close. The red chips stay.',
     R > 0 ? `Count what is left: ${R} blue chip${pl(R)}. Answer: ${R}.` : `Count what is left: ${-R} red chip${pl(-R)}. Answer: ${fmt(R)}.`
   ][s];
 }
@@ -353,11 +300,11 @@ function show(n) {
   st.sl = n;
   $('#s2').classList.toggle('on', n == 2);
   $('#deck').classList.toggle('on', n == 3);
-  if (n == 2 || n == 3) {
+  if (n != 1) {
+    clearTimeout(titleT1); clearTimeout(titleT2); clearTimeout(titleT3);
+    $('#s1').classList.remove('show', 'txt', 'rev');
     stopWinSpawner();
     par.innerHTML = '';
-  } else if (n == 1 && $('#s1').classList.contains('rev')) {
-    startWinSpawner();
   }
 }
 
@@ -391,16 +338,15 @@ function enterMat(ex, i) {
   deckIndex = MAT_IDX;
   wipe(() => { show(2); enter(ex, i) });
 }
+function openTitle() { deckIndex = TITLE_IDX; wipe(showTitle) }
 function deckNext() {
   if (deckStep < deckStepMax) { deckStep++; applySteps(); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex < BEATS.length - 1) {
     deckIndex++;
     if (BEATS[deckIndex].mat) enterMat(0, 0);
+    else if (BEATS[deckIndex].title) openTitle();
     else renderDeck();
-  } else {
-    deckIndex = 0;
-    wipe(() => show(1));
-  }
+  } else openDeck(0);
 }
 function deckBack() {
   if (deckStep > 0) { deckStep--; applySteps(); armNudge($('#deck-next')); return deckLabel() }
@@ -409,17 +355,16 @@ function deckBack() {
     if (BEATS[deckIndex].mat) {
       const last = EX.length - 1;
       enterMat(last, EX[last].n.length ? 4 : 1);
+    } else if (BEATS[deckIndex].title) {
+      openTitle();
     } else {
       renderDeck(true);
     }
-  } else {
-    wipe(() => show(1));
   }
 }
 function wipe(cb) { const w = $('#wipe'); w.classList.remove('go'); void w.offsetWidth; w.classList.add('go'); setTimeout(cb, reduce ? 0 : 650) }
 function next() {
-  if (st.sl == 0) return begin();
-  if (st.sl == 1) return openDeck(0);
+  if (st.sl == 1) return openDeck(TITLE_IDX + 1);
   if (st.sl == 3) return deckNext();
   if (st.i < M.n - 1) { st.i++; render() }
   else if (st.ex < EX.length - 1) enter(st.ex + 1, 0);
@@ -427,6 +372,7 @@ function next() {
 }
 function prev() {
   if (st.sl == 3) return deckBack();
+  if (st.sl == 1) return openDeck(TITLE_IDX - 1, true);
   if (st.sl < 2) return;
   if (st.i > 0) { st.i--; render() }
   else if (st.ex > 0) enter(st.ex - 1, EX[st.ex - 1].n.length ? 4 : 1);
@@ -434,7 +380,7 @@ function prev() {
 }
 
 EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => enter(j, 0); $('#tabs').appendChild(b) });
-$('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#intro').onclick = begin;
+$('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#s1').onclick = next;
 $('#deck-next').onclick = deckNext; $('#deck-back').onclick = deckBack;
 $('#deck-content').onclick = e => {
   const z = e.target.closest('.zero-pair');
@@ -473,3 +419,6 @@ function draw(t) {
 }
 function loop(t) { if (st.sl < 2) draw(t); requestAnimationFrame(loop) }
 reduce ? (draw(0), addEventListener('resize', () => draw(0))) : requestAnimationFrame(loop);
+
+/* ---------- start: the deck opens at the first slide (Prayer) ---------- */
+show(3); renderDeck();

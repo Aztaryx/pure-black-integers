@@ -16,8 +16,7 @@ Then visit `http://localhost:4173`.
 
 - `index.html` - page structure, slides, and canvas elements
 - `style.css` - visual system, layout, animation, and responsive styles
-- `script.js` - presentation state, chip rendering, and intro effects
-- `intro.mp4` - opening video
+- `script.js` - presentation state, deck slides, chip mat, and title-slide effects
 - `project-info/` - implementation and multi-agent handoff documentation
 
 ## Agent guidance

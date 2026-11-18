@@ -7,10 +7,10 @@ This repository is a dependency-free static web presentation. It is not a React,
 ## Working rules
 
 - Make the smallest complete change that satisfies the task.
-- Preserve the existing two-slide presentation flow and integer-chip behavior.
+- Preserve the presentation flow recorded in `project-info/DECISIONS.md` and the integer-chip behavior.
 - Keep `index.html`, `style.css`, and `script.js` consistent.
 - Do not introduce dependencies without a documented need.
-- Do not rename or move `intro.mp4` unless the reference and fallback behavior are updated together.
+- The opening video was removed (2026-11-19). `intro.mp4` is no longer referenced by the code.
 - Respect reduced-motion behavior and keep the presentation usable with keyboard and pointer controls.
 - Avoid broad formatting changes to existing files.
 - For multi-agent work, use `project-info/` as the shared handoff record.
@@ -26,4 +26,4 @@ curl -I http://127.0.0.1:4173/script.js
 curl -I http://127.0.0.1:4173/style.css
 ```
 
-Also load the page in a browser and verify both slides, Back/Next controls, and the intro fallback.
+Also load the page in a browser and verify the deck, the title slide after Guide Question 4, the chip mat, and Back/Next controls.
