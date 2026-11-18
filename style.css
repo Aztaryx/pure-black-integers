@@ -535,13 +535,27 @@
     }
 
     .deck-head {
-      border-bottom: 3px solid #111;
+      position: relative;
       padding-bottom: 2.2vh
     }
 
+    .deck-head::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: #111;
+      transform-origin: left
+    }
+
     .deck-card.solo .deck-head {
-      border-bottom: 0;
       padding-bottom: 0
+    }
+
+    .deck-card.solo .deck-head::after {
+      display: none
     }
 
     .deck-card h1 {
@@ -710,6 +724,112 @@
     .deck-nav button.go {
       background: #111;
       color: #fff
+    }
+
+    /* ---------- polish A: entrance, idle, active (end states are the normal styles, so reduced motion is safe) ---------- */
+    @keyframes d-left { from { opacity: 0; transform: translateX(-4vw) } }
+    @keyframes d-rule { from { transform: scaleX(0) } }
+    @keyframes d-up { from { opacity: 0; transform: translateY(2.5vh) } }
+    @keyframes d-pulse { 50% { transform: scale(1.5); opacity: .55 } }
+    @keyframes d-bob { 50% { translate: 0 -.7vh } }
+    @keyframes d-chip-in { from { opacity: 0; transform: scale(.3) } }
+    @keyframes d-tile-in { from { opacity: 0; translate: 0 -2vh; rotate: -8deg } }
+    @keyframes d-tile-slide { from { translate: calc(var(--dx, 0)*(var(--tw) + 1.2vw)) 0; rotate: -6deg } }
+    @keyframes d-stamp { from { opacity: 0; transform: scale(1.35) } }
+    @keyframes d-underline { from { background-size: 0 6px } }
+
+    .deck-head .kicker,
+    .deck-head h1 {
+      animation: d-left .6s cubic-bezier(.2, .7, .2, 1) both
+    }
+
+    .deck-head h1 {
+      animation-delay: .08s
+    }
+
+    .deck-head::after {
+      animation: d-rule .7s .15s cubic-bezier(.65, 0, .2, 1) both
+    }
+
+    .deck-body>*,
+    .grid-cards article,
+    .quiz-grid article {
+      animation: d-up .5s cubic-bezier(.2, .7, .2, 1) both
+    }
+
+    .deck-body> :nth-child(1) { animation-delay: .25s }
+    .deck-body> :nth-child(2) { animation-delay: .31s }
+    .deck-body> :nth-child(3) { animation-delay: .37s }
+    .deck-body> :nth-child(4) { animation-delay: .43s }
+    .deck-body> :nth-child(5) { animation-delay: .49s }
+    .deck-body> :nth-child(6) { animation-delay: .55s }
+    .grid-cards article:nth-child(1), .quiz-grid article:nth-child(1) { animation-delay: .35s }
+    .grid-cards article:nth-child(2), .quiz-grid article:nth-child(2) { animation-delay: .43s }
+    .grid-cards article:nth-child(3), .quiz-grid article:nth-child(3) { animation-delay: .51s }
+    .grid-cards article:nth-child(4), .quiz-grid article:nth-child(4) { animation-delay: .59s }
+    .grid-cards article:nth-child(5), .quiz-grid article:nth-child(5) { animation-delay: .67s }
+
+    /* idle: kicker marker pulses, chips bob (starts after the entrance finishes) */
+    .kicker::before {
+      content: '';
+      display: inline-block;
+      width: .5em;
+      height: .5em;
+      margin-right: .6em;
+      vertical-align: .05em;
+      border-radius: 50%;
+      background: var(--r);
+      animation: d-pulse 2.4s ease-in-out 1s infinite
+    }
+
+    .chip-mini {
+      animation: d-chip-in .35s calc(.3s + var(--i, 0)*60ms) cubic-bezier(.2, 1.6, .4, 1) both,
+        d-bob 3.2s ease-in-out calc(.9s + var(--i, 0)*140ms) infinite
+    }
+
+    /* tiles: settle in; reveal slides start scrambled and slide into order */
+    .tiles {
+      --tw: clamp(46px, 6vw, 84px)
+    }
+
+    .tiles span {
+      animation: d-tile-in .5s calc(.25s + var(--i, 0)*70ms) cubic-bezier(.2, 1.4, .4, 1) both;
+      transition: translate .12s, box-shadow .12s
+    }
+
+    .tiles.slide span {
+      animation: d-tile-slide .9s calc(.5s + var(--i, 0)*60ms) cubic-bezier(.6, 0, .2, 1) both
+    }
+
+    .tiles span:active {
+      translate: 3px 3px;
+      box-shadow: 1px 1px 0 #111
+    }
+
+    /* press and hover feedback on cards */
+    .grid-cards article,
+    .quiz-grid article {
+      transition: translate .15s, box-shadow .15s
+    }
+
+    .grid-cards article:hover,
+    .quiz-grid article:hover {
+      translate: 0 -4px;
+      box-shadow: 4px 8px 0 #111
+    }
+
+    .grid-cards article:active,
+    .quiz-grid article:active {
+      translate: 2px 2px;
+      box-shadow: 2px 2px 0 #111
+    }
+
+    /* answers stamp in, then the underline draws */
+    .deck-body>.answer {
+      padding: 0 .3em 6px 0;
+      border-bottom: 0;
+      background: linear-gradient(#111, #111) 0 100% / 100% 6px no-repeat;
+      animation: d-stamp .45s .55s cubic-bezier(.2, 1.6, .4, 1) both, d-underline .5s .95s cubic-bezier(.65, 0, .2, 1) both
     }
 
     @media(prefers-reduced-motion:reduce) {

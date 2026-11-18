@@ -8,9 +8,14 @@ const EX = [
 ];
 
 const chips = (count, red = false) =>
-  Array.from({ length: count }, () => `<span class="chip-mini${red ? ' red' : ''}">${red ? '−' : '+'}</span>`).join('');
+  Array.from({ length: count }, (_, i) => `<span class="chip-mini${red ? ' red' : ''}" style="--i:${i}">${red ? '−' : '+'}</span>`).join('');
 const chipRow = (...parts) => `<div class="chip-row">${parts.join('<span class="chip-op">+</span>')}</div>`;
-const tiles = w => `<div class="tiles">${[...w].map(c => `<span>${c}</span>`).join('')}</div>`;
+// tiles(word): tiles settle in. tiles(word, scrambled): tiles start in the scrambled order and slide into place.
+const tiles = (w, from) => {
+  const used = [];
+  const dx = i => { if (!from) return 0; const j = [...from].findIndex((c, k) => c === w[i] && !used.includes(k)); used.push(j); return j - i };
+  return `<div class="tiles${from ? ' slide' : ''}">${[...w].map((c, i) => `<span style="--i:${i};--dx:${dx(i)}">${c}</span>`).join('')}</div>`;
+};
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
 const card = (kicker, title, body = '', q = false) =>
   `<article class="deck-card${body ? '' : ' solo'}"><header class="deck-head"><span class="kicker">${kicker}</span><h1${q ? ' class="q"' : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
@@ -40,11 +45,11 @@ const BEATS = [
   // PORTION 3: RECALL — UNSCRAMBLE ME!
   { portion: 'Portion 3 — Recall', beat: '3.1', html: card('Activity 2', 'Unscramble Me!', '<p>Rearrange the jumbled letters, then answer the question.</p>') },
   { portion: 'Portion 3 — Recall', beat: '3.2', html: card('Word 1 of 3', 'Unscramble the word', tiles('TERINGE')) },
-  { portion: 'Portion 3 — Recall', beat: '3.3', html: card('Word 1 Revealed · Question', 'What are integers?', tiles('INTEGER'), true) },
+  { portion: 'Portion 3 — Recall', beat: '3.3', html: card('Word 1 Revealed · Question', 'What are integers?', tiles('INTEGER', 'TERINGE'), true) },
   { portion: 'Portion 3 — Recall', beat: '3.4', html: card('Word 2 of 3', 'Unscramble the word', tiles('POITVESI')) },
-  { portion: 'Portion 3 — Recall', beat: '3.5', html: card('Word 2 Revealed · Question', 'Where can we find the positive integers on the number line?', tiles('POSITIVE'), true) },
+  { portion: 'Portion 3 — Recall', beat: '3.5', html: card('Word 2 Revealed · Question', 'Where can we find the positive integers on the number line?', tiles('POSITIVE', 'POITVESI'), true) },
   { portion: 'Portion 3 — Recall', beat: '3.6', html: card('Word 3 of 3', 'Unscramble the word', tiles('VANEGITE')) },
-  { portion: 'Portion 3 — Recall', beat: '3.7', html: card('Word 3 Revealed · Question', 'Where can we find the negative integers on the number line?', tiles('NEGATIVE'), true) },
+  { portion: 'Portion 3 — Recall', beat: '3.7', html: card('Word 3 Revealed · Question', 'Where can we find the negative integers on the number line?', tiles('NEGATIVE', 'VANEGITE'), true) },
   { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
 
   // PORTION 4: SITUATIONAL ANALYSIS — THE SCORE BOARD
