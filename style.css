@@ -629,7 +629,8 @@
       animation-delay: .08s
     }
 
-    .deck-head::after {
+    /* the rule under the title draws once when the deck is entered; later slides keep it as is */
+    #deck:not(.rule-seen) .deck-head::after {
       animation: d-rule .7s .15s cubic-bezier(.65, 0, .2, 1) both
     }
 

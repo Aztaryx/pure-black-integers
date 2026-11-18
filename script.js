@@ -394,8 +394,11 @@ function enter(ex, i) {
   $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ?';
   requestAnimationFrame(() => requestAnimationFrame(() => render()));
 }
+// The header rule draws once per entry into the deck (load, wipe in, replay); later slides keep it static.
+let ruleSeen = false;
 function show(n) {
   st.sl = n;
+  if (n != 3) ruleSeen = false;
   $('#s2').classList.toggle('on', n == 2);
   $('#deck').classList.toggle('on', n == 3);
   if (n != 3) timerStop();
@@ -438,6 +441,7 @@ function deckLabel() {
 function renderDeck(full = false) {
   const beat = BEATS[deckIndex], root = $('#deck-content');
   root.innerHTML = beat.html || '';
+  $('#deck').classList.toggle('rule-seen', ruleSeen); ruleSeen = true;
   fadeIn(root);
   negify(root);
   timerStop(); const tm = root.querySelector('.timer'); timerLeft = tm ? +tm.dataset.secs : 0;
@@ -450,7 +454,7 @@ function renderDeck(full = false) {
   deckLabel();
 }
 function openDeck(index, full = false) {
-  deckIndex = index;
+  deckIndex = index; ruleSeen = false;
   wipe(() => { show(3); renderDeck(full) });
 }
 function enterMat(ex, i) {
