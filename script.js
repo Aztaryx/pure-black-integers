@@ -72,8 +72,9 @@ const crossRow = (a, b, aRed) => {
   const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}">${red ? '−' : '+'}</span>`).join('');
   return chipRow(grp(a, aRed), grp(b, !aRed));
 };
-// iconSvg(name, cls): flat line icons on a 64x64 grid, one stroke weight. Objects and abstract shapes only: no faces, no people, no body parts.
-// Names: sun desk thermo elevator coin ball check play think link share. cls may be 'blue' or 'red'.
+// iconSvg(name, cls): flat icons on a 64x64 grid, one stroke weight. Objects and abstract shapes only: no faces, no body parts.
+// The one people shape allowed is `pair`: two faceless default-avatar silhouettes side by side.
+// Names: sun desk thermo elevator coin ball check play think pair share. cls may be 'blue' or 'red'.
 const ICONS = {
   sun: '<circle cx="32" cy="32" r="10"/><path d="M32 6v8M32 50v8M6 32h8M50 32h8M13.6 13.6l5.7 5.7M44.7 44.7l5.7 5.7M13.6 50.4l5.7-5.7M44.7 19.3l5.7-5.7"/>',
   desk: '<path d="M8 32h48M14 32v22M50 32v22"/><rect x="22" y="18" width="20" height="14" rx="2"/>',
@@ -84,7 +85,7 @@ const ICONS = {
   check: '<circle cx="32" cy="32" r="24"/><path d="M21 33l8 8 15-17"/>',
   play: '<rect x="6" y="14" width="52" height="36" rx="8"/><path d="M27 24l14 8-14 8z"/>',
   think: '<ellipse cx="32" cy="22" rx="22" ry="14"/><circle cx="16" cy="43" r="4"/><circle cx="9" cy="53" r="2.5"/>',
-  link: '<circle cx="22" cy="32" r="16"/><circle cx="42" cy="32" r="16"/>',
+  pair: '<g fill="#111"><circle cx="18" cy="22" r="8"/><path d="M5 54v-3a13 13 0 0 1 26 0v3z"/><circle cx="46" cy="22" r="8"/><path d="M33 54v-3a13 13 0 0 1 26 0v3z"/></g>',
   share: '<path d="M12 8h40a6 6 0 0 1 6 6v22a6 6 0 0 1-6 6H32L20 54V42h-8a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z"/>'
 };
 const iconSvg = (name, cls = '') => `<svg class="icon${cls ? ' ' + cls : ''}" viewBox="0 0 64 64" aria-hidden="true">${ICONS[name] || ''}</svg>`;
