@@ -104,16 +104,15 @@ function flipChip(c) {
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
 // Worked-example row: equation, chips, and the answer, which stamps in on tap n.
 const exRow = (eq, chipHtml, ans, n) => `<div class="ex"><h2>${eq}</h2>${chipHtml}<h2 class="answer" data-step="${n}">${ans}</h2></div>`;
-// Grading rubric from the lesson plan. The plan's PDF is cropped after the "3 Points" column, so only 5, 4 and 3 points are here;
-// the 3-point cells complete text that the crop cut off ("2 errors in comp...") by the pattern of the other columns.
+// Grading rubric from the lesson plan (5, 4, 3 and 2 points; 25 points in total).
 const RUBRIC = [
-  ['Accuracy', 'Correct answer with 0 errors.', '1 minor error in computation or signs.', '2 errors in computation or signs.'],
-  ['Use of Chips', 'Correctly represented all integers using chips with 0 errors.', '1 incorrect chip or representation.', '2 incorrect chips or representations.'],
-  ['Explanation', 'Explained all steps clearly with 0 missing steps.', '1 step was missing or insufficiently explained.', '2 steps were missing or insufficiently explained.'],
-  ['Teamwork', '100% of members actively participated.', '75–99% of members actively participated.', '50–74% of members actively participated.'],
-  ['Presentation', 'Presented all parts clearly with 0 presentation issues.', '1 issue in clarity, voice, or organization.', '2 issues in clarity, voice, or organization.']
+  ['Accuracy', 'Correct answer with 0 errors.', '1 minor error in computation or signs.', '2 errors in computation or signs.', '3 or more errors, resulting in an incorrect answer.'],
+  ['Use of Chips', 'Correctly represented all integers using chips with 0 errors.', '1 incorrect chip or representation.', '2 incorrect chips or representations.', '3 or more incorrect chips or representations.'],
+  ['Explanation', 'Explained all steps clearly with 0 missing steps.', '1 step was missing or insufficiently explained.', '2 steps were missing or insufficiently explained.', '3 or more steps were missing, making the solution difficult to understand.'],
+  ['Teamwork', '100% of members actively participated.', '75–99% of members actively participated.', '50–74% of members actively participated.', 'Below 50% of members actively participated.'],
+  ['Presentation', 'Presented all parts clearly with 0 presentation issues.', '1 issue in clarity, voice, or organization.', '2 issues in clarity, voice, or organization.', '3 or more issues in clarity, voice, or organization.']
 ];
-const rubric = () => `<table class="rubric"><thead><tr><th>Criteria</th><th>5 Points</th><th>4 Points</th><th>3 Points</th></tr></thead><tbody>${RUBRIC.map(r => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td colspan="3">25 points</td></tr></tfoot></table>`;
+const rubric = () => `<table class="rubric"><thead><tr><th>Criteria</th><th>5 Points</th><th>4 Points</th><th>3 Points</th><th>2 Points</th></tr></thead><tbody>${RUBRIC.map(r => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td colspan="4">25 points</td></tr></tfoot></table>`;
 // Group-work timer, started by hand (Start, Pause, Reset). It stops when the slide changes.
 const fmtTime = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 const timerHtml = secs => `<div class="timer" data-secs="${secs}"><div class="t-disp" role="timer">${fmtTime(secs)}</div><div class="t-btns"><button data-act="start">Start</button><button data-act="pause">Pause</button><button data-act="reset">Reset</button></div></div>`;

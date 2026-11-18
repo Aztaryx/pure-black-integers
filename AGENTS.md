@@ -10,7 +10,7 @@ This repository is a dependency-free static web presentation. It is not a React,
 - Preserve the presentation flow recorded in `project-info/DECISIONS.md` and the integer-chip behavior.
 - Keep `index.html`, `style.css`, and `script.js` consistent.
 - Do not introduce dependencies without a documented need.
-- The opening video was removed (2026-11-19). `intro.mp4` is no longer referenced by the code.
+- The opening video was removed (2026-11-19). `intro.mp4` and its Git LFS rule were deleted.
 - Respect reduced-motion behavior and keep the presentation usable with keyboard and pointer controls.
 - Avoid broad formatting changes to existing files.
 - For multi-agent work, use `project-info/` as the shared handoff record.
