@@ -390,6 +390,14 @@ function render(pre) {
   armNudge($('#nx'));
   $('#nx').textContent = st.i < M.n - 1 ? 'Next' : st.ex < EX.length - 1 ? 'Next example' : 'Continue';
 }
+// Moving to another example on the chip mat uses the same dissolve as a wipe: every element fades out (background stays),
+// the next example is built while nothing is visible, then everything fades in, so nothing snaps. Taps meanwhile are ignored.
+let exBusy = false;
+function goEx(ex, i) {
+  if (exBusy) return;
+  exBusy = true;
+  dissolve(350, () => { enter(ex, i); fadeIn($('#s2')); exBusy = false });
+}
 function enter(ex, i) {
   st.ex = ex; st.i = i; stage.classList.add('nt'); build(ex); render(true); void stage.offsetWidth; stage.classList.remove('nt');
   $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ?';
@@ -512,7 +520,7 @@ function next() {
   if (st.sl == 1) return openDeck(TITLE_IDX + 1);
   if (st.sl == 3) return deckNext();
   if (st.i < M.n - 1) { st.i++; render() }
-  else if (st.ex < EX.length - 1) enter(st.ex + 1, 0);
+  else if (st.ex < EX.length - 1) goEx(st.ex + 1, 0);
   else openDeck(MAT_IDX + 1);
 }
 function prev() {
@@ -520,11 +528,11 @@ function prev() {
   if (st.sl == 1) return openDeck(TITLE_IDX - 1, true);
   if (st.sl < 2) return;
   if (st.i > 0) { st.i--; render() }
-  else if (st.ex > 0) enter(st.ex - 1, EX[st.ex - 1].n.length ? 4 : 1);
+  else if (st.ex > 0) goEx(st.ex - 1, EX[st.ex - 1].n.length ? 4 : 1);
   else openDeck(MAT_IDX - 1, true);
 }
 
-EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => enter(j, 0); $('#tabs').appendChild(b) });
+EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => goEx(j, 0); $('#tabs').appendChild(b) });
 $('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#s1').onclick = next;
 $('#deck-next').onclick = deckNext; $('#deck-back').onclick = deckBack;
 $('#deck-content').onclick = e => {
