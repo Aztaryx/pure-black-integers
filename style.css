@@ -964,6 +964,97 @@
     .nl-dot.n { fill: var(--r) }
     .nl-dot.e { fill: #111 }
 
+    /* ---------- polish C: drill arrays, pips, scoreboard, Next nudge ---------- */
+    @property --n { syntax: '<integer>'; initial-value: 0; inherits: false }
+    @keyframes d-dot { from { opacity: 0; transform: scale(.2) } }
+    @keyframes d-count { from { --n: var(--from) } }
+    @keyframes d-nudge { 0%, 100% { translate: 0 0 } 30% { translate: 7px 0 } 60% { translate: -2px 0 } }
+
+    .dots {
+      --ds: min(2.2vw, 3.2vh);
+      display: grid;
+      grid-template-columns: repeat(var(--c), var(--ds));
+      gap: 6px
+    }
+
+    .dots i {
+      width: var(--ds);
+      height: var(--ds);
+      border-radius: 50%;
+      background: #111;
+      animation: d-dot .3s calc(.4s + var(--row, 0)*.14s) cubic-bezier(.2, 1.6, .4, 1) both
+    }
+
+    .dots.still i {
+      animation: none
+    }
+
+    .pips {
+      display: flex;
+      gap: 10px
+    }
+
+    .pips i {
+      width: clamp(14px, 1.6vw, 22px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 3px solid #111;
+      background: #fff
+    }
+
+    .pips i.on {
+      background: var(--r);
+      animation: d-chip-in .35s calc(.4s + var(--i, 0)*80ms) cubic-bezier(.2, 1.6, .4, 1) both
+    }
+
+    .board {
+      width: min(560px, 100%);
+      border: 3px solid #111;
+      background: #fff;
+      box-shadow: 4px 4px 0 #111;
+      font-size: clamp(18px, 2.2vw, 30px);
+      font-weight: 800
+    }
+
+    .board>div {
+      display: flex;
+      justify-content: space-between;
+      padding: 1vh 1.4vw
+    }
+
+    .board-h {
+      background: #111;
+      color: #fff;
+      letter-spacing: .1em;
+      text-transform: uppercase
+    }
+
+    .board-row {
+      border-bottom: 2px solid #111
+    }
+
+    .board-row.new {
+      animation: d-left .5s .6s cubic-bezier(.2, .7, .2, 1) both
+    }
+
+    .board .pos { color: var(--b) }
+    .board .neg { color: var(--r) }
+
+    .board .count {
+      --n: var(--to);
+      counter-reset: n var(--n);
+      animation: d-count 1.2s .9s cubic-bezier(.3, 0, .2, 1) both
+    }
+
+    .board .count::after {
+      content: counter(n)
+    }
+
+    .deck-nav button.nudge,
+    .ctl button.nudge {
+      animation: d-nudge 1.6s ease-in-out infinite
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

@@ -37,6 +37,21 @@ const numberLine = (a, b, o = {}) => {
   }
   return s + '</svg>';
 };
+// Drill arrays (smaller factor = rows), pip strip, and the Team A scoreboard with a counting total.
+const dots = (r, c, still = false) => {
+  const [a, b] = r < c ? [r, c] : [c, r];
+  return `<div class="dots${still ? ' still' : ''}" style="--c:${b}">${Array.from({ length: a * b }, (_, i) => `<i style="--row:${Math.floor(i / b)}"></i>`).join('')}</div>`;
+};
+const pips = (done, total) => `<div class="pips" role="img" aria-label="Drill ${done} of ${total}">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}" style="--i:${i}"></i>`).join('')}</div>`;
+const scoreboard = n => {
+  const R = [['Round 1', 5], ['Round 2', -3]], t0 = n > 1 ? 5 : 0, t1 = n > 1 ? 2 : 5;
+  return `<div class="board" role="img" aria-label="Team A scoreboard"><div class="board-h"><span>Team A</span></div>${R.slice(0, n).map(([l, p], i) => `<div class="board-row${i == n - 1 && n > 1 ? ' new' : ''}"><span>${l}</span><b class="${p > 0 ? 'pos' : 'neg'}">${p > 0 ? '+' : '−'}${Math.abs(p)}</b></div>`).join('')}<div class="board-t"><span>Total</span><b class="count" style="--from:${t0};--to:${t1}"></b></div></div>`;
+};
+let nudgeT;
+function armNudge(btn) {
+  clearTimeout(nudgeT); document.querySelectorAll('.nudge').forEach(b => b.classList.remove('nudge'));
+  if (!reduce) nudgeT = setTimeout(() => btn.classList.add('nudge'), 8000);
+}
 function runDemos(root) {
   if (reduce) return;
   root.querySelectorAll('[data-auto]').forEach(z => setTimeout(() => { if (z.isConnected) z.classList.add('cancel') }, 1500));
@@ -62,16 +77,10 @@ const BEATS = [
   { portion: 'Portion 2 — Preliminaries', beat: '2.7', html: card('MATH Rule 4 · H', 'Honest', '<p>Be truthful and do your own work.</p>') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.8', html: card('Check-in', 'Attendance & MATHkamustahan', '<h2>How are you feeling today?</h2>') },
   { portion: 'Portion 2 — Warm-up', beat: '2.9', html: card('Activity 1', 'Numeracy Drills', '<p>Multiply as fast as you can.</p>') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.10', html: card('Drill 1 of 5', '5 × 6 = ?') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.11', html: card('Drill 1 of 5', '5 × 6', '<h2 class="answer">30</h2>') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.12', html: card('Drill 2 of 5', '7 × 6 = ?') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.13', html: card('Drill 2 of 5', '7 × 6', '<h2 class="answer">42</h2>') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.14', html: card('Drill 3 of 5', '11 × 5 = ?') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.15', html: card('Drill 3 of 5', '11 × 5', '<h2 class="answer">55</h2>') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.16', html: card('Drill 4 of 5', '8 × 8 = ?') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.17', html: card('Drill 4 of 5', '8 × 8', '<h2 class="answer">64</h2>') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.18', html: card('Drill 5 of 5', '10 × 14 = ?') },
-  { portion: 'Portion 2 — Warm-up', beat: '2.19', html: card('Drill 5 of 5', '10 × 14', '<h2 class="answer">140</h2>') },
+  ...[[5, 6], [7, 6], [11, 5], [8, 8], [10, 14]].flatMap(([r, c], k) => [
+    { portion: 'Portion 2 — Warm-up', beat: `2.${10 + 2 * k}`, html: card(`Drill ${k + 1} of 5`, `${r} × ${c} = ?`, dots(r, c) + pips(k + 1, 5)) },
+    { portion: 'Portion 2 — Warm-up', beat: `2.${11 + 2 * k}`, html: card(`Drill ${k + 1} of 5`, `${r} × ${c}`, dots(r, c, true) + `<h2 class="answer">${r * c}</h2>` + pips(k + 1, 5)) }
+  ]),
 
   // PORTION 3: RECALL — UNSCRAMBLE ME!
   { portion: 'Portion 3 — Recall', beat: '3.1', html: card('Activity 2', 'Unscramble Me!', '<p>Rearrange the jumbled letters, then answer the question.</p>') },
@@ -84,8 +93,8 @@ const BEATS = [
   { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
 
   // PORTION 4: SITUATIONAL ANALYSIS — THE SCORE BOARD
-  { portion: 'Portion 4 — Situational Analysis', beat: '4.1', html: card('Activity 3 · The Score Board', 'Round 1', '<p>During a classroom quiz bee, Team A earned 5 points in the first round.</p><h2>+5 points</h2>') },
-  { portion: 'Portion 4 — Situational Analysis', beat: '4.2', html: card('Activity 3 · The Score Board', 'Round 2', '<p>However, they received a 3-point deduction in the second round because of a rule violation.</p><h2>−3 points</h2>') },
+  { portion: 'Portion 4 — Situational Analysis', beat: '4.1', html: card('Activity 3 · The Score Board', 'Round 1', '<p>During a classroom quiz bee, Team A earned 5 points in the first round.</p><h2>+5 points</h2>' + scoreboard(1)) },
+  { portion: 'Portion 4 — Situational Analysis', beat: '4.2', html: card('Activity 3 · The Score Board', 'Round 2', '<p>However, they received a 3-point deduction in the second round because of a rule violation.</p><h2>−3 points</h2>' + scoreboard(2)) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.3', html: card('Chip Representation', 'Gained vs. Deducted', '<p>Gained Points (+5)</p>' + chipRow(chips(5)) + '<p>Deduction Points (−3)</p>' + chipRow(chips(3, true))) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.4', html: card('Guide Question 1', 'What do the blue and red chips represent?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.5', html: card('Guide Question 2', 'Why do you think Team A has two different kinds of chips?', '', true) },
@@ -345,6 +354,7 @@ function render(pre) {
   if (pre) return;
   $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ' + (s >= 4 ? `<b>${fmt(R)}</b>` : '?');
   $('#cap').textContent = cap(s);
+  armNudge($('#nx'));
   $('#nx').textContent = st.i < M.n - 1 ? 'Next' : st.ex < EX.length - 1 ? 'Next example' : 'Continue';
 }
 function enter(ex, i) {
@@ -369,6 +379,7 @@ function renderDeck() {
   const beat = BEATS[deckIndex];
   $('#deck-content').innerHTML = beat.html || '';
   runDemos($('#deck-content'));
+  armNudge($('#deck-next'));
   $('#deck-next').textContent = deckIndex === BEATS.length - 1 ? 'Replay' : 'Next';
 }
 function openDeck(index) {
