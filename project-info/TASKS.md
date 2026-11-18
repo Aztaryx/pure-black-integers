@@ -116,6 +116,14 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - Next: batch 3 (Portion 7 and 8 pairs, and the 9.2 to 9.7 quiz fold).
   - 2026-11-19: Batch 3 built. Portion 7 problems are `7.3–7.4` and `7.5–7.6`: the problem first, tap 1 swaps the title to the answer and adds the chips and equation, tap 2 adds the thermometer or elevator (enlarged). Portion 8 pairs are `8.4–8.5`, `8.6–8.7`, `8.8–8.9`, `8.10–8.11`: tap 1 swaps the title to the expression and stamps the answer (8.4–8.5 fills the answers into the two expressions). Quiz is five slides, `9.2–9.3`, `9.4`, `9.5`, `9.6`, `9.7`, one per item: items 1 and 2 show the answer on tap 1; items 3 and 4 cross out the zero pairs on tap 1 and show the answer on tap 2; item 5 draws the route on tap 1 and shows the answer on tap 2. Deck is now 51 slides. Node data check only; not looked at in a browser.
 
+### [In progress] Batch 5: wire icons and remaining graphics into the merged deck (2026-11-19)
+- Owner: Claude
+- Files: script.js (`BEATS` for 2.2–2.8, 3.8, 5.2, 7.1, 7.2, 8.2, 10.1, 10.3, 10.4; new `mathStrip()` and `badges()` helpers), style.css
+- Acceptance criteria: those slides carry the graphics from the Graphics plan, adapted to the no-faces rule (see DECISIONS.md); no change to 6.5 and 6.6, which stay text only so the method is not given away; no dependencies; reduced motion shows static end states.
+- Validation: `node --check script.js` only, by request.
+- Plan: 2.2 sun and desk icons beside the greeting; 2.3–2.7 a MATH letter strip with the current letter in blue (2.3 shows all four); 2.8 `check` icon; 3.8 one blue and one red chip with labels; 5.2 keeps its chips, adds labels under each; 7.1 and 7.2 `iconRow` think, pair, share; 8.2 four numbered group badges; 10.1 `check`, `thermo`, `coin`, `ball` icons inside the four cards; 10.3 `play` icon; 10.4 a row of blue and red chips.
+- After this batch: a browser pass is the main open item (nothing since the first layout commit has been looked at visually), then fixing whatever it shows.
+
 ### [In progress] Teacher requests from the chat screenshots (2026-11-19)
 - Source: screenshots from Joshua Philip (original teacher), relayed by the project owner, in Tagalog/English. The lesson-plan photos in them are too blurry to read, so anything that depends on their content is listed as open.
 - Files: script.js (`BEATS`), style.css, index.html, project-info/
