@@ -33,3 +33,28 @@ Track active and completed work here so multiple agents can coordinate.
 - Acceptance criteria: Each portion's slides carry the graphics listed in "Graphics plan" in DECISIONS.md; no dependencies; reduced-motion keeps a static end state.
 - Validation: To be defined when work starts.
 - Follow-up: Build the shared helpers first (`numberLine`, `scoreboard`, `pips`, `zeroPair`, `iconSvg`).
+
+### [Planned] Polish pass: animations and demos
+- Owner: Claude
+- Files: script.js (animation helpers, click handlers, per-beat demos), style.css (keyframes and states)
+- Acceptance criteria: Every item below works with pointer and keyboard; each animation has a static end state under `prefers-reduced-motion`; no dependencies; Next/Back still advance the deck, and a click on an interactive demo does not also advance the slide.
+- Validation: To be defined per item; each finished item gets a dated note here.
+- Follow-up: Work in the order listed. Push after each finished item.
+
+Animation picks (decided 2026-11-18):
+
+1. Slide entrance (all deck slides): header slides in from the left, rule draws left to right, body items fade up in sequence (about 60 ms apart). Back plays the same entrance, no reverse.
+2. Idle (all deck slides): the kicker has a slow pulse on its leading marker; chips in `.chip-row` bob gently with staggered delays; tiles settle with a small tilt. Idle motion pauses while an active animation plays.
+3. Active, answer reveals (drills 2.11–2.19, 8.5–8.11, 9.3–9.7): the answer value stamps in (scale from 1.3 to 1 with a hard-shadow pop) and the underline draws on.
+4. Active, unscramble (3.2–3.7): tiles start shuffled in position, then slide into the correct order on the reveal slide.
+5. On click, chips: clicking a chip in a `.chip-row` flips it (blue to red, +1 to −1) with a short 3D turn; clicking a zero pair makes the two chips merge and fade out.
+6. On click, tiles and cards: tiles lift and tilt on press; grid cards and quiz cards lift 4 px on hover and press.
+7. Demo, zero pair (5.3): auto-plays once on entry (blue and red chips slide together, flash, vanish, equation lights up to 0), with a "Replay" click on the visual.
+8. Demo, number line (3.3, 3.5, 3.7, 5.1, 6.5): the shaded range sweeps in from zero; a hop arrow animates for addition examples.
+9. Demo, scoreboard (4.1–4.3): points count up or down into the running total; chips drop onto the board one at a time.
+10. Demo, drills (2.10, 2.12, 2.14, 2.16, 2.18): the dot array builds row by row; the pips strip fills.
+11. Demo, thermometer and elevator (7.4, 7.6): the mercury level rises and the elevator car moves along the shaft to the answer.
+12. Demo, assessment (9.3–9.7): zero pairs get a crossing line drawn through them, then the remainder highlights; 9.7 draws the route line.
+13. Next/Back affordance: the Next button gets a subtle nudge animation after 8 seconds of inactivity on a slide.
+
+Not planned: sound, particle effects, any animation that moves text the presenter is reading.
