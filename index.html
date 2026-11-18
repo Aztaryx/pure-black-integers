@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adding Integers Using Integer Chips</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="wipe"></div>
+  <div class="bar t"></div>
+  <div class="bar b"></div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <filter id="ca" color-interpolation-filters="sRGB" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.4" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r" />
+      <feOffset in="r" id="or" dx="0" dy="0" result="r2" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0" result="c" />
+      <feOffset in="c" id="oc" dx="0" dy="0" result="c2" />
+      <feBlend in="r2" in2="c2" mode="screen" />
+    </filter>
+  </svg>
+  <div id="intro"><video id="iv" src="intro.mp4" muted playsinline preload="auto"></video><canvas id="ic"></canvas>
+    <div class="grain" id="gr"></div>
+    <div id="ia" class="paper"></div>
+    <div id="gw"></div>
+    <canvas id="gl"></canvas>
+  </div>
+
+  <section id="s1" class="slide">
+    <div class="world">
+      <div class="g paper"></div><canvas id="wave"></canvas>
+      <div class="ttl"><span class="a">Adding</span><b class="b">INTEGERS</b><span class="c">using integer chips</span>
+      </div>
+      <div class="par"></div>
+    </div>
+    <div id="hero"></div>
+  </section>
+
+  <section id="s2" class="slide paper">
+    <div id="eq"></div>
+    <div class="stage" id="stage">
+      <div class="mat"></div>
+    </div>
+    <p id="cap" aria-live="polite"></p>
+    <div class="ctl">
+      <button id="bk">Back</button><button id="nx" class="go2">Next</button><span class="gap"></span>
+      <span id="tabs" class="ctl"></span>
+    </div>
+  </section>
+
+    <script src="script.js" defer></script>
+</body>
+
+</html>
