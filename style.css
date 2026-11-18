@@ -971,7 +971,7 @@
     @keyframes d-nudge { 0%, 100% { translate: 0 0 } 30% { translate: 7px 0 } 60% { translate: -2px 0 } }
 
     .dots {
-      --ds: min(2.2vw, 3.2vh);
+      --ds: min(calc(56vw / var(--c) - 6px), calc(46vh / var(--r, 5) - 6px));
       display: grid;
       grid-template-columns: repeat(var(--c), var(--ds));
       gap: 6px
@@ -1292,6 +1292,84 @@
 
     .deck-card h1.swap>* {
       grid-area: 1 / 1
+    }
+
+    /* ---------- polish H: merged slides (drill, unscramble, score board) ---------- */
+    .deck-card .stack>* {
+      align-self: start
+    }
+
+    .deck-card .blk {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2.4vh
+    }
+
+    .deck-card .blk[data-step].shown {
+      animation: d-up .45s 0s cubic-bezier(.2, .7, .2, 1) both
+    }
+
+    .tiles.slide[data-step] span {
+      animation-delay: calc(.1s + var(--i, 0)*60ms)
+    }
+
+    .drill {
+      display: flex;
+      align-items: center;
+      gap: 5vw;
+      width: 100%
+    }
+
+    .drill .dots {
+      flex: none
+    }
+
+    .drill-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 3vh;
+      min-width: 0
+    }
+
+    .drill-side .answer {
+      font-size: clamp(56px, 9vw, 150px);
+      animation: d-stamp .45s 0s cubic-bezier(.2, 1.6, .4, 1) both
+    }
+
+    .board-t .stack {
+      justify-items: end
+    }
+
+    .board [data-step].new {
+      animation-delay: 0s
+    }
+
+    .board .count[data-step] {
+      animation-delay: .35s
+    }
+
+    .deck-card.big .board {
+      width: min(640px, 100%);
+      font-size: clamp(24px, 3.2vw, 46px)
+    }
+
+    /* question-only slides (guide and reflection questions) have no asset, so the title is the asset */
+    .deck-card.solo h1.q {
+      font-size: clamp(34px, 5.4vw, 80px);
+      line-height: 1.1
+    }
+
+    @media (max-width: 820px) {
+      .drill {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .dots {
+        --ds: min(calc(88vw / var(--c) - 6px), calc(34vh / var(--r, 5) - 6px))
+      }
     }
 
     @media(prefers-reduced-motion:reduce) {

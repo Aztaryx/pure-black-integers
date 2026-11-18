@@ -11,10 +11,10 @@ const chips = (count, red = false) =>
   Array.from({ length: count }, (_, i) => `<span class="chip-mini${red ? ' red' : ''}" style="--i:${i}"></span>`).join('');
 const chipRow = (...parts) => `<div class="chip-row">${parts.join('<span class="chip-op">+</span>')}</div>`;
 // tiles(word): tiles settle in. tiles(word, scrambled): tiles start in the scrambled order and slide into place.
-const tiles = (w, from) => {
+const tiles = (w, from, attrs = '') => {
   const used = [];
   const dx = i => { if (!from) return 0; const j = [...from].findIndex((c, k) => c === w[i] && !used.includes(k)); used.push(j); return j - i };
-  return `<div class="tiles${from ? ' slide' : ''}">${[...w].map((c, i) => `<span style="--i:${i};--dx:${dx(i)}">${c}</span>`).join('')}</div>`;
+  return `<div class="tiles${from ? ' slide' : ''}"${attrs ? ' ' + attrs : ''}>${[...w].map((c, i) => `<span style="--i:${i};--dx:${dx(i)}">${c}</span>`).join('')}</div>`;
 };
 // Zero pair: click (or Enter/Space) to cancel it; click again to bring it back. data-auto plays it once on entry.
 const zeroPair = (auto = false) =>
@@ -41,13 +41,11 @@ const numberLine = (a, b, o = {}) => {
 // Drill arrays (smaller factor = rows), pip strip, and the Team A scoreboard with a counting total.
 const dots = (r, c, still = false) => {
   const [a, b] = r < c ? [r, c] : [c, r];
-  return `<div class="dots${still ? ' still' : ''}" style="--c:${b}">${Array.from({ length: a * b }, (_, i) => `<i style="--row:${Math.floor(i / b)}"></i>`).join('')}</div>`;
+  return `<div class="dots${still ? ' still' : ''}" style="--c:${b};--r:${a}">${Array.from({ length: a * b }, (_, i) => `<i style="--row:${Math.floor(i / b)}"></i>`).join('')}</div>`;
 };
 const pips = (done, total) => `<div class="pips" role="img" aria-label="Drill ${done} of ${total}">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}" style="--i:${i}"></i>`).join('')}</div>`;
-const scoreboard = n => {
-  const R = [['Round 1', 5], ['Round 2', -3]], t0 = n > 1 ? 5 : 0, t1 = n > 1 ? 2 : 5;
-  return `<div class="board" role="img" aria-label="Team A scoreboard"><div class="board-h"><span>Team A</span></div>${R.slice(0, n).map(([l, p], i) => `<div class="board-row${i == n - 1 && n > 1 ? ' new' : ''}"><span>${l}</span><b class="${p > 0 ? 'pos' : 'neg'}">${p > 0 ? '+' : '−'}${Math.abs(p)}</b></div>`).join('')}<div class="board-t"><span>Total</span><b class="count" style="--from:${t0};--to:${t1}"></b></div></div>`;
-};
+// One Team A board for the merged 4.1-4.3 slide: Round 2 and the second total appear on tap 1 (data-step), the first total hides then.
+const scoreboard = () => `<div class="board" role="img" aria-label="Team A scoreboard: round 1 plus 5, round 2 minus 3, total 2"><div class="board-h"><span>Team A</span></div><div class="board-row"><span>Round 1</span><b class="pos">+5</b></div><div class="board-row new" data-step="1"><span>Round 2</span><b class="neg">−3</b></div><div class="board-t"><span>Total</span><span class="stack"><b class="count" data-hide="1" style="--from:0;--to:5"></b><b class="count" data-step="1" style="--from:5;--to:2"></b></span></div></div>`;
 let nudgeT;
 function armNudge(btn) {
   clearTimeout(nudgeT); document.querySelectorAll('.nudge').forEach(b => b.classList.remove('nudge'));
@@ -125,25 +123,28 @@ const BEATS = [
   { portion: 'Portion 2 — Preliminaries', beat: '2.7', html: card('MATH Rule 4 · H', 'Honest', '<p>Be truthful and do your own work.</p>') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.8', html: card('Check-in', 'Attendance & MATHkamustahan', '<h2>How are you feeling today?</h2>') },
   { portion: 'Portion 2 — Warm-up', beat: '2.9', html: card('Activity 1', 'Numeracy Drills', '<p>Multiply as fast as you can.</p>') },
-  ...[[5, 6], [7, 6], [11, 5], [8, 8], [10, 14]].flatMap(([r, c], k) => [
-    { portion: 'Portion 2 — Warm-up', beat: `2.${10 + 2 * k}`, html: card(`Drill ${k + 1} of 5`, `${r} × ${c} = ?`, dots(r, c) + pips(k + 1, 5)) },
-    { portion: 'Portion 2 — Warm-up', beat: `2.${11 + 2 * k}`, html: card(`Drill ${k + 1} of 5`, `${r} × ${c}`, dots(r, c, true) + `<h2 class="answer">${r * c}</h2>` + pips(k + 1, 5)) }
-  ]),
+  ...[[5, 6], [7, 6], [11, 5], [8, 8], [10, 14]].map(([r, c], k) => ({
+    portion: 'Portion 2 — Warm-up', beat: `2.${10 + 2 * k}–2.${11 + 2 * k}`,
+    html: card(`Drill ${k + 1} of 5`, `${r} × ${c} = ?`, `<div class="drill">${dots(r, c)}<div class="drill-side"><h2 class="answer" data-step="1">${r * c}</h2>${pips(k + 1, 5)}</div></div>`, false, { big: true })
+  })),
 
   // PORTION 3: RECALL — UNSCRAMBLE ME!
   { portion: 'Portion 3 — Recall', beat: '3.1', html: card('Activity 2', 'Unscramble Me!', '<p>Rearrange the jumbled letters, then answer the question.</p>') },
-  { portion: 'Portion 3 — Recall', beat: '3.2', html: card('Word 1 of 3', 'Unscramble the word', tiles('TERINGE')) },
-  { portion: 'Portion 3 — Recall', beat: '3.3', html: card('Word 1 Revealed · Question', 'What are integers?', tiles('INTEGER', 'TERINGE') + numberLine(-5, 5, { shade: 'both' }), true) },
-  { portion: 'Portion 3 — Recall', beat: '3.4', html: card('Word 2 of 3', 'Unscramble the word', tiles('POITVESI')) },
-  { portion: 'Portion 3 — Recall', beat: '3.5', html: card('Word 2 Revealed · Question', 'Where can we find the positive integers on the number line?', tiles('POSITIVE', 'POITVESI') + numberLine(-5, 5, { shade: 'pos' }), true) },
-  { portion: 'Portion 3 — Recall', beat: '3.6', html: card('Word 3 of 3', 'Unscramble the word', tiles('VANEGITE')) },
-  { portion: 'Portion 3 — Recall', beat: '3.7', html: card('Word 3 Revealed · Question', 'Where can we find the negative integers on the number line?', tiles('NEGATIVE', 'VANEGITE') + numberLine(-5, 5, { shade: 'neg' }), true) },
+  ...[['TERINGE', 'INTEGER', 'What are integers?', 'both'], ['POITVESI', 'POSITIVE', 'Where can we find the positive integers on the number line?', 'pos'], ['VANEGITE', 'NEGATIVE', 'Where can we find the negative integers on the number line?', 'neg']].map(([scr, word, q, shade], k) => ({
+    portion: 'Portion 3 — Recall', beat: `3.${2 + 2 * k}–3.${3 + 2 * k}`,
+    html: card(`Word ${k + 1} of 3`, `<span data-hide="1">Unscramble the word</span><span data-step="1">${q}</span>`,
+      `<div class="stack">${tiles(scr, '', 'data-hide="1"')}${tiles(word, scr, 'data-step="1"')}</div>` + step(2, numberLine(-5, 5, { shade })), true, { swap: true })
+  })),
   { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
 
   // PORTION 4: SITUATIONAL ANALYSIS — THE SCORE BOARD
-  { portion: 'Portion 4 — Situational Analysis', beat: '4.1', html: card('Activity 3 · The Score Board', 'Round 1', '<p>During a classroom quiz bee, Team A earned 5 points in the first round.</p><h2>+5 points</h2>' + scoreboard(1)) },
-  { portion: 'Portion 4 — Situational Analysis', beat: '4.2', html: card('Activity 3 · The Score Board', 'Round 2', '<p>However, they received a 3-point deduction in the second round because of a rule violation.</p><h2>−3 points</h2>' + scoreboard(2)) },
-  { portion: 'Portion 4 — Situational Analysis', beat: '4.3', html: card('Chip Representation', 'Gained vs. Deducted', '<p>Gained Points (+5)</p>' + chipRow(chips(5)) + '<p>Deduction Points (−3)</p>' + chipRow(chips(3, true))) },
+  { portion: 'Portion 4 — Situational Analysis', beat: '4.1–4.3', html: card('Activity 3 · The Score Board',
+    '<span data-hide="1">Round 1</span><span data-step="1" data-hide="2">Round 2</span><span data-step="2">Gained vs. Deducted</span>',
+    duo('<div class="stack">' +
+      '<div class="blk" data-hide="1"><p>During a classroom quiz bee, Team A earned 5 points in the first round.</p><h2>+5 points</h2></div>' +
+      '<div class="blk" data-step="1" data-hide="2"><p>However, they received a 3-point deduction in the second round because of a rule violation.</p><h2>−3 points</h2></div>' +
+      '<div class="blk" data-step="2"><p>Gained Points (+5)</p>' + chipRow(chips(5)) + '<p>Deduction Points (−3)</p>' + chipRow(chips(3, true)) + '</div></div>',
+      scoreboard()), false, { swap: true, big: true }) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.4', html: card('Guide Question 1', 'What do the blue and red chips represent?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.5', html: card('Guide Question 2', 'Why do you think Team A has two different kinds of chips?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.6', html: card('Guide Question 3', 'In the context of integers for gained and deducted points, which one is positive and which one is negative?', '', true) },

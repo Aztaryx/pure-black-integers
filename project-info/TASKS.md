@@ -112,4 +112,6 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - Progress (dated):
   - 2026-11-18: Small items done: chip glyphs removed, Prayer slide centered, `card()` takes an options object `{ center, big, swap }` and skips an empty kicker. Batch 1 (reveal engine) next.
   - 2026-11-18: Batch 1 built (reveal engine): `step()`, `hideAt()`, `applySteps()`, step-aware `deckNext`/`deckBack`, `renderDeck(full)` and `openDeck(index, full)` (Back arrives with every step shown), CSS for hidden steps, `.stack` and `h1.swap`. No slide uses it yet. Only `node --check` run.
+  - 2026-11-18: Batch 2 built. Drills 2.10 to 2.19 are 5 slides (`2.10–2.11` and so on): array left and sized to fit the free area, answer stamps on tap 1, pips under it. Unscramble 3.2 to 3.7 is 3 slides (`3.2–3.3`, `3.4–3.5`, `3.6–3.7`): tap 1 slides the tiles into order and swaps the title to the question, tap 2 sweeps in the number line. Score board 4.1 to 4.3 is one slide (`4.1–4.3`): tap 1 adds Round 2 and counts the total from 5 to 2, tap 2 swaps in the chip groups; board and text sit side by side. Guide and reflection question slides (4.4 to 4.7, 10.2) get a larger title. Deck is now 58 slides. Data sanity check run in Node (no `undefined`, step counts as intended); not looked at in a browser.
+  - Next: batch 3 (Portion 7 and 8 pairs, and the 9.2 to 9.7 quiz fold).
 
