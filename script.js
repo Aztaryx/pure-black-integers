@@ -118,7 +118,7 @@ function negify(root) {
 function textNodes(el) { const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), a = []; while (w.nextNode()) a.push(w.currentNode); return a }
 function showChars(nodes, full, k) { nodes.forEach((n, i) => { n.nodeValue = full[i].slice(0, Math.max(0, Math.min(full[i].length, k))); k -= full[i].length }) }
 const spanVisible = e => !e.classList.contains('gone') && !(e.hasAttribute('data-step') && !e.classList.contains('shown'));
-function retype(h1, from, to) {
+function retype(h1, from, to, wait = 0) {
   if (h1._done) h1._done();
   const fN = textNodes(from), fF = fN.map(n => n.nodeValue), tN = textNodes(to), tF = tN.map(n => n.nodeValue);
   const fL = fF.join('').length, tL = tF.join('').length;
@@ -129,7 +129,7 @@ function retype(h1, from, to) {
   };
   h1._done = done;
   if (reduce || !(fL + tL)) return done();
-  from.style.visibility = 'visible'; to.style.visibility = 'hidden'; from.classList.add('caret');
+  from.style.visibility = 'visible'; to.style.visibility = 'hidden';
   const eStep = Math.max(2, Math.ceil(fL / 14)), tStep = Math.max(1, Math.ceil(tL / 40));
   const type = () => {
     if (!h1.isConnected) return;
@@ -144,7 +144,8 @@ function retype(h1, from, to) {
     showChars(tN, tF, 0); k = 0; to.style.visibility = 'visible'; to.classList.add('caret');
     timer = setTimeout(type, 160);
   };
-  timer = setTimeout(erase, 90);
+  // wait: hold the old title (no caret) first, for example until the tiles finish unscrambling
+  timer = setTimeout(() => { from.classList.add('caret'); erase() }, 90 + wait);
 }
 // ---- ribbon of drifting windows in the right margin of every deck slide ----
 let ribbonT = 0;
@@ -202,7 +203,7 @@ const hideAt = (n, html) => `<div class="step-out" data-hide="${n}">${html}</div
 // o: { center } centers the slide; { big } enlarges the asset; { swap } stacks the title's step variants in one spot.
 const card = (kicker, title, body = '', q = false, o = {}) => {
   const hc = [q && 'q', o.swap && 'swap'].filter(Boolean).join(' ');
-  return `<article class="deck-card${body ? '' : ' solo'}${o.center ? ' center' : ''}${o.big ? ' big' : ''}"><header class="deck-head">${kicker ? `<span class="kicker">${kicker}</span>` : ''}<h1${hc ? ` class="${hc}"` : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
+  return `<article class="deck-card${body ? '' : ' solo'}${o.center ? ' center' : ''}${o.big ? ' big' : ''}"><header class="deck-head">${kicker ? `<span class="kicker">${kicker}</span>` : ''}<h1${hc ? ` class="${hc}"` : ''}${o.delay ? ` data-delay="${o.delay}"` : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
 };
 
 const BEATS = [
@@ -227,7 +228,7 @@ const BEATS = [
   ...[['TERINGE', 'INTEGER', 'What are integers?', 'both'], ['POITVESI', 'POSITIVE', 'Where can we find the positive integers on the number line?', 'pos'], ['VANEGITE', 'NEGATIVE', 'Where can we find the negative integers on the number line?', 'neg']].map(([scr, word, q, shade], k) => ({
     portion: 'Portion 3 — Recall', beat: `3.${2 + 2 * k}–3.${3 + 2 * k}`,
     html: card(`Word ${k + 1} of 3`, `<span data-hide="1">Unscramble the word</span><span data-step="1">${q}</span>`,
-      `<div class="stack">${tiles(scr, '', 'data-hide="1"')}${tiles(word, scr, 'data-step="1"')}</div>` + step(2, numberLine(-5, 5, { shade })), true, { swap: true })
+      `<div class="stack">${tiles(scr, '', 'data-hide="1"')}${tiles(word, scr, 'data-step="1"')}</div>` + step(2, numberLine(-5, 5, { shade })), true, { swap: true, delay: 100 + (word.length - 1) * 60 + 900 + 600 })
   })),
   { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>' + labelled(['', 'Positive'], ['red', 'Negative'])) },
 
@@ -426,13 +427,13 @@ function timerAct(btn) {
   btn.blur();
 }
 // Reveal state: elements with data-step <= deckStep get .shown; elements with data-hide <= deckStep get .gone.
-function applySteps(animate = false) {
+function applySteps(animate = false, dir = 1) {
   const root = $('#deck-content'), swaps = [...root.querySelectorAll('h1.swap')];
   const before = swaps.map(h => [...h.children].find(spanVisible));
   root.querySelectorAll('[data-step]').forEach(e => e.classList.toggle('shown', +e.dataset.step <= deckStep));
   root.querySelectorAll('[data-hide]').forEach(e => e.classList.toggle('gone', +e.dataset.hide <= deckStep));
   root.querySelectorAll('[data-on]').forEach(e => e.classList.toggle('on', +e.dataset.on <= deckStep));
-  if (animate) swaps.forEach((h, i) => { const now = [...h.children].find(spanVisible); if (before[i] && now && now !== before[i]) retype(h, before[i], now) });
+  if (animate) swaps.forEach((h, i) => { const now = [...h.children].find(spanVisible); if (before[i] && now && now !== before[i]) retype(h, before[i], now, dir > 0 ? +(h.dataset.delay || 0) : 0) });
 }
 function deckLabel() {
   $('#deck-next').textContent = deckIndex === BEATS.length - 1 && deckStep >= deckStepMax ? 'Replay' : 'Next';
@@ -464,7 +465,7 @@ function enterMat(ex, i) {
 function openTitle() { deckIndex = TITLE_IDX; wipe(showTitle) }
 function deckNext() {
   flushSwap();
-  if (deckStep < deckStepMax) { deckStep++; applySteps(true); armNudge($('#deck-next')); return deckLabel() }
+  if (deckStep < deckStepMax) { deckStep++; applySteps(true, 1); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex < BEATS.length - 1) {
     deckIndex++;
     if (BEATS[deckIndex].mat) enterMat(0, 0);
@@ -474,7 +475,7 @@ function deckNext() {
 }
 function deckBack() {
   flushSwap();
-  if (deckStep > 0) { deckStep--; applySteps(true); armNudge($('#deck-next')); return deckLabel() }
+  if (deckStep > 0) { deckStep--; applySteps(true, -1); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex > 0) {
     deckIndex--;
     if (BEATS[deckIndex].mat) {
