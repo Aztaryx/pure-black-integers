@@ -58,4 +58,7 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-18: Teacher request: when a slide repeats the previous slide's asset, merge them into one slide and reveal the changes by tap, in order. See the task "Format change" in TASKS.md for the merge list and batches.
 - 2026-11-18: When a slide has little text, enlarge its asset to fill the free area (`.big`, viewport-unit sizing) rather than leaving empty space.
 - 2026-11-18: Step markup is `data-step="n"` on elements inside a slide's body. Next reveals the next step, then advances. Back hides the last step, then goes to the previous slide fully revealed. Merged slides use a beat id range such as `2.10–2.11`.
+- 2026-11-18: Chips carry no "+" or "−" glyph anywhere (chip mat, `chips()`, zero pair, crossed rows); color alone shows the sign (blue positive, red negative), as the teacher asked. The "+" between chip groups in a `chipRow` is the equation operator and stays.
+- 2026-11-18: The Prayer slide is the one deliberate exception to "nothing is centered": title "Prayer" only, centered both ways (`.deck-card.center`).
+- 2026-11-18: Quiz items 9.2 to 9.7 fold into one question-then-answer slide per item; the 9.2 grid is dropped.
 

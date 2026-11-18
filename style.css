@@ -1240,6 +1240,19 @@
       .duo { grid-template-columns: 1fr }
     }
 
+    /* ---------- polish F: centered slide (used for the Prayer slide only) ---------- */
+    .deck-card.center {
+      height: 100%;
+      margin: 0 auto;
+      align-items: center;
+      justify-content: center;
+      text-align: center
+    }
+
+    .deck-card.center .deck-body {
+      align-items: center
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

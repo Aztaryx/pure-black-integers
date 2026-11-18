@@ -96,16 +96,18 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - Score board 4.1 to 4.3 (3 slides): 1 slide. Tap 1 Round 1 (+5), tap 2 Round 2 (−3) with the total counting, tap 3 the chip groups. Guide questions 4.4 to 4.7 stay separate and become large solo question slides.
   - Problems 7.3/7.4 and 7.5/7.6: 2 slides. Tap 1 the problem, tap 2 chips and equation, tap 3 the thermometer or elevator.
   - Group answers 8.4/8.5, 8.6/8.7, 8.8/8.9, 8.10/8.11: 4 slides. Tap 1 the problem, tap 2 the answer.
-  - 9.2 to 9.7: keep 9.2 as the five-item overview and make 9.3 to 9.7 answers appear on tap (zero pairs cross out first, then the answer). Open question below.
+  - Quiz 9.2 to 9.7 (6 slides): 5 slides, one per item; the 9.2 grid is dropped. Tap 1 shows the question and chips, tap 2 crosses out the zero pairs, tap 3 shows the answer (9.7 also draws the route).
   - Unchanged: Portions 2.1 to 2.8, 5, 6, 7.1 to 7.2, 8.1 to 8.3, 10.
-- Open questions for the project owner:
-  - 9.2 overview plus 9.3 to 9.7: keep all six slides, or drop the 9.2 grid and fold each item into its own question-then-answer slide?
-  - Teacher's note on the chat screenshot (Tagalog): is it asking that blue chips show no "+" and red chips no "−" on the chip mat? Not acting on it until confirmed.
-  - Teacher's note on the prayer slide: only the word "Prayer" is needed, since the class has its own prayer. The current slide says "Let us pray."; change the title to "Prayer"?
+- Resolved with the project owner (2026-11-18):
+  - Quiz: consolidate, as listed above.
+  - Chips: blue chips show no "+" and red chips no "−" (color alone shows the sign). Done in `chips()`, `zeroPair()`, `crossRow()`, `flipChip()` and the chip mat.
+  - Prayer: title is just "Prayer", centered on the slide. Done (`card(..., { center: true })`).
 - Batches (push after each):
   1. Step-reveal engine: `data-step` markup, `deckNext` and `deckBack` step logic, CSS, README note.
   2. Merge drills, unscramble and score board.
-  3. Merge Portion 7 and Portion 8 pairs; 9.x per the answer above.
+  3. Merge the Portion 7 and Portion 8 pairs and the Portion 9 items.
   4. `.big` enlargement across sparse slides.
   5. Resume the graphics plan on the merged deck.
 
+- Progress (dated):
+  - 2026-11-18: Small items done: chip glyphs removed, Prayer slide centered, `card()` takes an options object `{ center, big, swap }` and skips an empty kicker. Batch 1 (reveal engine) next.

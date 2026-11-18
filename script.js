@@ -8,7 +8,7 @@ const EX = [
 ];
 
 const chips = (count, red = false) =>
-  Array.from({ length: count }, (_, i) => `<span class="chip-mini${red ? ' red' : ''}" style="--i:${i}">${red ? '−' : '+'}</span>`).join('');
+  Array.from({ length: count }, (_, i) => `<span class="chip-mini${red ? ' red' : ''}" style="--i:${i}"></span>`).join('');
 const chipRow = (...parts) => `<div class="chip-row">${parts.join('<span class="chip-op">+</span>')}</div>`;
 // tiles(word): tiles settle in. tiles(word, scrambled): tiles start in the scrambled order and slide into place.
 const tiles = (w, from) => {
@@ -18,7 +18,7 @@ const tiles = (w, from) => {
 };
 // Zero pair: click (or Enter/Space) to cancel it; click again to bring it back. data-auto plays it once on entry.
 const zeroPair = (auto = false) =>
-  `<div class="zero-pair" role="button" tabindex="0" aria-label="Zero pair. Activate to cancel the pair."${auto ? ' data-auto' : ''}><span class="chip-mini">+</span><span class="chip-mini red">−</span></div>`;
+  `<div class="zero-pair" role="button" tabindex="0" aria-label="Zero pair. Activate to cancel the pair."${auto ? ' data-auto' : ''}><span class="chip-mini"></span><span class="chip-mini red"></span></div>`;
 // numberLine(from, to, { shade: 'pos' | 'neg' | 'both', hop: [start, end] }): SVG number line.
 // It does not call fmt() because BEATS is built before fmt is defined.
 const numberLine = (a, b, o = {}) => {
@@ -69,7 +69,7 @@ const elevator = (f0, f1) => {
   return s + `<text class="el-lbl" x="196" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0} floors</text></svg>`;
 };
 const crossRow = (a, b, aRed) => {
-  const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}">${red ? '−' : '+'}</span>`).join('');
+  const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}"></span>`).join('');
   return chipRow(grp(a, aRed), grp(b, !aRed));
 };
 // iconSvg(name, cls): flat icons on a 64x64 grid, one stroke weight. Objects and abstract shapes only: no faces, no body parts.
@@ -100,17 +100,20 @@ function runDemos(root) {
 function flipChip(c) {
   if (c.classList.contains('flip')) return;
   c.classList.add('flip');
-  setTimeout(() => { const r = c.classList.toggle('red'); c.textContent = r ? '−' : '+' }, reduce ? 0 : 250);
+  setTimeout(() => c.classList.toggle('red'), reduce ? 0 : 250);
   setTimeout(() => c.classList.remove('flip'), reduce ? 0 : 500);
 }
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
-const card = (kicker, title, body = '', q = false) =>
-  `<article class="deck-card${body ? '' : ' solo'}"><header class="deck-head"><span class="kicker">${kicker}</span><h1${q ? ' class="q"' : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
+// o: { center } centers the slide; { big } enlarges the asset; { swap } stacks the title's step variants in one spot.
+const card = (kicker, title, body = '', q = false, o = {}) => {
+  const hc = [q && 'q', o.swap && 'swap'].filter(Boolean).join(' ');
+  return `<article class="deck-card${body ? '' : ' solo'}${o.center ? ' center' : ''}${o.big ? ' big' : ''}"><header class="deck-head">${kicker ? `<span class="kicker">${kicker}</span>` : ''}<h1${hc ? ` class="${hc}"` : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
+};
 
 const BEATS = [
   // PORTION 2: PRELIMINARIES & NUMERACY DRILLS
   { portion: 'Portion 2 — Preliminaries', beat: '2.1', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p>') },
-  { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('Prayer', 'Let us pray.') },
+  { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('', 'Prayer', '', false, { center: true }) },
   { portion: 'Portion 2 — Preliminaries', beat: '2.3', html: card('Classroom Management', 'MATH Rules') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.4', html: card('MATH Rule 1 · M', 'Motivated', '<p>Always do your best in every Mathematics activity.</p>') },
   { portion: 'Portion 2 — Preliminaries', beat: '2.5', html: card('MATH Rule 2 · A', 'Active', '<p>Participate in class discussions and activities.</p>') },
@@ -367,9 +370,9 @@ function build(i) {
   stage.querySelectorAll('.chip,.win2').forEach(e => e.remove());
   const ex = EX[i], P = sum(ex.p), N = sum(ex.n);
   M = { ex, P, N, m: Math.min(P, N), R: P - N, B: [], W: [], R2: [], n: N ? 5 : 2 };
-  let k = 0; ex.p.forEach((n, g) => { for (let j = 0; j < n; j++)M.B.push({ e: mk('chip', '+'), k: k++, g }) });
+  let k = 0; ex.p.forEach((n, g) => { for (let j = 0; j < n; j++)M.B.push({ e: mk('chip'), k: k++, g }) });
   k = 0; ex.n.forEach((n, g) => { const e = mk('win2'); e.style.width = `calc(var(--u)*${n * 1.1 - .1})`; e.innerHTML = `<i>−${n}</i>`; M.W.push({ e, o: k, g }); k += n });
-  for (let j = P; j < N; j++)M.R2.push({ e: mk('chip', '+'), k: j });
+  for (let j = P; j < N; j++)M.R2.push({ e: mk('chip'), k: j });
   document.querySelectorAll('#tabs button').forEach((b, j) => b.classList.toggle('on', j == i));
 }
 function cap(s) {
@@ -387,11 +390,11 @@ function render(pre) {
   const { P, N, m, R } = M, s = pre ? -1 : (N ? st.i : (st.i ? 4 : 0));
   M.B.forEach(c => {
     const gone = N && s >= 3 && c.k < m, x = s >= 4 && c.k >= m ? X(c.k - m, 0) : X(c.k, c.g);
-    c.e.textContent = N && s >= 2 && c.k < m ? '−' : '+'; c.e.classList.toggle('gone', !!gone);
+    c.e.classList.toggle('gone', !!gone);
     put(c.e, x + .1, YM + .1, s < 0 || gone ? 0 : 1, gone ? 1.5 : 1)
   });
   M.W.forEach(w => put(w.e, s >= 2 ? X(w.o, 0) : X(w.o, w.g), s >= 2 ? YM : YS, s >= 1 && s < 3 ? 1 : 0));
-  M.R2.forEach(c => { const v = s >= 2, red = s >= 3; c.e.classList.toggle('r', red); c.e.textContent = red ? '−' : '+'; put(c.e, X(s >= 4 ? c.k - P : c.k, 0) + .1, YM + .1, v ? 1 : 0, v ? 1 : .3) });
+  M.R2.forEach(c => { const v = s >= 2, red = s >= 3; c.e.classList.toggle('r', red); put(c.e, X(s >= 4 ? c.k - P : c.k, 0) + .1, YM + .1, v ? 1 : 0, v ? 1 : .3) });
   if (pre) return;
   $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ' + (s >= 4 ? `<b>${fmt(R)}</b>` : '?');
   $('#cap').textContent = cap(s);
