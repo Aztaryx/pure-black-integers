@@ -1617,6 +1617,26 @@
       animation: d-up .45s 0s cubic-bezier(.2, .7, .2, 1) both
     }
 
+    /* ---------- transitions: dissolve the slide's elements (not its background), then fade the next slide in ---------- */
+    @keyframes dissolve-out { to { opacity: 0; filter: blur(10px) } }
+    @keyframes slide-fade-in { from { opacity: 0 } }
+
+    #deck.dissolve #deck-content,
+    #s2.dissolve>*,
+    #s1.dissolve .ttl,
+    #s1.dissolve #hero,
+    #s1.dissolve .par {
+      animation: dissolve-out var(--dis, 600ms) ease-in forwards
+    }
+
+    #deck-content.fade-in {
+      animation: slide-fade-in .22s ease-out backwards
+    }
+
+    #s2.fade-in>* {
+      animation: slide-fade-in .35s ease-out backwards
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

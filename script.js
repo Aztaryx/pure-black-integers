@@ -438,6 +438,7 @@ function deckLabel() {
 function renderDeck(full = false) {
   const beat = BEATS[deckIndex], root = $('#deck-content');
   root.innerHTML = beat.html || '';
+  fadeIn(root);
   negify(root);
   timerStop(); const tm = root.querySelector('.timer'); timerLeft = tm ? +tm.dataset.secs : 0;
   deckStepMax = Math.max(0, ...[...root.querySelectorAll('[data-step],[data-on],[data-hide]')].map(e => Math.max(...['step', 'on', 'hide'].map(k => +(e.dataset[k] ?? 0)))));
@@ -454,19 +455,21 @@ function openDeck(index, full = false) {
 }
 function enterMat(ex, i) {
   deckIndex = MAT_IDX;
-  wipe(() => { show(2); enter(ex, i) });
+  wipe(() => { show(2); enter(ex, i); fadeIn($('#s2')) });
 }
 function openTitle() { deckIndex = TITLE_IDX; wipe(showTitle) }
 function deckNext() {
+  flushSwap();
   if (deckStep < deckStepMax) { deckStep++; applySteps(true); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex < BEATS.length - 1) {
     deckIndex++;
     if (BEATS[deckIndex].mat) enterMat(0, 0);
     else if (BEATS[deckIndex].title) openTitle();
-    else renderDeck();
+    else swapDeck();
   } else openDeck(0);
 }
 function deckBack() {
+  flushSwap();
   if (deckStep > 0) { deckStep--; applySteps(true); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex > 0) {
     deckIndex--;
@@ -476,11 +479,30 @@ function deckBack() {
     } else if (BEATS[deckIndex].title) {
       openTitle();
     } else {
-      renderDeck(true);
+      swapDeck(true);
     }
   }
 }
-function wipe(cb) { const w = $('#wipe'); w.classList.remove('go'); void w.offsetWidth; w.classList.add('go'); setTimeout(cb, reduce ? 0 : 650) }
+// Every wipe (the window sweep) dissolves all elements of the slide on screen, background excepted, then runs cb.
+const SLIDE_EL = { 1: '#s1', 2: '#s2', 3: '#deck' };
+function dissolve(ms, then) {
+  const el = $(SLIDE_EL[st.sl]);
+  if (reduce || !el) return setTimeout(then, 0);
+  el.style.setProperty('--dis', ms + 'ms'); el.classList.add('dissolve');
+  setTimeout(() => { el.classList.remove('dissolve'); then() }, ms);
+}
+function fadeIn(el) { el.classList.remove('fade-in'); if (!reduce) { void el.offsetWidth; el.classList.add('fade-in') } }
+function wipe(cb) { const w = $('#wipe'); w.classList.remove('go'); void w.offsetWidth; w.classList.add('go'); dissolve(600, cb) }
+// Plain next/previous slide: a fast dissolve of the old slide, then the new one fades in. A tap during the dissolve finishes it at once.
+let swapPending = null;
+function flushSwap() { if (swapPending) swapPending() }
+function swapDeck(full) {
+  flushSwap();
+  if (reduce) return renderDeck(full);
+  const el = $('#deck'); let t;
+  const run = () => { clearTimeout(t); swapPending = null; el.classList.remove('dissolve'); renderDeck(full) };
+  swapPending = run; el.style.setProperty('--dis', '170ms'); el.classList.add('dissolve'); t = setTimeout(run, 170);
+}
 function next() {
   if (st.sl == 1) return openDeck(TITLE_IDX + 1);
   if (st.sl == 3) return deckNext();

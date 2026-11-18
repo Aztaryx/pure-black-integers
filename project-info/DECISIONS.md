@@ -84,3 +84,10 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-19: Deck ribbon: `#deck-ribbon` is a 6vw strip in the right padding of every deck slide, holding slowly drifting windows (same `win-up` motion as the title slide). It stays inside the padding so it is never behind text. Reduced motion shows three still windows. The spawner runs only while the deck is on screen and restarts in `renderDeck()`.
 - 2026-11-19: Titles that change on a tap (`h1.swap`) are retyped by `retype()`: erase the old text (about 0.4 s), then type the new text (about 1.3 s at most) with a blinking caret. Both versions stay in the same grid cell, so nothing jumps. It runs for Next and Back through `applySteps(true)`; `renderDeck()` calls `applySteps()` without it, so a slide that opens does not retype. A new tap finishes the running retype first. Reduced motion switches instantly.
 - 2026-11-19: Card-like blocks share one hover lift (4 px) and one press (2 px), now also on the scoreboard, icon cards, MATH letters and group badges.
+
+## Transitions (2026-11-19, owner request)
+
+- 2026-11-19: Every wipe (the window sweep, `#wipe`) dissolves all elements of the slide on screen, but not its background, for 600 ms (opacity to 0 with a blur) before the new slide is built. `dissolve(ms, then)` in `script.js` finds the slide by `st.sl` (`#s1` title: `.ttl`, `#hero`, `.par`; `#s2` chip mat: every child; `#deck`: `#deck-content`). The Back/Next buttons and the right-margin window ribbon stay.
+- 2026-11-19: A plain next or previous slide (no wipe) used to cut. It now dissolves the old slide in 170 ms (`swapDeck()`), then the new slide fades in over 220 ms (`fadeIn()`). A tap during the dissolve finishes it at once (`flushSwap()`), so fast tapping is never blocked. Taps that only reveal a step are unchanged.
+- 2026-11-19: Reduced motion: no dissolve and no fade; slides switch instantly as before.
+
