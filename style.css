@@ -377,8 +377,12 @@
       padding: 7vh 6vw 6vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 2vh
+    }
+
+    #s2 .kicker {
+      margin-bottom: 0
     }
 
     #eq {
@@ -490,59 +494,79 @@
       width: 18px
     }
 
+    /* ---------- deck slides: one left-aligned header + body system ---------- */
     #deck {
       z-index: 4;
       visibility: hidden;
-      padding: 6.5vh 6vw 6.5vh;
+      padding: 7vh 6vw 6vh;
       display: flex;
       flex-direction: column;
-      gap: 1.5vh
+      gap: 2vh
     }
 
     #deck.on {
       visibility: visible
     }
 
-    .deck-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 2px solid #111;
-      padding-bottom: 1.2vh;
-      font-size: clamp(13px, 1.3vw, 18px);
-      font-weight: 700;
-      letter-spacing: .08em;
-      text-transform: uppercase
-    }
-
     #deck-content {
       flex: 1;
-      display: grid;
-      place-items: center;
       min-height: 0;
-      text-align: center;
+      overflow: auto;
       cursor: pointer
+    }
+
+    .kicker {
+      display: block;
+      margin-bottom: 1.2vh;
+      color: var(--r);
+      font-size: clamp(15px, 1.6vw, 24px);
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase
     }
 
     .deck-card {
       width: 100%;
-      max-width: 960px
+      max-width: 1280px;
+      display: flex;
+      flex-direction: column;
+      gap: 3.5vh;
+      text-align: left
+    }
+
+    .deck-head {
+      border-bottom: 3px solid #111;
+      padding-bottom: 2.2vh
+    }
+
+    .deck-card.solo .deck-head {
+      border-bottom: 0;
+      padding-bottom: 0
     }
 
     .deck-card h1 {
-      font: clamp(40px, 6.8vw, 102px)/1.02 var(--h);
-      letter-spacing: -.03em;
-      margin-bottom: 2.5vh
+      font: clamp(36px, 5.6vw, 84px)/1.04 var(--h);
+      letter-spacing: -.03em
     }
 
     .deck-card h1.q {
-      font: clamp(28px, 4.2vw, 60px)/1.12 var(--h);
+      font: clamp(28px, 4vw, 58px)/1.12 var(--h);
       letter-spacing: -.02em
     }
 
+    .deck-card.solo h1:not(.q) {
+      font-size: clamp(56px, 9vw, 140px)
+    }
+
+    .deck-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2.4vh
+    }
+
     .deck-card h2 {
-      font: clamp(26px, 3.8vw, 56px)/1.12 var(--h);
-      margin: 1.5vh 0
+      font: clamp(26px, 3.8vw, 56px)/1.12 var(--h)
     }
 
     .deck-card p,
@@ -551,44 +575,33 @@
       line-height: 1.4
     }
 
+    .deck-card p {
+      max-width: 34em
+    }
+
     .deck-card a {
       color: #1d4ed8;
       font-weight: 700;
       text-underline-offset: 4px
     }
 
-    .deck-card .kicker {
-      display: block;
-      margin-bottom: 1.8vh;
-      color: var(--r);
-      font-size: clamp(15px, 1.6vw, 24px);
-      font-weight: 800;
-      letter-spacing: .12em;
-      text-transform: uppercase
-    }
-
     .deck-card ul,
     .deck-card ol {
       display: grid;
       gap: 1.2vh;
-      text-align: left;
-      max-width: 28em;
-      margin: 0 auto;
-      padding-left: 1.2em
+      max-width: 34em;
+      padding-left: 1.3em
     }
 
-    .deck-card ul {
-      list-style: none;
-      padding: 0;
-      text-align: center
+    .deck-card li::marker {
+      color: var(--r);
+      font-weight: 800
     }
 
     .tiles {
       display: flex;
-      justify-content: center;
       flex-wrap: wrap;
-      gap: 1.2vw;
-      margin: 2.5vh 0
+      gap: 1.2vw
     }
 
     .tiles span {
@@ -604,11 +617,9 @@
 
     .chip-row {
       display: flex;
-      justify-content: center;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
-      margin: 1.8vh 0
+      gap: 10px
     }
 
     .chip-mini {
@@ -636,36 +647,35 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 1.4vw;
-      text-align: left;
-      margin-top: 2vh
+      width: 100%
     }
 
     .grid-cards article {
-      border: 2px solid #111;
+      border: 3px solid #111;
       padding: 1.8vh 1.8vw;
       background: #fff;
+      box-shadow: 4px 4px 0 #111;
       font-size: clamp(16px, 1.9vw, 25px);
       font-weight: 700
     }
 
     .answer {
       display: inline-block;
-      margin-top: 1.5vh;
-      padding: 0 .3em;
+      padding: 0 .3em 0 0;
       border-bottom: 6px solid #111
     }
 
     .quiz-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1.4vh 2vw;
-      text-align: left;
-      margin-top: 1.5vh
+      gap: 1.8vh 2vw;
+      width: 100%
     }
 
     .quiz-grid article {
-      border: 2px solid #111;
+      border: 3px solid #111;
       background: #fff;
+      box-shadow: 4px 4px 0 #111;
       padding: 1.4vh 1.6vw;
       font-size: clamp(16px, 1.8vw, 24px);
       font-weight: 700
@@ -676,7 +686,6 @@
     }
 
     .quiz-grid .chip-row {
-      justify-content: flex-start;
       margin: .8vh 0 0
     }
 
