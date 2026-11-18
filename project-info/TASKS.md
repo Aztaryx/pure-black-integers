@@ -67,3 +67,12 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-18: Items 9 (4.1–4.2 only), 10 and 13 built. Scoreboard with a counting total on 4.1 and 4.2 (CSS `@property` integer counter); drill slides 2.10–2.19 now generated from one list, with a dot array that builds row by row and a pips strip; the Next button nudges after 8 s idle (deck and chip mat). 4.3 keeps its chip rows without a scoreboard.
 - 2026-11-18: Items 11 and 12 built. `thermo()` on the temperature slides (mercury rises −6 to −2) and `elevator()` on the floor slides (car rides −2 to 3), each beside the chip row; `crossRow()` crosses out zero pairs one by one on the answer slides and rings the leftover chips; 9.7 draws a three-hop route line (7 out, 2 more, 6 back) on a 0–10 number line. `numberLine()` now takes `hops: [[from, to], ...]`; backward hops are red. Beat ids for these slides were matched by their existing content, so check that each one landed on the intended slide.
 - Next: icons from the graphics plan (portions 2, 7, 8, 10), the portion 6 merge and pairing graphics, and a browser pass over everything (nothing so far has been looked at visually; only `node --check` has run).
+
+### [In progress] Graphics batches (supersedes "Add graphics to deck slides" order of work)
+- Owner: Claude
+- Files: script.js, style.css, project-info/
+- Constraint: no faces, people, or body parts in any asset (see DECISIONS.md).
+- Validation: `node --check script.js` only, by request; no browser testing.
+- Batch 1 (2026-11-18): `iconSvg`, `iconRow`, `duo` helpers and their CSS. `numberLine`, `scoreboard`, `pips` and `zeroPair` already existed. Not wired into slides yet.
+- Next: batch 2 Portions 4 to 7, batch 3 Portions 2, 3, 8, 9, 10.
+

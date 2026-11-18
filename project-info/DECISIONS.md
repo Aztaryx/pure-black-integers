@@ -45,3 +45,10 @@ Per portion:
 - Portion 10, Reflection (10.1–10.4): 10.1 four icons (attendance check, thermometer, coin, ball) inside the existing cards; 10.2 a blue and a red chip beside the question; 10.3 a video-play icon on the resource card; 10.4 a decorative row of blue and red chips.
 
 Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Portions 2, 3, 8, 9, 10.
+
+## Graphics constraints (added 2026-11-18)
+
+- 2026-11-18: No faces, people, or body parts in any graphic or icon (no mood faces, people groups, pairs of people, folded hands). Objects, chips, number lines and abstract shapes only. This overrides the earlier Graphics plan wherever it listed such items.
+- 2026-11-18: Substitutions for the affected plan items: 2.2 (prayer) has no graphic; 2.8 (check-in) uses the `check` icon or no graphic; 7.1 and 7.2 use `iconRow([['think','Think'],['link','Pair'],['share','Share']])` (thought bubble, two overlapping circles, speech bubble); 8.2 uses numbered or colored badges instead of group icons; 10.1 uses `check`, `thermo`, `coin` and `ball` icons.
+- 2026-11-18: Icon helpers in `script.js`: `iconSvg(name, cls)` (names: sun, desk, thermo, elevator, coin, ball, check, play, think, link, share; cls `blue` or `red`), `iconRow(items)` for captioned icon cards, and `duo(text, visual)` for the two-column body (text left, `.deck-visual` right, stacks under 820px). Icons are decorative (`aria-hidden`); meaning stays in the text.
+

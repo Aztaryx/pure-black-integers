@@ -72,6 +72,26 @@ const crossRow = (a, b, aRed) => {
   const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}">${red ? '−' : '+'}</span>`).join('');
   return chipRow(grp(a, aRed), grp(b, !aRed));
 };
+// iconSvg(name, cls): flat line icons on a 64x64 grid, one stroke weight. Objects and abstract shapes only: no faces, no people, no body parts.
+// Names: sun desk thermo elevator coin ball check play think link share. cls may be 'blue' or 'red'.
+const ICONS = {
+  sun: '<circle cx="32" cy="32" r="10"/><path d="M32 6v8M32 50v8M6 32h8M50 32h8M13.6 13.6l5.7 5.7M44.7 44.7l5.7 5.7M13.6 50.4l5.7-5.7M44.7 19.3l5.7-5.7"/>',
+  desk: '<path d="M8 32h48M14 32v22M50 32v22"/><rect x="22" y="18" width="20" height="14" rx="2"/>',
+  thermo: '<rect x="26" y="6" width="12" height="36" rx="6"/><circle cx="32" cy="48" r="9"/><path d="M32 20v28M42 16h6M42 26h6M42 36h6"/>',
+  elevator: '<rect x="12" y="6" width="40" height="52" rx="3"/><path d="M32 6v52M17 28l5-7 5 7M37 36l5 7 5-7"/>',
+  coin: '<circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="17"/><path d="M28 20v24M28 20h8a6 6 0 0 1 0 12h-8M24 25h16M24 29h16"/>',
+  ball: '<circle cx="32" cy="32" r="24"/><path d="M32 8v48M8 32h48M15 15c9 9 9 25 0 34M49 15c-9 9-9 25 0 34"/>',
+  check: '<circle cx="32" cy="32" r="24"/><path d="M21 33l8 8 15-17"/>',
+  play: '<rect x="6" y="14" width="52" height="36" rx="8"/><path d="M27 24l14 8-14 8z"/>',
+  think: '<ellipse cx="32" cy="22" rx="22" ry="14"/><circle cx="16" cy="43" r="4"/><circle cx="9" cy="53" r="2.5"/>',
+  link: '<circle cx="22" cy="32" r="16"/><circle cx="42" cy="32" r="16"/>',
+  share: '<path d="M12 8h40a6 6 0 0 1 6 6v22a6 6 0 0 1-6 6H32L20 54V42h-8a6 6 0 0 1-6-6V14a6 6 0 0 1 6-6z"/>'
+};
+const iconSvg = (name, cls = '') => `<svg class="icon${cls ? ' ' + cls : ''}" viewBox="0 0 64 64" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+// iconRow([[icon, label], ...]): bordered cards, each an icon over a caption.
+const iconRow = items => `<div class="icon-row">${items.map(([n, l], i) => `<figure style="--i:${i}">${iconSvg(n)}<figcaption>${l}</figcaption></figure>`).join('')}</div>`;
+// duo(textHtml, visualHtml): text left, graphic right in .deck-visual; stacks on narrow viewports.
+const duo = (text, visual) => `<div class="duo"><div class="duo-text">${text}</div><div class="deck-visual">${visual}</div></div>`;
 function runDemos(root) {
   if (reduce) return;
   root.querySelectorAll('[data-auto]').forEach(z => setTimeout(() => { if (z.isConnected) z.classList.add('cancel') }, 1500));
