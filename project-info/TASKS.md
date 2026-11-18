@@ -58,3 +58,10 @@ Animation picks (decided 2026-11-18):
 13. Next/Back affordance: the Next button gets a subtle nudge animation after 8 seconds of inactivity on a slide.
 
 Not planned: sound, particle effects, any animation that moves text the presenter is reading.
+
+Progress (dated notes; not browser-tested, only `node --check` run):
+
+- 2026-11-18: Items 1, 2 (chip bob, kicker pulse, tile settle), 3, 4, 6 built (entrance, idle, answer stamp, unscramble slide, hover and press).
+- 2026-11-18: Items 5, 7, 8 built. Chip click flips blue/red; `zeroPair()` demo on 5.3 auto-plays once and toggles on click or Enter/Space; `numberLine()` added to 3.3, 3.5, 3.7, 5.1 (shaded range sweeps in) and 6.5 (hop arrows for 3 + 2 and (−4) + (−2)). Clicking a chip or zero pair no longer advances the slide; the click handler lives on `#deck-content`.
+- Known limits: item 2's "pause idle during active animation" is approximated by delaying idle motion until the entrance finishes. Reduced motion shows the end state of every animation and skips the 5.3 auto-play.
+- Next: items 9–13 (scoreboard, drill dot arrays and pips, thermometer and elevator, assessment crossings and route, Next nudge), then icons from the graphics plan.

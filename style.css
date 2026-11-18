@@ -783,8 +783,9 @@
     }
 
     .chip-mini {
-      animation: d-chip-in .35s calc(.3s + var(--i, 0)*60ms) cubic-bezier(.2, 1.6, .4, 1) both,
-        d-bob 3.2s ease-in-out calc(.9s + var(--i, 0)*140ms) infinite
+      --anim: d-chip-in .35s calc(.3s + var(--i, 0)*60ms) cubic-bezier(.2, 1.6, .4, 1) both,
+        d-bob 3.2s ease-in-out calc(.9s + var(--i, 0)*140ms) infinite;
+      animation: var(--anim)
     }
 
     /* tiles: settle in; reveal slides start scrambled and slide into order */
@@ -831,6 +832,137 @@
       background: linear-gradient(#111, #111) 0 100% / 100% 6px no-repeat;
       animation: d-stamp .45s .55s cubic-bezier(.2, 1.6, .4, 1) both, d-underline .5s .95s cubic-bezier(.65, 0, .2, 1) both
     }
+
+    /* ---------- polish B: clickable chips, zero-pair demo, number lines ---------- */
+    @keyframes d-flip { 50% { rotate: y 90deg } }
+    @keyframes d-fade { from { opacity: 0 } }
+    @keyframes d-sweep { from { transform: scaleX(0) } }
+    @keyframes d-hop { from { stroke-dashoffset: 1 } }
+    @keyframes d-lit { from { transform: scale(1.8); color: var(--r) } }
+    @keyframes d-merge {
+      0% { translate: 0 0; transform: scale(1); filter: none; opacity: 1 }
+      45% { translate: calc(var(--dir)*(var(--cw) + 10px)/2) 0; transform: scale(1); filter: none; opacity: 1 }
+      65% { translate: calc(var(--dir)*(var(--cw) + 10px)/2) 0; transform: scale(1.25); filter: brightness(1.8); opacity: 1 }
+      100% { translate: calc(var(--dir)*(var(--cw) + 10px)/2) 0; transform: scale(1.7); filter: blur(10px) brightness(2.2); opacity: 0 }
+    }
+
+    .chip-mini {
+      cursor: pointer
+    }
+
+    .chip-mini.flip {
+      animation: var(--anim), d-flip .5s ease-in-out
+    }
+
+    .zero-pair {
+      --cw: clamp(36px, 4.4vw, 62px);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      border-radius: 999px
+    }
+
+    .zero-pair:focus-visible {
+      outline: 3px solid #111;
+      outline-offset: 8px
+    }
+
+    .zero-pair.cancel .chip-mini {
+      animation: d-merge 1s cubic-bezier(.6, 0, .2, 1) forwards
+    }
+
+    .zero-pair.cancel .chip-mini:first-of-type { --dir: 1 }
+    .zero-pair.cancel .chip-mini:last-of-type { --dir: -1 }
+
+    .lit {
+      display: inline-block;
+      transition: opacity .3s
+    }
+
+    .zero-pair.cancel~h2 .lit {
+      animation: d-lit .6s .8s cubic-bezier(.2, 1.6, .4, 1) both
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .zero-pair:not(.cancel)~h2 .lit {
+        opacity: .2
+      }
+    }
+
+    .deck-card h3 {
+      font: clamp(22px, 2.6vw, 38px)/1.1 var(--h)
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 2vh 2vw;
+      width: 100%
+    }
+
+    .split>div {
+      display: grid;
+      gap: 1vh;
+      align-content: start
+    }
+
+    .numline {
+      width: 100%;
+      max-width: 860px;
+      height: auto;
+      overflow: visible
+    }
+
+    .nl-axis,
+    .nl-tick {
+      stroke: #111;
+      stroke-width: 3
+    }
+
+    .nl-head,
+    .nl-arrow {
+      fill: #111
+    }
+
+    .nl-lbl {
+      font: 700 20px var(--h);
+      fill: #111
+    }
+
+    .nl-lbl.zero {
+      font-size: 26px
+    }
+
+    .nl-shade {
+      opacity: .35;
+      animation: d-sweep 1s .7s cubic-bezier(.6, 0, .2, 1) both
+    }
+
+    .nl-shade.pos { fill: var(--b) }
+    .nl-shade.neg { fill: var(--r) }
+
+    .nl-hop {
+      fill: none;
+      stroke: #111;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 1;
+      animation: d-hop .9s 1.1s cubic-bezier(.6, 0, .2, 1) both
+    }
+
+    .nl-arrow {
+      animation: d-fade .2s 1.95s both
+    }
+
+    .nl-dot {
+      stroke: #fff;
+      stroke-width: 3
+    }
+
+    .nl-dot.a { fill: var(--b) }
+    .nl-dot.n { fill: var(--r) }
+    .nl-dot.e { fill: #111 }
 
     @media(prefers-reduced-motion:reduce) {
 

@@ -16,6 +16,37 @@ const tiles = (w, from) => {
   const dx = i => { if (!from) return 0; const j = [...from].findIndex((c, k) => c === w[i] && !used.includes(k)); used.push(j); return j - i };
   return `<div class="tiles${from ? ' slide' : ''}">${[...w].map((c, i) => `<span style="--i:${i};--dx:${dx(i)}">${c}</span>`).join('')}</div>`;
 };
+// Zero pair: click (or Enter/Space) to cancel it; click again to bring it back. data-auto plays it once on entry.
+const zeroPair = (auto = false) =>
+  `<div class="zero-pair" role="button" tabindex="0" aria-label="Zero pair. Activate to cancel the pair."${auto ? ' data-auto' : ''}><span class="chip-mini">+</span><span class="chip-mini red">−</span></div>`;
+// numberLine(from, to, { shade: 'pos' | 'neg' | 'both', hop: [start, end] }): SVG number line.
+// It does not call fmt() because BEATS is built before fmt is defined.
+const numberLine = (a, b, o = {}) => {
+  const f = n => (n < 0 ? '−' : '') + Math.abs(n), st = 60, pad = 40, W = (b - a) * st + pad * 2, y = 60, X = n => pad + (n - a) * st;
+  const shade = (x1, x2, cls) => `<rect class="nl-shade ${cls}" x="${X(x1)}" y="${y - 9}" width="${X(x2) - X(x1)}" height="18" rx="9" style="transform-origin:${X(0)}px ${y}px"/>`;
+  let s = `<svg class="numline" viewBox="0 0 ${W} 100" role="img" aria-label="Number line from ${f(a)} to ${f(b)}">`;
+  if (o.shade === 'pos' || o.shade === 'both') s += shade(0, b, 'pos');
+  if (o.shade === 'neg' || o.shade === 'both') s += shade(a, 0, 'neg');
+  s += `<line class="nl-axis" x1="${pad - 22}" y1="${y}" x2="${W - pad + 22}" y2="${y}"/><path class="nl-head" d="M${pad - 26} ${y} l12 -7 v14 z M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
+  for (let n = a; n <= b; n++) s += `<line class="nl-tick" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
+  if (o.hop) {
+    const [h1, h2] = o.hop, x1 = X(h1), x2 = X(h2), ay = y - 14, lift = Math.min(34, Math.abs(x2 - x1) * .4) + 8, cx = (x1 + x2) / 2, cy = ay - lift * 2;
+    const ang = Math.atan2(ay - cy, x2 - cx) * 180 / Math.PI;
+    s += `<path class="nl-hop" pathLength="1" d="M${x1} ${ay} Q${cx} ${cy} ${x2} ${ay}"/><path class="nl-arrow" d="M0 0 l-13 -8 v16 z" transform="translate(${x2} ${ay}) rotate(${ang})"/>`;
+    s += `<circle class="nl-dot ${h1 < 0 ? 'n' : 'a'}" cx="${x1}" cy="${y}" r="9"/><circle class="nl-dot e" cx="${x2}" cy="${y}" r="9"/>`;
+  }
+  return s + '</svg>';
+};
+function runDemos(root) {
+  if (reduce) return;
+  root.querySelectorAll('[data-auto]').forEach(z => setTimeout(() => { if (z.isConnected) z.classList.add('cancel') }, 1500));
+}
+function flipChip(c) {
+  if (c.classList.contains('flip')) return;
+  c.classList.add('flip');
+  setTimeout(() => { const r = c.classList.toggle('red'); c.textContent = r ? '−' : '+' }, reduce ? 0 : 250);
+  setTimeout(() => c.classList.remove('flip'), reduce ? 0 : 500);
+}
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
 const card = (kicker, title, body = '', q = false) =>
   `<article class="deck-card${body ? '' : ' solo'}"><header class="deck-head"><span class="kicker">${kicker}</span><h1${q ? ' class="q"' : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
@@ -45,11 +76,11 @@ const BEATS = [
   // PORTION 3: RECALL — UNSCRAMBLE ME!
   { portion: 'Portion 3 — Recall', beat: '3.1', html: card('Activity 2', 'Unscramble Me!', '<p>Rearrange the jumbled letters, then answer the question.</p>') },
   { portion: 'Portion 3 — Recall', beat: '3.2', html: card('Word 1 of 3', 'Unscramble the word', tiles('TERINGE')) },
-  { portion: 'Portion 3 — Recall', beat: '3.3', html: card('Word 1 Revealed · Question', 'What are integers?', tiles('INTEGER', 'TERINGE'), true) },
+  { portion: 'Portion 3 — Recall', beat: '3.3', html: card('Word 1 Revealed · Question', 'What are integers?', tiles('INTEGER', 'TERINGE') + numberLine(-5, 5, { shade: 'both' }), true) },
   { portion: 'Portion 3 — Recall', beat: '3.4', html: card('Word 2 of 3', 'Unscramble the word', tiles('POITVESI')) },
-  { portion: 'Portion 3 — Recall', beat: '3.5', html: card('Word 2 Revealed · Question', 'Where can we find the positive integers on the number line?', tiles('POSITIVE', 'POITVESI'), true) },
+  { portion: 'Portion 3 — Recall', beat: '3.5', html: card('Word 2 Revealed · Question', 'Where can we find the positive integers on the number line?', tiles('POSITIVE', 'POITVESI') + numberLine(-5, 5, { shade: 'pos' }), true) },
   { portion: 'Portion 3 — Recall', beat: '3.6', html: card('Word 3 of 3', 'Unscramble the word', tiles('VANEGITE')) },
-  { portion: 'Portion 3 — Recall', beat: '3.7', html: card('Word 3 Revealed · Question', 'Where can we find the negative integers on the number line?', tiles('NEGATIVE', 'VANEGITE'), true) },
+  { portion: 'Portion 3 — Recall', beat: '3.7', html: card('Word 3 Revealed · Question', 'Where can we find the negative integers on the number line?', tiles('NEGATIVE', 'VANEGITE') + numberLine(-5, 5, { shade: 'neg' }), true) },
   { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
 
   // PORTION 4: SITUATIONAL ANALYSIS — THE SCORE BOARD
@@ -62,13 +93,13 @@ const BEATS = [
   { portion: 'Portion 4 — Situational Analysis', beat: '4.7', html: card('Guide Question 4', 'How can we organize these chips to understand the team’s score?', '', true) },
 
   // PORTION 5: VOCABULARY UNLOCK
-  { portion: 'Portion 5 — Vocabulary', beat: '5.1', html: card('Unlocking Vocabulary', 'Integers', '<p>Numbers that include positive whole numbers, negative whole numbers, and zero.</p><h2>…, −3, −2, −1, 0, 1, 2, 3, …</h2>') },
+  { portion: 'Portion 5 — Vocabulary', beat: '5.1', html: card('Unlocking Vocabulary', 'Integers', '<p>Numbers that include positive whole numbers, negative whole numbers, and zero.</p><h2>…, −3, −2, −1, 0, 1, 2, 3, …</h2>' + numberLine(-5, 5)) },
   { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Unlocking Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + chipRow(chips(1), chips(1, true)) + '<p>Blue = Positive (+1) · Red / Inversion Window = Negative (−1)</p>') },
-  { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Unlocking Vocabulary', 'Zero Pair', '<p>A combination of one positive chip and one negative chip that cancel each other out.</p>' + chipRow(chips(1), chips(1, true)) + '<h2>(+1) + (−1) = 0</h2>') },
+  { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Unlocking Vocabulary', 'Zero Pair', '<p>A combination of one positive chip and one negative chip that cancel each other out.</p>' + zeroPair(true) + '<h2>(+1) + (−1) = <span class="lit">0</span></h2>') },
 
   // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
   { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
-  { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p><h2>Keep the sign!</h2>') },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p><h2>Keep the sign!</h2><div class="split"><div><h3>3 + 2 = 5</h3>' + numberLine(-1, 6, { hop: [3, 5] }) + '</div><div><h3>(−4) + (−2) = −6</h3>' + numberLine(-7, 1, { hop: [-4, -6] }) + '</div></div>') },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Case 3', 'Different Signs', '<p>Pair each positive chip with one negative chip to make zero pairs, remove them, and count what remains.</p>') },
 
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
@@ -337,6 +368,7 @@ let deckIndex = 0;
 function renderDeck() {
   const beat = BEATS[deckIndex];
   $('#deck-content').innerHTML = beat.html || '';
+  runDemos($('#deck-content'));
   $('#deck-next').textContent = deckIndex === BEATS.length - 1 ? 'Replay' : 'Next';
 }
 function openDeck(index) {
@@ -390,7 +422,17 @@ function prev() {
 EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => enter(j, 0); $('#tabs').appendChild(b) });
 $('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#intro').onclick = begin;
 $('#deck-next').onclick = deckNext; $('#deck-back').onclick = deckBack;
-$('#deck-content').onclick = e => { if (!e.target.closest('a,button')) deckNext() };
+$('#deck-content').onclick = e => {
+  const z = e.target.closest('.zero-pair');
+  if (z) return z.classList.toggle('cancel');
+  const c = e.target.closest('.chip-mini');
+  if (c) return flipChip(c);
+  if (!e.target.closest('a,button')) deckNext();
+};
+$('#deck-content').addEventListener('keydown', e => {
+  const z = e.target.closest('.zero-pair');
+  if (z && (e.key == 'Enter' || e.key == ' ')) { e.preventDefault(); e.stopPropagation(); z.classList.toggle('cancel') }
+});
 
 document.addEventListener('keydown', e => {
   if (e.key == 'f' || e.key == 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); return }
