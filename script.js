@@ -239,7 +239,7 @@ const BEATS = [
       '<div class="blk" data-hide="1"><p>During a classroom quiz bee, Team A earned 5 points in the first round.</p><h2>+5 points</h2></div>' +
       '<div class="blk" data-step="1" data-hide="2"><p>However, they received a 3-point deduction in the second round because of a rule violation.</p><h2>−3 points</h2></div>' +
       '<div class="blk" data-step="2"><p>Gained Points (+5)</p>' + chipRow(chips(5)) + '<p>Deduction Points (−3)</p>' + chipRow(chips(3, true)) + '</div></div>',
-      scoreboard()), false, { swap: true, big: true }) },
+      scoreboard()), false, { swap: true, big: true, delay: 900 }) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.4', html: card('Guide Question 1', 'What do the blue and red chips represent?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.5', html: card('Guide Question 2', 'Why do you think Team A has two different kinds of chips?', '', true) },
   { portion: 'Portion 4 — Situational Analysis', beat: '4.6', html: card('Guide Question 3', 'In the context of integers for gained and deducted points, which one is positive and which one is negative?', '', true) },
@@ -265,11 +265,11 @@ const BEATS = [
   { portion: 'Portion 7 — Familiarize', beat: '7.3–7.4', html: card('Problem 1',
     '<span data-hide="1">Laboratory Temperature</span><span data-step="1">−2°C</span>',
     duo('<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>' +
-      '<div class="blk" data-step="1">' + chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2></div>', step(2, thermo(-6, -2))), false, { swap: true, big: true }) },
+      '<div class="blk" data-step="1">' + chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2></div>', step(2, thermo(-6, -2))), false, { swap: true, big: true, delay: 1000 }) },
   { portion: 'Portion 7 — Familiarize', beat: '7.5–7.6', html: card('Problem 2',
     '<span data-hide="1">The Elevator</span><span data-step="1">3rd Floor</span>',
     duo('<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>' +
-      '<div class="blk" data-step="1">' + chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2></div>', step(2, elevator(-2, 3))), false, { swap: true, big: true }) },
+      '<div class="blk" data-step="1">' + chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2></div>', step(2, elevator(-2, 3))), false, { swap: true, big: true, delay: 1000 }) },
 
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
