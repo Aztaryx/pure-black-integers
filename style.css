@@ -1055,6 +1055,118 @@
       animation: d-nudge 1.6s ease-in-out infinite
     }
 
+    /* ---------- polish D: thermometer, elevator, crossings, route ---------- */
+    @keyframes d-mercury { from { transform: scaleY(var(--s0)) } }
+    @keyframes d-car { from { translate: 0 var(--dy) } }
+    @keyframes d-cross { from { transform: scale(0); opacity: 0 } }
+
+    .side {
+      display: flex;
+      align-items: center;
+      gap: 5vw;
+      width: 100%
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2.4vh
+    }
+
+    .thermo,
+    .elevator {
+      height: min(44vh, 360px);
+      width: auto;
+      flex: none
+    }
+
+    .th-tube {
+      fill: #fff;
+      stroke: #111;
+      stroke-width: 4
+    }
+
+    .th-hg {
+      fill: var(--r)
+    }
+
+    .th-merc {
+      fill: var(--r);
+      animation: d-mercury 1.4s .6s cubic-bezier(.5, 0, .2, 1) both
+    }
+
+    .th-tick {
+      stroke: #111;
+      stroke-width: 3
+    }
+
+    .th-lbl,
+    .el-lbl {
+      font: 700 15px var(--h);
+      fill: #111
+    }
+
+    .th-end {
+      font: 800 22px var(--h);
+      fill: var(--r)
+    }
+
+    .el-shaft {
+      fill: #fff;
+      stroke: #111;
+      stroke-width: 4
+    }
+
+    .el-floor {
+      stroke: #111;
+      stroke-width: 2;
+      stroke-dasharray: 6 6
+    }
+
+    .el-car rect {
+      fill: var(--b);
+      stroke: #111;
+      stroke-width: 3
+    }
+
+    .el-car {
+      animation: d-car 1.6s .6s cubic-bezier(.6, 0, .2, 1) both
+    }
+
+    .nl-hop.back {
+      stroke: var(--r)
+    }
+
+    .nl-arrow.back {
+      fill: var(--r)
+    }
+
+    .chip-mini {
+      position: relative
+    }
+
+    .chip-mini.x {
+      opacity: .55
+    }
+
+    .chip-mini.x::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      background: linear-gradient(to top right, transparent 46%, #111 46% 54%, transparent 54%);
+      animation: d-cross .35s calc(1.1s + var(--i, 0)*.15s) both
+    }
+
+    .chip-mini.keep::before {
+      content: '';
+      position: absolute;
+      inset: -7px;
+      border: 4px solid #111;
+      border-radius: 50%;
+      animation: d-fade .3s 2s both
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

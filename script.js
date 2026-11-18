@@ -24,17 +24,18 @@ const zeroPair = (auto = false) =>
 const numberLine = (a, b, o = {}) => {
   const f = n => (n < 0 ? '−' : '') + Math.abs(n), st = 60, pad = 40, W = (b - a) * st + pad * 2, y = 60, X = n => pad + (n - a) * st;
   const shade = (x1, x2, cls) => `<rect class="nl-shade ${cls}" x="${X(x1)}" y="${y - 9}" width="${X(x2) - X(x1)}" height="18" rx="9" style="transform-origin:${X(0)}px ${y}px"/>`;
-  let s = `<svg class="numline" viewBox="0 0 ${W} 100" role="img" aria-label="Number line from ${f(a)} to ${f(b)}">`;
+  const hops = o.hops || (o.hop ? [o.hop] : []), extra = Math.max(0, hops.length - 1) * 12;
+  let s = `<svg class="numline" viewBox="0 ${-extra} ${W} ${100 + extra}" role="img" aria-label="Number line from ${f(a)} to ${f(b)}">`;
   if (o.shade === 'pos' || o.shade === 'both') s += shade(0, b, 'pos');
   if (o.shade === 'neg' || o.shade === 'both') s += shade(a, 0, 'neg');
   s += `<line class="nl-axis" x1="${pad - 22}" y1="${y}" x2="${W - pad + 22}" y2="${y}"/><path class="nl-head" d="M${pad - 26} ${y} l12 -7 v14 z M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
   for (let n = a; n <= b; n++) s += `<line class="nl-tick" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
-  if (o.hop) {
-    const [h1, h2] = o.hop, x1 = X(h1), x2 = X(h2), ay = y - 14, lift = Math.min(34, Math.abs(x2 - x1) * .4) + 8, cx = (x1 + x2) / 2, cy = ay - lift * 2;
-    const ang = Math.atan2(ay - cy, x2 - cx) * 180 / Math.PI;
-    s += `<path class="nl-hop" pathLength="1" d="M${x1} ${ay} Q${cx} ${cy} ${x2} ${ay}"/><path class="nl-arrow" d="M0 0 l-13 -8 v16 z" transform="translate(${x2} ${ay}) rotate(${ang})"/>`;
-    s += `<circle class="nl-dot ${h1 < 0 ? 'n' : 'a'}" cx="${x1}" cy="${y}" r="9"/><circle class="nl-dot e" cx="${x2}" cy="${y}" r="9"/>`;
-  }
+  hops.forEach(([h1, h2], i) => {
+    const x1 = X(h1), x2 = X(h2), ay = y - 14, lift = Math.min(34, Math.abs(x2 - x1) * .4) + 8 + i * 12, cx = (x1 + x2) / 2, cy = ay - lift * 2;
+    const ang = Math.atan2(ay - cy, x2 - cx) * 180 / Math.PI, back = h2 < h1 ? ' back' : '', d = 1.1 + i;
+    s += `<path class="nl-hop${back}" pathLength="1" style="animation-delay:${d}s" d="M${x1} ${ay} Q${cx} ${cy} ${x2} ${ay}"/><path class="nl-arrow${back}" style="animation-delay:${d + .85}s" d="M0 0 l-13 -8 v16 z" transform="translate(${x2} ${ay}) rotate(${ang})"/>`;
+  });
+  if (hops.length) { const s1 = hops[0][0], e2 = hops[hops.length - 1][1]; s += `<circle class="nl-dot ${s1 < 0 ? 'n' : 'a'}" cx="${X(s1)}" cy="${y}" r="9"/><circle class="nl-dot e" cx="${X(e2)}" cy="${y}" r="9"/>`; }
   return s + '</svg>';
 };
 // Drill arrays (smaller factor = rows), pip strip, and the Team A scoreboard with a counting total.
@@ -52,6 +53,25 @@ function armNudge(btn) {
   clearTimeout(nudgeT); document.querySelectorAll('.nudge').forEach(b => b.classList.remove('nudge'));
   if (!reduce) nudgeT = setTimeout(() => btn.classList.add('nudge'), 8000);
 }
+// Thermometer (mercury rises from t0 to t1), elevator (car rides from floor f0 to f1) and crossed zero pairs.
+const sgn = n => (n < 0 ? '−' : '') + Math.abs(n);
+const thermo = (t0, t1) => {
+  const Y = t => 20 + (4 - t) * 28, base = 370, s0 = ((base - Y(t0)) / (base - Y(t1))).toFixed(3);
+  let s = `<svg class="thermo" viewBox="0 0 220 410" role="img" aria-label="Thermometer rising from ${sgn(t0)} to ${sgn(t1)} degrees Celsius"><rect class="th-tube" x="60" y="14" width="40" height="${base - 14}" rx="20"/><circle class="th-tube" cx="80" cy="${base}" r="30"/><circle class="th-hg" cx="80" cy="${base}" r="22"/><rect class="th-merc" x="70" y="${Y(t1)}" width="20" height="${base - Y(t1)}" style="transform-origin:80px ${base}px"/>`;
+  for (let t = -8; t <= 4; t += 2) s += `<line class="th-tick" x1="104" y1="${Y(t)}" x2="116" y2="${Y(t)}"/><text class="th-lbl" x="122" y="${Y(t) + 5}">${sgn(t)}</text>`;
+  return s + `<text class="th-end" x="52" y="${Y(t1) + 8}" text-anchor="end">${sgn(t1)}°C</text></svg>`;
+};
+const elevator = (f0, f1) => {
+  const lo = -2, hi = 3, H = 54, Y = n => 20 + (hi - n) * H, T = 20 + (hi - lo + 1) * H;
+  let s = `<svg class="elevator" viewBox="0 0 270 ${T + 20}" role="img" aria-label="Elevator moving from floor ${sgn(f0)} to floor ${sgn(f1)}"><rect class="el-shaft" x="90" y="20" width="90" height="${T - 20}"/>`;
+  for (let n = hi; n >= lo; n--) s += `<line class="el-floor" x1="40" y1="${Y(n) + H}" x2="230" y2="${Y(n) + H}"/><text class="el-lbl" x="76" y="${Y(n) + H / 2 + 6}" text-anchor="end">${sgn(n)}</text>`;
+  s += `<g class="el-car" style="--dy:${Y(f0) - Y(f1)}px"><rect x="98" y="${Y(f1) + 6}" width="74" height="${H - 12}" rx="6"/></g>`;
+  return s + `<text class="el-lbl" x="196" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0} floors</text></svg>`;
+};
+const crossRow = (a, b, aRed) => {
+  const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}">${red ? '−' : '+'}</span>`).join('');
+  return chipRow(grp(a, aRed), grp(b, !aRed));
+};
 function runDemos(root) {
   if (reduce) return;
   root.querySelectorAll('[data-auto]').forEach(z => setTimeout(() => { if (z.isConnected) z.classList.add('cancel') }, 1500));
@@ -115,9 +135,9 @@ const BEATS = [
   { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve') },
   { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Mechanics', 'How We Work', '<ol><li>Model and solve the problem independently using integer chips.</li><li>Pair up to compare representations and explain your solutions.</li><li>Selected pairs share with the class.</li></ol>') },
   { portion: 'Portion 7 — Familiarize', beat: '7.3', html: card('Problem 1', 'Laboratory Temperature', '<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.4', html: card('Problem 1 Solution', '−2°C', chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2>') },
+  { portion: 'Portion 7 — Familiarize', beat: '7.4', html: card('Problem 1 Solution', '−2°C', '<div class="side"><div class="col">' + chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2></div>' + thermo(-6, -2) + '</div>') },
   { portion: 'Portion 7 — Familiarize', beat: '7.5', html: card('Problem 2', 'The Elevator', '<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.6', html: card('Problem 2 Solution', '3rd Floor', chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2>') },
+  { portion: 'Portion 7 — Familiarize', beat: '7.6', html: card('Problem 2 Solution', '3rd Floor', '<div class="side"><div class="col">' + chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2></div>' + elevator(-2, 3) + '</div>') },
 
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
@@ -137,9 +157,9 @@ const BEATS = [
   { portion: 'Portion 9 — Assessment', beat: '9.2', html: card('Quiz Items', 'Answer All 5 Items', '<div class="quiz-grid"><article>1. (+5) + (+2)' + chipRow(chips(5), chips(2)) + '</article><article>2. (−5) + (−3)' + chipRow(chips(5, true), chips(3, true)) + '</article><article>3. (−2) + (+6)' + chipRow(chips(2, true), chips(6)) + '</article><article>4. (+4) + (−1)' + chipRow(chips(4), chips(1, true)) + '</article><article class="full">5. Traveler drove 7 km, then 2 km more, then went back 6 km. How far to return to start?' + chipRow(chips(7), chips(2), chips(6, true)) + '</article></div>') },
   { portion: 'Portion 9 — Assessment', beat: '9.3', html: card('Check · Item 1', '(+5) + (+2)', chipRow(chips(5), chips(2)) + '<h2 class="answer">7</h2>') },
   { portion: 'Portion 9 — Assessment', beat: '9.4', html: card('Check · Item 2', '(−5) + (−3)', chipRow(chips(5, true), chips(3, true)) + '<h2 class="answer">−8</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.5', html: card('Check · Item 3', '(−2) + (+6)', chipRow(chips(2, true), chips(6)) + '<h2 class="answer">4</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.6', html: card('Check · Item 4', '(+4) + (−1)', chipRow(chips(4), chips(1, true)) + '<h2 class="answer">3</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.7', html: card('Check · Item 5', '(+7) + (+2) + (−6) = +3', chipRow(chips(7), chips(2), chips(6, true)) + '<h2 class="answer">3 km back to start</h2>') },
+  { portion: 'Portion 9 — Assessment', beat: '9.5', html: card('Check · Item 3', '(−2) + (+6)', crossRow(2, 6, true) + '<h2 class="answer">4</h2>') },
+  { portion: 'Portion 9 — Assessment', beat: '9.6', html: card('Check · Item 4', '(+4) + (−1)', crossRow(4, 1, false) + '<h2 class="answer">3</h2>') },
+  { portion: 'Portion 9 — Assessment', beat: '9.7', html: card('Check · Item 5', '(+7) + (+2) + (−6) = +3', chipRow(chips(7), chips(2), chips(6, true)) + numberLine(0, 10, { hops: [[0, 7], [7, 9], [9, 3]] }) + '<h2 class="answer">3 km back to start</h2>') },
 
   // PORTION 10: REFLECTION & EXTENDED LEARNING
   { portion: 'Portion 10 — Reflection', beat: '10.1', html: card('Everyday Situations', 'Where Do We Use Integers?', '<div class="grid-cards"><article>Attendance</article><article>Temperature Changes</article><article>Money Transactions</article><article>Basketball Scores</article></div>') },
