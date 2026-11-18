@@ -1499,6 +1499,113 @@
       width: clamp(56px, 7vw, 100px)
     }
 
+    /* ---------- consistency: one window language ---------- */
+    /* A negative is a window. Whatever sits under a window flips: white to black, blue to red. */
+    @keyframes caret-blink { 50% { opacity: 0 } }
+    @keyframes ribbon-in { from { opacity: 0 } }
+
+    /* negative numbers in slide text sit in a black window pill */
+    .neg {
+      display: inline-block;
+      padding: 0 .14em;
+      margin: 0 .02em;
+      background: #111;
+      color: #fff;
+      border-radius: .14em;
+      line-height: 1.08
+    }
+
+    .neg:empty {
+      display: none
+    }
+
+    /* red chip = a blue chip under a window: red disc in a black window cell, as on the chip mat */
+    .chip-mini.red {
+      border-radius: 16%;
+      background: radial-gradient(circle closest-side, var(--r) 84%, #111 86%);
+      box-shadow: none
+    }
+
+    /* number lines: the negative side is a black window with white axis, ticks and labels */
+    .nl-window {
+      fill: #111;
+      animation: d-sweep 1s .5s cubic-bezier(.6, 0, .2, 1) both
+    }
+
+    .nl-axis.w,
+    .nl-tick.w {
+      stroke: #fff
+    }
+
+    .nl-head.w,
+    .nl-lbl.w {
+      fill: #fff
+    }
+
+    .nl-shade.neg {
+      opacity: .9
+    }
+
+    /* right-margin ribbon of drifting windows on every deck slide; it stays inside the 6vw padding, never behind text */
+    #deck-ribbon {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 6vw;
+      overflow: hidden;
+      pointer-events: none
+    }
+
+    #deck-ribbon .rw {
+      position: absolute;
+      top: 0;
+      backdrop-filter: invert(1);
+      -webkit-backdrop-filter: invert(1);
+      animation: win-up var(--dur, 30s) linear var(--delay, 0s) both
+    }
+
+    #deck-ribbon .rw.still {
+      animation: none;
+      transform: translateY(var(--ty, 20vh))
+    }
+
+    /* retyped titles: a caret follows the text being typed or erased */
+    .caret::after {
+      content: '';
+      display: inline-block;
+      width: .07em;
+      height: .82em;
+      margin-left: .06em;
+      vertical-align: -.05em;
+      background: #111;
+      animation: caret-blink 1s steps(1) infinite
+    }
+
+    /* one lift on hover and one press, for every card-like block */
+    .icon-row figure,
+    .math-strip span,
+    .badges span,
+    .board {
+      transition: translate .15s, box-shadow .15s
+    }
+
+    .icon-row figure:hover,
+    .math-strip span:hover,
+    .badges span:hover,
+    .board:hover {
+      translate: 0 -4px;
+      box-shadow: 4px 8px 0 #111
+    }
+
+    .icon-row figure:active,
+    .math-strip span:active,
+    .badges span:active,
+    .board:active {
+      translate: 2px 2px;
+      box-shadow: 2px 2px 0 #111
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

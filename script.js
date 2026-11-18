@@ -24,12 +24,15 @@ const zeroPair = (auto = false) =>
 const numberLine = (a, b, o = {}) => {
   const f = n => (n < 0 ? '−' : '') + Math.abs(n), st = 60, pad = 40, W = (b - a) * st + pad * 2, y = 60, X = n => pad + (n - a) * st;
   const shade = (x1, x2, cls) => `<rect class="nl-shade ${cls}" x="${X(x1)}" y="${y - 9}" width="${X(x2) - X(x1)}" height="18" rx="9" style="transform-origin:${X(0)}px ${y}px"/>`;
-  const hops = o.hops || (o.hop ? [o.hop] : []), extra = Math.max(0, hops.length - 1) * 12;
-  let s = `<svg class="numline" viewBox="0 ${-extra} ${W} ${100 + extra}" role="img" aria-label="Number line from ${f(a)} to ${f(b)}">`;
+  const wx = Math.min(X(0) - st / 2, W - pad + 30), hasWin = a < 0, hops = o.hops || (o.hop ? [o.hop] : []), extra = Math.max(0, hops.length - 1) * 12;
+  let s = `<svg class="numline" viewBox="0 ${-extra} ${W} ${112 + extra}" role="img" aria-label="Number line from ${f(a)} to ${f(b)}">`;
+  if (hasWin) s += `<rect class="nl-window" x="${pad - 36}" y="${y - 40}" width="${wx - pad + 36}" height="88" rx="10" style="transform-origin:${wx}px ${y}px"/>`;
   if (o.shade === 'pos' || o.shade === 'both') s += shade(0, b, 'pos');
   if (o.shade === 'neg' || o.shade === 'both') s += shade(a, 0, 'neg');
-  s += `<line class="nl-axis" x1="${pad - 22}" y1="${y}" x2="${W - pad + 22}" y2="${y}"/><path class="nl-head" d="M${pad - 26} ${y} l12 -7 v14 z M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
-  for (let n = a; n <= b; n++) s += `<line class="nl-tick" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
+  const ax = (x1, x2, w) => `<line class="nl-axis${w ? ' w' : ''}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
+  s += hasWin ? ax(pad - 22, wx, true) + ax(wx, W - pad + 22, false) : ax(pad - 22, W - pad + 22, false);
+  s += `<path class="nl-head${hasWin ? ' w' : ''}" d="M${pad - 26} ${y} l12 -7 v14 z"/><path class="nl-head" d="M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
+  for (let n = a; n <= b; n++) s += `<line class="nl-tick${n < 0 ? ' w' : ''}" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}${n < 0 ? ' w' : ''}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
   hops.forEach(([h1, h2], i) => {
     const x1 = X(h1), x2 = X(h2), ay = y - 14, lift = Math.min(34, Math.abs(x2 - x1) * .4) + 8 + i * 12, cx = (x1 + x2) / 2, cy = ay - lift * 2;
     const ang = Math.atan2(ay - cy, x2 - cx) * 180 / Math.PI, back = h2 < h1 ? ' back' : '', d = 1.1 + i;
@@ -96,6 +99,77 @@ const mathStrip = on => `<div class="math-strip" aria-hidden="true">${[...'MATH'
 // badges(n): numbered group badges (blue, red, black, white).
 const badges = n => `<div class="badges" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<span style="--i:${i}">${i + 1}</span>`).join('')}</div>`;
 const labelled = (...items) => `<div class="labelled">${items.map(([cls, t]) => `<figure><span class="chip-mini ${cls}"></span><figcaption>${t}</figcaption></figure>`).join('')}</div>`;
+// ---- negatives are windows: every −digits in slide text sits in a black window pill ----
+const NEG_SPLIT = /(−\d+(?:[.,]\d+)?(?:°[CF])?)/, NEG_HIT = /−\d/;
+function negify(root) {
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), hits = [];
+  while (w.nextNode()) { const n = w.currentNode; if (NEG_HIT.test(n.nodeValue) && !n.parentElement.closest('svg,.neg,a,button,script,style')) hits.push(n) }
+  hits.forEach(n => {
+    const f = document.createDocumentFragment();
+    n.nodeValue.split(NEG_SPLIT).forEach((part, i) => {
+      if (!part) return;
+      if (i % 2) { const e = document.createElement('span'); e.className = 'neg'; e.textContent = part; f.appendChild(e) }
+      else f.appendChild(document.createTextNode(part));
+    });
+    n.replaceWith(f);
+  });
+}
+// ---- titles that change on a tap are retyped: the old text is erased, the new text typed, caret following ----
+function textNodes(el) { const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), a = []; while (w.nextNode()) a.push(w.currentNode); return a }
+function showChars(nodes, full, k) { nodes.forEach((n, i) => { n.nodeValue = full[i].slice(0, Math.max(0, Math.min(full[i].length, k))); k -= full[i].length }) }
+const spanVisible = e => !e.classList.contains('gone') && !(e.hasAttribute('data-step') && !e.classList.contains('shown'));
+function retype(h1, from, to) {
+  if (h1._done) h1._done();
+  const fN = textNodes(from), fF = fN.map(n => n.nodeValue), tN = textNodes(to), tF = tN.map(n => n.nodeValue);
+  const fL = fF.join('').length, tL = tF.join('').length;
+  let timer = 0, k = fL;
+  const done = () => {
+    clearTimeout(timer); showChars(fN, fF, fL); showChars(tN, tF, tL);
+    from.style.visibility = to.style.visibility = ''; from.classList.remove('caret'); to.classList.remove('caret'); h1._done = null;
+  };
+  h1._done = done;
+  if (reduce || !(fL + tL)) return done();
+  from.style.visibility = 'visible'; to.style.visibility = 'hidden'; from.classList.add('caret');
+  const eStep = Math.max(2, Math.ceil(fL / 14)), tStep = Math.max(1, Math.ceil(tL / 40));
+  const type = () => {
+    if (!h1.isConnected) return;
+    k += tStep; showChars(tN, tF, k);
+    timer = setTimeout(k < tL ? type : done, k < tL ? 34 : 500);
+  };
+  const erase = () => {
+    if (!h1.isConnected) return;
+    k -= eStep; showChars(fN, fF, k);
+    if (k > 0) { timer = setTimeout(erase, 22); return }
+    showChars(fN, fF, 0); from.style.visibility = 'hidden'; from.classList.remove('caret');
+    showChars(tN, tF, 0); k = 0; to.style.visibility = 'visible'; to.classList.add('caret');
+    timer = setTimeout(type, 160);
+  };
+  timer = setTimeout(erase, 90);
+}
+// ---- ribbon of drifting windows in the right margin of every deck slide ----
+let ribbonT = 0;
+function addRibbonWin(delay) {
+  const box = $('#deck-ribbon'), w = document.createElement('div'), z = Math.random();
+  const width = (0.7 + z * 2.1).toFixed(2), left = (0.4 + Math.random() * (5.2 - width)).toFixed(2);
+  w.className = 'rw'; w.style.left = left + 'vw'; w.style.width = width + 'vw'; w.style.height = (10 + z * 30).toFixed(0) + 'vh';
+  w.style.setProperty('--dur', (46 - z * 18).toFixed(1) + 's'); w.style.setProperty('--delay', delay + 's');
+  w.addEventListener('animationend', () => w.remove());
+  box.appendChild(w);
+}
+function startRibbon() {
+  const box = $('#deck-ribbon');
+  if (reduce) {
+    if (!box.children.length) [[1.1, 12], [2.2, 58], [1.6, 84]].forEach(([wd, ty]) => { const w = document.createElement('div'); w.className = 'rw still'; w.style.cssText = `left:${(5.4 - wd) * (ty % 7) / 7 + .3}vw;width:${wd}vw;height:${14 + ty % 17}vh;--ty:${ty - 10}vh`; box.appendChild(w) });
+    return;
+  }
+  if (ribbonT) return;
+  addRibbonWin(-18); addRibbonWin(-6);
+  const loop = () => {
+    if (!$('#deck').classList.contains('on')) { ribbonT = 0; return }
+    addRibbonWin(0); ribbonT = setTimeout(loop, 5000 + Math.random() * 5000);
+  };
+  ribbonT = setTimeout(loop, 6000);
+}
 function runDemos(root) {
   if (reduce) return;
   root.querySelectorAll('[data-auto]').forEach(z => setTimeout(() => { if (z.isConnected) z.classList.add('cancel') }, 1500));
@@ -348,11 +422,13 @@ function timerAct(btn) {
   btn.blur();
 }
 // Reveal state: elements with data-step <= deckStep get .shown; elements with data-hide <= deckStep get .gone.
-function applySteps() {
-  const root = $('#deck-content');
+function applySteps(animate = false) {
+  const root = $('#deck-content'), swaps = [...root.querySelectorAll('h1.swap')];
+  const before = swaps.map(h => [...h.children].find(spanVisible));
   root.querySelectorAll('[data-step]').forEach(e => e.classList.toggle('shown', +e.dataset.step <= deckStep));
   root.querySelectorAll('[data-hide]').forEach(e => e.classList.toggle('gone', +e.dataset.hide <= deckStep));
   root.querySelectorAll('[data-on]').forEach(e => e.classList.toggle('on', +e.dataset.on <= deckStep));
+  if (animate) swaps.forEach((h, i) => { const now = [...h.children].find(spanVisible); if (before[i] && now && now !== before[i]) retype(h, before[i], now) });
 }
 function deckLabel() {
   $('#deck-next').textContent = deckIndex === BEATS.length - 1 && deckStep >= deckStepMax ? 'Replay' : 'Next';
@@ -361,10 +437,12 @@ function deckLabel() {
 function renderDeck(full = false) {
   const beat = BEATS[deckIndex], root = $('#deck-content');
   root.innerHTML = beat.html || '';
+  negify(root);
   timerStop(); const tm = root.querySelector('.timer'); timerLeft = tm ? +tm.dataset.secs : 0;
   deckStepMax = Math.max(0, ...[...root.querySelectorAll('[data-step],[data-on],[data-hide]')].map(e => Math.max(...['step', 'on', 'hide'].map(k => +(e.dataset[k] ?? 0)))));
   deckStep = full ? deckStepMax : 0;
   applySteps();
+  startRibbon();
   runDemos(root);
   armNudge($('#deck-next'));
   deckLabel();
@@ -379,7 +457,7 @@ function enterMat(ex, i) {
 }
 function openTitle() { deckIndex = TITLE_IDX; wipe(showTitle) }
 function deckNext() {
-  if (deckStep < deckStepMax) { deckStep++; applySteps(); armNudge($('#deck-next')); return deckLabel() }
+  if (deckStep < deckStepMax) { deckStep++; applySteps(true); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex < BEATS.length - 1) {
     deckIndex++;
     if (BEATS[deckIndex].mat) enterMat(0, 0);
@@ -388,7 +466,7 @@ function deckNext() {
   } else openDeck(0);
 }
 function deckBack() {
-  if (deckStep > 0) { deckStep--; applySteps(); armNudge($('#deck-next')); return deckLabel() }
+  if (deckStep > 0) { deckStep--; applySteps(true); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex > 0) {
     deckIndex--;
     if (BEATS[deckIndex].mat) {

@@ -139,6 +139,7 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - The slide-to-slide wipe is already a window sweep (`#wipe`); no change.
   - Shared card look (3px #111 border, 4px hard shadow, d-up entrance, same hover/press) checked across tiles, cards, board, badges, icons and timer; fix any outliers.
 - Validation: `node --check script.js` only, by request. Not looked at in a browser.
+- 2026-11-19: Built, all criteria above except the outlier sweep, which was limited to hover and press on the board, icon cards, MATH letters and badges (everything else already shared the 3px border, 4px shadow and d-up entrance). Details in DECISIONS.md. Only `node --check` run.
 - Known risk: this pass changes how many slides look. A browser pass over the whole deck is the main open item.
 
 ### [In progress] Teacher requests from the chat screenshots (2026-11-19)
