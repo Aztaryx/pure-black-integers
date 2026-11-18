@@ -324,8 +324,11 @@
       background: var(--r)
     }
 
+    /* a zero pair turns to dust: it turns red at once (hidden under the window), then blurs away while specks drift off (see .dust) */
     .chip.gone {
-      filter: blur(10px) brightness(2.2)
+      background: var(--r);
+      filter: blur(3px);
+      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .8s .3s ease-in, filter .8s .3s ease-in
     }
 
     .win2 {
@@ -333,7 +336,6 @@
       height: var(--u);
       backdrop-filter: invert(1) hue-rotate(-57deg) saturate(3);
       -webkit-backdrop-filter: invert(1) hue-rotate(-57deg) saturate(3);
-      background-image: repeating-linear-gradient(90deg, transparent 0 calc(var(--u)*1.1 - 2px), #8888 calc(var(--u)*1.1 - 2px) calc(var(--u)*1.1));
       outline: 2px solid #000
     }
 
@@ -341,7 +343,88 @@
       position: absolute;
       left: 0;
       top: calc(var(--u)*-.5);
-      font: normal calc(var(--u)*.34) var(--h)
+      font: normal calc(var(--u)*.34) var(--h);
+      color: var(--r)
+    }
+
+    /* the overlay's cells are red chips sitting in the inversion window */
+    .win2 b {
+      position: absolute;
+      top: calc(var(--u)*.1);
+      left: calc(var(--u)*(var(--j)*1.1 + .1));
+      width: calc(var(--u)*.8);
+      height: calc(var(--u)*.8);
+      border-radius: 50%;
+      background: var(--r);
+      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
+    }
+
+    /* the window glitches away: slices jump, flicker and shift, then it is gone */
+    @keyframes win-glitch {
+      0% { opacity: 1; clip-path: inset(0); translate: 0 0 }
+      8% { clip-path: inset(0 0 62% 0); translate: calc(var(--u)*-.14) 0 }
+      16% { clip-path: inset(48% 0 18% 0); translate: calc(var(--u)*.18) 0 }
+      24% { opacity: .2; clip-path: inset(0); translate: 0 0 }
+      32% { opacity: 1; clip-path: inset(12% 0 55% 0); translate: calc(var(--u)*.1) calc(var(--u)*-.03) }
+      42% { opacity: 0; clip-path: inset(0); translate: 0 0 }
+      50% { opacity: 1; clip-path: inset(70% 0 0 0); translate: calc(var(--u)*-.22) 0 }
+      62% { opacity: .4; clip-path: inset(30% 0 40% 0); translate: calc(var(--u)*.06) 0 }
+      74% { opacity: 1; clip-path: inset(0 0 85% 0); translate: calc(var(--u)*-.1) 0 }
+      86% { opacity: .3; clip-path: inset(40% 0 40% 0); translate: 0 0 }
+      100% { opacity: 0; clip-path: inset(50% 0 50% 0); translate: 0 0 }
+    }
+
+    /* while it glitches the window is plain black (what the inversion of the white mat looks like) so the red chips under its slices keep their colour */
+    .win2.out {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: #000;
+      transition: none;
+      animation: win-glitch .8s steps(1, end) both
+    }
+
+    /* red chips left over spawn as the window glitches away, in the same flicker */
+    @keyframes chip-spawn {
+      0% { opacity: 0 }
+      20% { opacity: 1; clip-path: inset(0 0 60% 0); translate: calc(var(--u)*-.08) 0; filter: brightness(2) }
+      40% { opacity: .3; clip-path: inset(45% 0 0 0); translate: calc(var(--u)*.1) 0 }
+      60% { opacity: 1; clip-path: inset(0); translate: 0 0; filter: brightness(1.6) }
+      100% { opacity: 1; clip-path: inset(0); translate: 0 0; filter: none }
+    }
+
+    .chip.spawn {
+      animation: chip-spawn .6s .35s steps(1, end) backwards
+    }
+
+    /* dust: specks start inside the chip and drift up and to the right while they fade */
+    .dust {
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 4;
+      width: calc(var(--u)*.8);
+      height: calc(var(--u)*.8);
+      pointer-events: none;
+      transform: translate(calc(var(--x, 0)*var(--u)), calc(var(--y, 0)*var(--u)))
+    }
+
+    .dust i {
+      position: absolute;
+      left: var(--px);
+      top: var(--py);
+      width: calc(var(--u)*var(--sz));
+      height: calc(var(--u)*var(--sz));
+      margin: calc(var(--u)*var(--sz)*-.5) 0 0 calc(var(--u)*var(--sz)*-.5);
+      border-radius: 50%;
+      background: var(--c, var(--r));
+      opacity: 0;
+      animation: dust-fly var(--t, 1.2s) var(--d, .3s) cubic-bezier(.25, .6, .35, 1) both
+    }
+
+    @keyframes dust-fly {
+      0% { opacity: 0; transform: translate(0, 0) scale(1) }
+      12% { opacity: 1 }
+      100% { opacity: 0; transform: translate(calc(var(--dx)*var(--u)), calc(var(--dy)*var(--u))) scale(.3) }
     }
 
     #cap {
@@ -1481,15 +1564,9 @@
     @keyframes caret-blink { 50% { opacity: 0 } }
     @keyframes ribbon-in { from { opacity: 0 } }
 
-    /* negative numbers in slide text sit in a black window pill */
+    /* negative numbers in slide text are color-coded red, like the red chips (no black pill) */
     .neg {
-      display: inline-block;
-      padding: 0 .14em;
-      margin: 0 .02em;
-      background: #111;
-      color: #fff;
-      border-radius: .14em;
-      line-height: 1.08
+      color: var(--r)
     }
 
     .neg:empty {
