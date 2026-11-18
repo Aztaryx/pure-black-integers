@@ -34,6 +34,7 @@ Examples are declared in the `EX` array. Each example contains an equation and p
 - Example navigation
 - Chip pairing and cancellation
 - Canvas animation and decorative effects
+- Beat-by-beat preliminaries, recall, score board, vocabulary, familiarization, group activity, assessment, and reflection deck
 
 ## Constraints
 

@@ -5,6 +5,71 @@ const $ = s => document.querySelector(s), stage = $('#stage');
       { eq: ['(−4)', '+', '3'], p: [3], n: [4] },
       { eq: ['(−4)', '+', '(−2)'], p: [], n: [4, 2] },
       { eq: ['3', '+', '2'], p: [3, 2], n: [] }];
+    const chipRow = (count, red = false) => '<div class="chip-row">' + Array.from({ length: count }, () => `<span class="chip-mini${red ? ' red' : ''}">${red ? '−' : '+'}</span>`).join('') + '</div>';
+    const card = (kicker, title, body) => `<article class="deck-card"><span class="kicker">${kicker}</span><h1>${title}</h1>${body}</article>`;
+    const BEATS = [
+      { portion: 'Portion 2 — Preliminaries', beat: '2.1', html: card('Greeting', 'Good Morning!', '<p>Grade 7 – St. Joseph</p>') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.2', html: card('Prayer', 'Let us pray.', '') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.3', html: card('MATH Classroom Rules', 'MATH', '<p>Motivated · Active · Teamwork · Honest</p>') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.4', html: card('M', 'Motivated', '<p>Always do your best in every Mathematics activity.</p>') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.5', html: card('A', 'Active', '<p>Participate in class discussions and activities.</p>') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.6', html: card('T', 'Teamwork', '<p>Cooperate and help your classmates.</p>') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.7', html: card('H', 'Honest', '<p>Be truthful and do your own work.</p>') },
+      { portion: 'Portion 2 — Preliminaries', beat: '2.8', html: card('Check-in', 'Attendance & MATHkamustahan', '<h2>How are you feeling today?</h2>') },
+      { portion: 'Portion 2 — Warm-up', beat: '2.9', html: card('Activity 1', 'Numeracy Drills', '<p>Multiply. Click Next to reveal each answer.</p>') },
+      { portion: 'Portion 2 — Warm-up', beat: '2.10', html: card('Drill 1', '3 × 4', '<h2 class="answer">12</h2>') },
+      { portion: 'Portion 2 — Warm-up', beat: '2.11', html: card('Drill 2', '7 × 6', '<h2 class="answer">42</h2>') },
+      { portion: 'Portion 2 — Warm-up', beat: '2.12', html: card('Drill 3', '9 × 8', '<h2 class="answer">72</h2>') },
+      { portion: 'Portion 2 — Warm-up', beat: '2.13', html: card('Drill 4', '12 × 5', '<h2 class="answer">60</h2>') },
+      { portion: 'Portion 2 — Warm-up', beat: '2.14', html: card('Drill 5', '15 × 6', '<h2 class="answer">90</h2>') },
+      { portion: 'Portion 3 — Recall', beat: '3.1', html: card('Activity 2', 'Unscramble Me!', '<p>Rearrange the letters, then answer the question.</p>') },
+      { portion: 'Portion 3 — Recall', beat: '3.2', html: card('Unscramble', 'T E R I N G E', '') },
+      { portion: 'Portion 3 — Recall', beat: '3.3', html: card('Reveal', 'I N T E G E R', '<h2>What are integers?</h2>') },
+      { portion: 'Portion 3 — Recall', beat: '3.4', html: card('Unscramble', 'P O I T V E S I', '') },
+      { portion: 'Portion 3 — Recall', beat: '3.5', html: card('Reveal', 'P O S I T I V E', '<h2>Where can we find positive integers on the number line?</h2>') },
+      { portion: 'Portion 3 — Recall', beat: '3.6', html: card('Unscramble', 'V A N E G I T E', '') },
+      { portion: 'Portion 3 — Recall', beat: '3.7', html: card('Reveal', 'N E G A T I V E', '<h2>Where can we find negative integers on the number line?</h2>') },
+      { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up', 'Positive & Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.1', html: card('Activity 3 — The Score Board', 'Round 1', '<p>During a classroom quiz bee, Team A earned 5 points.</p><h2>+5</h2>') },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.2', html: card('Round 2', 'A 3-point deduction', '<p>They received a 3-point deduction because of a rule violation.</p><h2>−3</h2>') },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.3', html: card('Chip Visual', 'Gained vs. Deducted', chipRow(5) + chipRow(3, true)) },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.4', html: card('Question 1', 'What do the blue and red chips represent?', '') },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.5', html: card('Question 2', 'Why does Team A have two different kinds of chips?', '') },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.6', html: card('Question 3', 'Which color is positive and which is negative?', '') },
+      { portion: 'Portion 4 — Situational Analysis', beat: '4.7', html: card('Question 4', 'How can we organize these chips to understand the team’s score?', '') },
+      { portion: 'Portion 5 — Vocabulary', beat: '5.1', html: card('Vocabulary', 'Integers', '<p>Positive whole numbers, negative whole numbers, and zero.</p><h2>…, −3, −2, −1, 0, 1, 2, 3, …</h2>') },
+      { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + chipRow(1) + chipRow(1, true)) },
+      { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Vocabulary', 'Zero Pair', '<p>One positive chip and one negative chip cancel each other out.</p><h2>(+1) + (−1) = 0</h2>') },
+      { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
+      { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Rule Check', 'Same Signs', '<p>No zero pairs. Combine all chips and keep the sign.</p><h2>Cases 1 & 2</h2>') },
+      { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Rule Check', 'Different Signs', '<p>Pair up and cancel zero pairs, then count what remains.</p><h2>Case 3</h2>') },
+      { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think, Model, and Solve', 'Think-Pair-Share', '') },
+      { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Problem 1', 'Temperature', '<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>') },
+      { portion: 'Portion 7 — Familiarize', beat: '7.3', html: card('Problem 1 Solution', '−2°C', '<p>6 red + 4 blue → 4 zero pairs cancel → 2 red remain.</p><h2>(−6) + 4 = −2</h2>') },
+      { portion: 'Portion 7 — Familiarize', beat: '7.4', html: card('Problem 2', 'Elevator', '<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>') },
+      { portion: 'Portion 7 — Familiarize', beat: '7.5', html: card('Problem 2 Solution', '3rd Floor', '<p>2 red + 5 blue → 2 zero pairs cancel → 3 blue remain.</p><h2>(−2) + 5 = 3</h2>') },
+      { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!', '') },
+      { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', '<ul><li>Use task cards and colored chips.</li><li>Present your chip model.</li><li>Explain the process.</li></ul>') },
+      { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', '<div class="grid-cards"><article>Accuracy — 5</article><article>Use of Chips — 5</article><article>Explanation — 5</article><article>Teamwork — 5</article><article>Presentation — 5</article></div>') },
+      { portion: 'Portion 8 — Decide', beat: '8.4', html: card('Group 1', 'Simple Expressions', '<h2>4 + 3 = ?</h2><h2>(−7) + 3 = ?</h2>') },
+      { portion: 'Portion 8 — Decide', beat: '8.5', html: card('Group 1 Check', 'Answers', '<h2>7 &nbsp; and &nbsp; −4</h2>') },
+      { portion: 'Portion 8 — Decide', beat: '8.6', html: card('Group 2', 'Mathematical Phrase', '<p>Translate, then solve using chips:</p><h2>“The sum of negative five and positive eight.”</h2>') },
+      { portion: 'Portion 8 — Decide', beat: '8.7', html: card('Group 2 Check', '(−5) + 8 = 3', '') },
+      { portion: 'Portion 8 — Decide', beat: '8.8', html: card('Group 3', 'Basic Word Problem', '<p>Mia starts with 12 points. She earns 8, loses 15, and earns 7. How many points does she have?</p>') },
+      { portion: 'Portion 8 — Decide', beat: '8.9', html: card('Group 3 Check', '12 points', '<h2>12 + 8 + (−15) + 7 = 12</h2>') },
+      { portion: 'Portion 8 — Decide', beat: '8.10', html: card('Group 4', 'Challenging Word Problem', '<p>Carlo starts with 5. He loses 12, earns 18, loses 9, and earns 7. What is his final score?</p>') },
+      { portion: 'Portion 8 — Decide', beat: '8.11', html: card('Group 4 Check', '9 points', '<h2>5 + (−12) + 18 + (−9) + 7 = 9</h2>') },
+      { portion: 'Portion 9 — Assessment', beat: '9.1', html: card('Time to Test Your Understanding', 'Formative Assessment', '<p>Blue = +1 · Red = −1. Cross out zero pairs, count the remainder, and write the sum.</p>') },
+      { portion: 'Portion 9 — Assessment', beat: '9.2', html: card('Quiz Display', 'Solve Four Items', '<div class="quiz-grid"><article>1. (+5) + (+2)</article><article>2. (−5) + (−3)</article><article>3. (−2) + (+6)</article><article>4. (+4) + (−1)</article></div><p>Optional traveler item: (+7) + (+2) + (−6)</p>') },
+      { portion: 'Portion 9 — Assessment', beat: '9.3', html: card('Checking 1', '(+5) + (+2)', '<h2 class="answer">7</h2>') },
+      { portion: 'Portion 9 — Assessment', beat: '9.4', html: card('Checking 2', '(−5) + (−3)', '<h2 class="answer">−8</h2>') },
+      { portion: 'Portion 9 — Assessment', beat: '9.5', html: card('Checking 3', '(−2) + (+6)', '<h2 class="answer">4</h2>') },
+      { portion: 'Portion 9 — Assessment', beat: '9.6', html: card('Checking 4', '(+4) + (−1)', '<h2 class="answer">3</h2><p>Traveler item: (+7) + (+2) + (−6) = 3 km</p>') },
+      { portion: 'Portion 10 — Reflection', beat: '10.1', html: card('Real-Life Contexts', 'Where do integers appear?', '<div class="grid-cards"><article>Attendance</article><article>Temperature Changes</article><article>Money Transactions</article><article>Basketball Scores</article></div>') },
+      { portion: 'Portion 10 — Reflection', beat: '10.2', html: card('Reflect', 'Everyday Situations', '<h2>How can we use the addition of integers to solve problems in our everyday situations?</h2>') },
+      { portion: 'Portion 10 — Reflection', beat: '10.3', html: card('Digital Learning Resource', 'Addition of Integers', '<p>Explore: Grade 7 MATATAG</p><h2>youtu.be/gLQoEzKKTyQ</h2>') },
+      { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you', 'Grade 7 – St. Joseph!', '<p>Joshua Philip M. Aure</p>') }
+    ];
     const sum = a => a.reduce((x, y) => x + y, 0), fmt = n => (n < 0 ? '−' : '') + Math.abs(n);
     const X = (k, g) => .6 + k * 1.1 + g * .35, YS = .3, YM = 1.825;
     let st = { sl: 0, ex: 0, i: 0 }, M;
@@ -332,26 +397,68 @@ const $ = s => document.querySelector(s), stage = $('#stage');
       function show(n) {
         st.sl = n;
         $('#s2').classList.toggle('on', n == 2);
+        $('#deck').classList.toggle('on', n == 3);
         if (n == 2) {
           stopWinSpawner();
+          par.innerHTML = '';
+          $('#deck').classList.remove('on');
+        } else if (n == 3) {
+          stopWinSpawner();
+          $('#s2').classList.remove('on');
           par.innerHTML = '';
         } else if (n == 1 && $('#s1').classList.contains('rev')) {
           startWinSpawner();
         }
       }
+      let deckIndex = 0;
+      function renderDeck() {
+        const beat = BEATS[deckIndex];
+        $('#portion').textContent = beat.portion;
+        $('#beat').textContent = 'Beat ' + beat.beat;
+        $('#deck-content').innerHTML = beat.html || '';
+        $('#deck-next').textContent = deckIndex === BEATS.length - 1 ? 'Replay' : 'Next';
+      }
+      function openDeck(index) {
+        deckIndex = index;
+        wipe(() => { show(3); renderDeck(); });
+      }
+      function deckNext() {
+        if (deckIndex < BEATS.length - 1) {
+          deckIndex++;
+          if (BEATS[deckIndex].mat) {
+            wipe(() => { show(2); enter(0, 0); });
+          } else {
+            renderDeck();
+          }
+        } else {
+          wipe(() => show(1));
+        }
+      }
+      function deckBack() {
+        if (deckIndex > 0) {
+          deckIndex--;
+          renderDeck();
+        } else {
+          wipe(() => show(1));
+        }
+      }
       function wipe(cb) { const w = $('#wipe'); w.classList.remove('go'); void w.offsetWidth; w.classList.add('go'); setTimeout(cb, reduce ? 0 : 650) }
       function next() {
         if (st.sl == 0) return begin();
-        if (st.sl == 1) return wipe(() => { show(2); enter(0, 0) });
+        if (st.sl == 1) return openDeck(0);
+        if (st.sl == 3) return deckNext();
         if (st.i < M.n - 1) { st.i++; render() } else if (st.ex < 3) enter(st.ex + 1, 0)
+        else openDeck(deckIndex + 1);
       }
       function prev() {
+        if (st.sl == 3) return deckBack();
         if (st.sl < 2) return;
         if (st.i > 0) { st.i--; render() } else if (st.ex > 0) { enter(st.ex - 1, EX[st.ex - 1].n.length ? 4 : 1) } else wipe(() => show(1))
       }
 
       EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => enter(j, 0); $('#tabs').appendChild(b) });
       $('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#intro').onclick = begin;
+      $('#deck-next').onclick = deckNext; $('#deck-back').onclick = deckBack;
       document.addEventListener('keydown', e => {
         if (e.key == 'f' || e.key == 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); return }
         if (e.target.closest('button')) return;
