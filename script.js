@@ -104,6 +104,10 @@ function flipChip(c) {
   setTimeout(() => c.classList.remove('flip'), reduce ? 0 : 500);
 }
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
+// Click-order reveals. step(n, html) appears on the n-th tap; hideAt(n, html) disappears on the n-th tap.
+// Both keep their space, so the layout never jumps. Any element can also carry data-step / data-hide directly.
+const step = (n, html) => `<div class="step" data-step="${n}">${html}</div>`;
+const hideAt = (n, html) => `<div class="step-out" data-hide="${n}">${html}</div>`;
 // o: { center } centers the slide; { big } enlarges the asset; { swap } stacks the title's step variants in one spot.
 const card = (kicker, title, body = '', q = false, o = {}) => {
   const hc = [q && 'q', o.swap && 'swap'].filter(Boolean).join(' ');
@@ -418,23 +422,37 @@ function show(n) {
   }
 }
 
-let deckIndex = 0;
-function renderDeck() {
-  const beat = BEATS[deckIndex];
-  $('#deck-content').innerHTML = beat.html || '';
-  runDemos($('#deck-content'));
-  armNudge($('#deck-next'));
-  $('#deck-next').textContent = deckIndex === BEATS.length - 1 ? 'Replay' : 'Next';
+let deckIndex = 0, deckStep = 0, deckStepMax = 0;
+// Reveal state: elements with data-step <= deckStep get .shown; elements with data-hide <= deckStep get .gone.
+function applySteps() {
+  const root = $('#deck-content');
+  root.querySelectorAll('[data-step]').forEach(e => e.classList.toggle('shown', +e.dataset.step <= deckStep));
+  root.querySelectorAll('[data-hide]').forEach(e => e.classList.toggle('gone', +e.dataset.hide <= deckStep));
 }
-function openDeck(index) {
+function deckLabel() {
+  $('#deck-next').textContent = deckIndex === BEATS.length - 1 && deckStep >= deckStepMax ? 'Replay' : 'Next';
+}
+// full = true shows every step at once (arriving with Back).
+function renderDeck(full = false) {
+  const beat = BEATS[deckIndex], root = $('#deck-content');
+  root.innerHTML = beat.html || '';
+  deckStepMax = Math.max(0, ...[...root.querySelectorAll('[data-step]')].map(e => +e.dataset.step));
+  deckStep = full ? deckStepMax : 0;
+  applySteps();
+  runDemos(root);
+  armNudge($('#deck-next'));
+  deckLabel();
+}
+function openDeck(index, full = false) {
   deckIndex = index;
-  wipe(() => { show(3); renderDeck() });
+  wipe(() => { show(3); renderDeck(full) });
 }
 function enterMat(ex, i) {
   deckIndex = MAT_IDX;
   wipe(() => { show(2); enter(ex, i) });
 }
 function deckNext() {
+  if (deckStep < deckStepMax) { deckStep++; applySteps(); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex < BEATS.length - 1) {
     deckIndex++;
     if (BEATS[deckIndex].mat) enterMat(0, 0);
@@ -445,13 +463,14 @@ function deckNext() {
   }
 }
 function deckBack() {
+  if (deckStep > 0) { deckStep--; applySteps(); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex > 0) {
     deckIndex--;
     if (BEATS[deckIndex].mat) {
       const last = EX.length - 1;
       enterMat(last, EX[last].n.length ? 4 : 1);
     } else {
-      renderDeck();
+      renderDeck(true);
     }
   } else {
     wipe(() => show(1));
@@ -471,7 +490,7 @@ function prev() {
   if (st.sl < 2) return;
   if (st.i > 0) { st.i--; render() }
   else if (st.ex > 0) enter(st.ex - 1, EX[st.ex - 1].n.length ? 4 : 1);
-  else openDeck(MAT_IDX - 1);
+  else openDeck(MAT_IDX - 1, true);
 }
 
 EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => enter(j, 0); $('#tabs').appendChild(b) });

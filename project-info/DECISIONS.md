@@ -61,4 +61,5 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-18: Chips carry no "+" or "−" glyph anywhere (chip mat, `chips()`, zero pair, crossed rows); color alone shows the sign (blue positive, red negative), as the teacher asked. The "+" between chip groups in a `chipRow` is the equation operator and stays.
 - 2026-11-18: The Prayer slide is the one deliberate exception to "nothing is centered": title "Prayer" only, centered both ways (`.deck-card.center`).
 - 2026-11-18: Quiz items 9.2 to 9.7 fold into one question-then-answer slide per item; the 9.2 grid is dropped.
+- 2026-11-18: Reveal engine details. Hidden steps use `visibility: hidden`, so they keep their space and cannot be clicked. Animations inside a hidden step are switched off and start fresh when it is shown. Under reduced motion the steps still reveal one per tap, without animation. `.stack` puts two variants in one grid cell and `h1.swap` does the same for a title that changes between steps.
 

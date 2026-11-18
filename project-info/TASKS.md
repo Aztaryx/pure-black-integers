@@ -111,3 +111,5 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 
 - Progress (dated):
   - 2026-11-18: Small items done: chip glyphs removed, Prayer slide centered, `card()` takes an options object `{ center, big, swap }` and skips an empty kicker. Batch 1 (reveal engine) next.
+  - 2026-11-18: Batch 1 built (reveal engine): `step()`, `hideAt()`, `applySteps()`, step-aware `deckNext`/`deckBack`, `renderDeck(full)` and `openDeck(index, full)` (Back arrives with every step shown), CSS for hidden steps, `.stack` and `h1.swap`. No slide uses it yet. Only `node --check` run.
+

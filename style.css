@@ -1253,6 +1253,47 @@
       align-items: center
     }
 
+    /* ---------- polish G: click-order reveals (data-step shows on tap, data-hide hides on tap) ---------- */
+    .deck-card [data-step]:not(.shown) {
+      visibility: hidden
+    }
+
+    /* hidden steps hold no animation; it starts fresh when they are shown */
+    .deck-card [data-step]:not(.shown),
+    .deck-card [data-step]:not(.shown) * {
+      animation: none !important
+    }
+
+    .deck-card [data-hide].gone {
+      visibility: hidden
+    }
+
+    .deck-card .step,
+    .deck-card .step-out {
+      width: 100%
+    }
+
+    .deck-card .step.shown {
+      animation: d-up .45s 0s cubic-bezier(.2, .7, .2, 1) both
+    }
+
+    /* stack: two step variants share one spot (for example scrambled tiles, then ordered tiles) */
+    .deck-card .stack {
+      display: grid
+    }
+
+    .deck-card .stack>* {
+      grid-area: 1 / 1
+    }
+
+    .deck-card h1.swap {
+      display: grid
+    }
+
+    .deck-card h1.swap>* {
+      grid-area: 1 / 1
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,
