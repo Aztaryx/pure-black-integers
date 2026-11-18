@@ -1372,6 +1372,56 @@
       }
     }
 
+    /* ---------- polish I: Portion 7, 8 and 9 merged slides ---------- */
+    .deck-visual .step {
+      display: flex;
+      justify-content: center
+    }
+
+    .deck-body>.answer[data-step] {
+      animation-delay: 0s, .4s
+    }
+
+    .deck-card.big .deck-body>.answer {
+      font-size: clamp(48px, 7vw, 110px)
+    }
+
+    .deck-card.big .thermo,
+    .deck-card.big .elevator {
+      height: min(52vh, 460px)
+    }
+
+    .deck-card.big .chip-row .chip-mini {
+      width: clamp(46px, 5.6vw, 84px)
+    }
+
+    .deck-card h1 .ans {
+      border-bottom: .08em solid #111;
+      padding: 0 .06em
+    }
+
+    .cap-680 .numline {
+      max-width: 680px
+    }
+
+    /* crossed zero pairs: marks and rings start when the row is switched on (data-on) */
+    .chip-row[data-on]:not(.on) .chip-mini.x {
+      opacity: 1
+    }
+
+    .chip-row[data-on]:not(.on) .chip-mini.x::after,
+    .chip-row[data-on]:not(.on) .chip-mini.keep::before {
+      display: none
+    }
+
+    .chip-row[data-on] .chip-mini.x::after {
+      animation-delay: calc(.15s + var(--i, 0)*.15s)
+    }
+
+    .chip-row[data-on] .chip-mini.keep::before {
+      animation-delay: 1s
+    }
+
     @media(prefers-reduced-motion:reduce) {
 
       *,

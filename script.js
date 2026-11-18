@@ -68,7 +68,7 @@ const elevator = (f0, f1) => {
 };
 const crossRow = (a, b, aRed) => {
   const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}"></span>`).join('');
-  return chipRow(grp(a, aRed), grp(b, !aRed));
+  return chipRow(grp(a, aRed), grp(b, !aRed)).replace('class="chip-row"', 'class="chip-row" data-on="1"');
 };
 // iconSvg(name, cls): flat icons on a 64x64 grid, one stroke weight. Objects and abstract shapes only: no faces, no body parts.
 // The one people shape allowed is `pair`: two faceless default-avatar silhouettes side by side.
@@ -163,32 +163,41 @@ const BEATS = [
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
   { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve') },
   { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Mechanics', 'How We Work', '<ol><li>Model and solve the problem independently using integer chips.</li><li>Pair up to compare representations and explain your solutions.</li><li>Selected pairs share with the class.</li></ol>') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.3', html: card('Problem 1', 'Laboratory Temperature', '<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.4', html: card('Problem 1 Solution', '−2°C', '<div class="side"><div class="col">' + chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2></div>' + thermo(-6, -2) + '</div>') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.5', html: card('Problem 2', 'The Elevator', '<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>') },
-  { portion: 'Portion 7 — Familiarize', beat: '7.6', html: card('Problem 2 Solution', '3rd Floor', '<div class="side"><div class="col">' + chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2></div>' + elevator(-2, 3) + '</div>') },
+  { portion: 'Portion 7 — Familiarize', beat: '7.3–7.4', html: card('Problem 1',
+    '<span data-hide="1">Laboratory Temperature</span><span data-step="1">−2°C</span>',
+    duo('<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>' +
+      '<div class="blk" data-step="1">' + chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2></div>', step(2, thermo(-6, -2))), false, { swap: true, big: true }) },
+  { portion: 'Portion 7 — Familiarize', beat: '7.5–7.6', html: card('Problem 2',
+    '<span data-hide="1">The Elevator</span><span data-step="1">3rd Floor</span>',
+    duo('<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>' +
+      '<div class="blk" data-step="1">' + chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2></div>', step(2, elevator(-2, 3))), false, { swap: true, big: true }) },
 
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
   { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
   { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', '<div class="grid-cards"><article>Accuracy — 5 pts</article><article>Use of Chips — 5 pts</article><article>Explanation — 5 pts</article><article>Teamwork — 5 pts</article><article>Presentation — 5 pts</article></div>') },
-  { portion: 'Portion 8 — Decide', beat: '8.4', html: card('Group 1 · Simple Expressions', '4 + 3 = ?<br>(−7) + 3 = ?') },
-  { portion: 'Portion 8 — Decide', beat: '8.5', html: card('Group 1 Check', 'Answers', '<h2 class="answer">7</h2><br><h2 class="answer">−4</h2>') },
-  { portion: 'Portion 8 — Decide', beat: '8.6', html: card('Group 2 · Mathematical Phrases', 'Translate & Solve', '<p>“The sum of negative five and positive eight.”</p>') },
-  { portion: 'Portion 8 — Decide', beat: '8.7', html: card('Group 2 Check', '(−5) + 8', '<h2 class="answer">3</h2>') },
-  { portion: 'Portion 8 — Decide', beat: '8.8', html: card('Group 3 · Basic Word Problem', 'Mia’s Score', '<p>Mia starts with 12 points. She earns 8 points in Round 1, loses 15 points in Round 2, and earns 7 points in Round 3. How many points does Mia have at the end?</p>') },
-  { portion: 'Portion 8 — Decide', beat: '8.9', html: card('Group 3 Check', '12 + 8 + (−15) + 7', '<h2 class="answer">12 points</h2>') },
-  { portion: 'Portion 8 — Decide', beat: '8.10', html: card('Group 4 · Challenging Word Problem', 'Carlo’s Score', '<p>Carlo starts with 5 points. He loses 12 points in Round 1, earns 18 points in Round 2, loses 9 points in Round 3, and earns 7 points in the final round. What is Carlo’s final score?</p>') },
-  { portion: 'Portion 8 — Decide', beat: '8.11', html: card('Group 4 Check', '5 + (−12) + 18 + (−9) + 7', '<h2 class="answer">9 points</h2>') },
+  { portion: 'Portion 8 — Decide', beat: '8.4–8.5', html: card('Group 1 · Simple Expressions',
+    '<span data-hide="1">4 + 3 = ?<br>(−7) + 3 = ?</span><span data-step="1">4 + 3 = <b class="ans">7</b><br>(−7) + 3 = <b class="ans">−4</b></span>', '', false, { swap: true }) },
+  { portion: 'Portion 8 — Decide', beat: '8.6–8.7', html: card('Group 2 · Mathematical Phrases',
+    '<span data-hide="1">Translate &amp; Solve</span><span data-step="1">(−5) + 8</span>',
+    '<p>“The sum of negative five and positive eight.”</p><h2 class="answer" data-step="1">3</h2>', false, { swap: true, big: true }) },
+  { portion: 'Portion 8 — Decide', beat: '8.8–8.9', html: card('Group 3 · Basic Word Problem',
+    '<span data-hide="1">Mia’s Score</span><span data-step="1">12 + 8 + (−15) + 7</span>',
+    '<p>Mia starts with 12 points. She earns 8 points in Round 1, loses 15 points in Round 2, and earns 7 points in Round 3. How many points does Mia have at the end?</p><h2 class="answer" data-step="1">12 points</h2>', false, { swap: true, big: true }) },
+  { portion: 'Portion 8 — Decide', beat: '8.10–8.11', html: card('Group 4 · Challenging Word Problem',
+    '<span data-hide="1">Carlo’s Score</span><span data-step="1">5 + (−12) + 18 + (−9) + 7</span>',
+    '<p>Carlo starts with 5 points. He loses 12 points in Round 1, earns 18 points in Round 2, loses 9 points in Round 3, and earns 7 points in the final round. What is Carlo’s final score?</p><h2 class="answer" data-step="1">9 points</h2>', false, { swap: true, big: true }) },
 
   // PORTION 9: FORMATIVE ASSESSMENT
   { portion: 'Portion 9 — Assessment', beat: '9.1', html: card('Formative Assessment', 'Time to Test Your Understanding', '<p>Blue chips = +1 · Red chips = −1. Cross out opposite-color pairs (zero pairs), count the remaining chips, and write the sum.</p>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.2', html: card('Quiz Items', 'Answer All 5 Items', '<div class="quiz-grid"><article>1. (+5) + (+2)' + chipRow(chips(5), chips(2)) + '</article><article>2. (−5) + (−3)' + chipRow(chips(5, true), chips(3, true)) + '</article><article>3. (−2) + (+6)' + chipRow(chips(2, true), chips(6)) + '</article><article>4. (+4) + (−1)' + chipRow(chips(4), chips(1, true)) + '</article><article class="full">5. Traveler drove 7 km, then 2 km more, then went back 6 km. How far to return to start?' + chipRow(chips(7), chips(2), chips(6, true)) + '</article></div>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.3', html: card('Check · Item 1', '(+5) + (+2)', chipRow(chips(5), chips(2)) + '<h2 class="answer">7</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.4', html: card('Check · Item 2', '(−5) + (−3)', chipRow(chips(5, true), chips(3, true)) + '<h2 class="answer">−8</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.5', html: card('Check · Item 3', '(−2) + (+6)', crossRow(2, 6, true) + '<h2 class="answer">4</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.6', html: card('Check · Item 4', '(+4) + (−1)', crossRow(4, 1, false) + '<h2 class="answer">3</h2>') },
-  { portion: 'Portion 9 — Assessment', beat: '9.7', html: card('Check · Item 5', '(+7) + (+2) + (−6) = +3', chipRow(chips(7), chips(2), chips(6, true)) + numberLine(0, 10, { hops: [[0, 7], [7, 9], [9, 3]] }) + '<h2 class="answer">3 km back to start</h2>') },
+  { portion: 'Portion 9 — Assessment', beat: '9.2–9.3', html: card('Quiz · Item 1 of 5', '(+5) + (+2)', chipRow(chips(5), chips(2)) + '<h2 class="answer" data-step="1">7</h2>', false, { big: true }) },
+  { portion: 'Portion 9 — Assessment', beat: '9.4', html: card('Quiz · Item 2 of 5', '(−5) + (−3)', chipRow(chips(5, true), chips(3, true)) + '<h2 class="answer" data-step="1">−8</h2>', false, { big: true }) },
+  { portion: 'Portion 9 — Assessment', beat: '9.5', html: card('Quiz · Item 3 of 5', '(−2) + (+6)', crossRow(2, 6, true) + '<h2 class="answer" data-step="2">4</h2>', false, { big: true }) },
+  { portion: 'Portion 9 — Assessment', beat: '9.6', html: card('Quiz · Item 4 of 5', '(+4) + (−1)', crossRow(4, 1, false) + '<h2 class="answer" data-step="2">3</h2>', false, { big: true }) },
+  { portion: 'Portion 9 — Assessment', beat: '9.7', html: card('Quiz · Item 5 of 5',
+    '<span data-hide="2">(+7) + (+2) + (−6) = ?</span><span data-step="2">(+7) + (+2) + (−6) = +3</span>',
+    '<p>Traveler drove 7 km, then 2 km more, then went back 6 km. How far to return to start?</p>' + chipRow(chips(7), chips(2), chips(6, true)) +
+    '<div class="step cap-680" data-step="1">' + numberLine(0, 10, { hops: [[0, 7], [7, 9], [9, 3]] }) + '</div><h2 class="answer" data-step="2">3 km back to start</h2>', false, { swap: true }) },
 
   // PORTION 10: REFLECTION & EXTENDED LEARNING
   { portion: 'Portion 10 — Reflection', beat: '10.1', html: card('Everyday Situations', 'Where Do We Use Integers?', '<div class="grid-cards"><article>Attendance</article><article>Temperature Changes</article><article>Money Transactions</article><article>Basketball Scores</article></div>') },
@@ -429,6 +438,7 @@ function applySteps() {
   const root = $('#deck-content');
   root.querySelectorAll('[data-step]').forEach(e => e.classList.toggle('shown', +e.dataset.step <= deckStep));
   root.querySelectorAll('[data-hide]').forEach(e => e.classList.toggle('gone', +e.dataset.hide <= deckStep));
+  root.querySelectorAll('[data-on]').forEach(e => e.classList.toggle('on', +e.dataset.on <= deckStep));
 }
 function deckLabel() {
   $('#deck-next').textContent = deckIndex === BEATS.length - 1 && deckStep >= deckStepMax ? 'Replay' : 'Next';
@@ -437,7 +447,7 @@ function deckLabel() {
 function renderDeck(full = false) {
   const beat = BEATS[deckIndex], root = $('#deck-content');
   root.innerHTML = beat.html || '';
-  deckStepMax = Math.max(0, ...[...root.querySelectorAll('[data-step]')].map(e => +e.dataset.step));
+  deckStepMax = Math.max(0, ...[...root.querySelectorAll('[data-step],[data-on],[data-hide]')].map(e => Math.max(...['step', 'on', 'hide'].map(k => +(e.dataset[k] ?? 0)))));
   deckStep = full ? deckStepMax : 0;
   applySteps();
   runDemos(root);
