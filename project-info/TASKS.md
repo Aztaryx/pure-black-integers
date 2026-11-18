@@ -125,6 +125,22 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-19: Built. 2.2 sun and desk icons; 2.3–2.7 `mathStrip()` (2.3 all dim, 2.4–2.7 the current letter lit blue); 2.8 `check` icon; 3.8 and 5.2 `labelled()` chips; 7.1 and 7.2 `iconRow` think, pair, share; 8.2 `badges(4)`; 10.1 icons inside the four cards; 10.3 `play` icon; 10.4 three blue and three red chips. 6.5 and 6.6 left text only on purpose. Only `node --check` run.
 - After this batch: a browser pass is the main open item (nothing since the first layout commit has been looked at visually), then fixing whatever it shows.
 
+### [In progress] Consistency pass: window language and retyped titles (2026-11-19)
+- Owner: Claude
+- Source: project owner, 2026-11-19: use the inversion windows consistently, not only on the title slide and one example; swap titles by retyping instead of switching; consistency and polish first.
+- Files: script.js (`numberLine`, `chips`/`chipRow`, `applySteps`, new `retype()`, `negify()`, deck window ribbon), style.css, project-info/DECISIONS.md
+- Acceptance criteria:
+  - One rule everywhere: a negative is a window, and whatever sits under a window flips (white to black, blue to red). No slide text says "inversion window".
+  - Negative numbers in titles, equations and answers sit in a black window pill with white text (`negify()` wraps every `−digits` in slide text, so new slides follow the rule without extra markup).
+  - Red chips are a red disc inside a black window cell, as on the chip mat. This applies to every `.chip-mini.red`.
+  - Number lines draw the negative side as a black window with white axis, ticks and labels, and the window sweeps in from zero.
+  - Every deck slide has a narrow ribbon of slow-drifting windows in the right margin, like the title slide. The ribbon stays inside the right padding, so it never sits behind text, and it is switched off under reduced motion.
+  - Titles that change on a tap (`h1.swap`) are retyped: the old title is deleted and the new one typed, with a blinking caret, in the same spot (no layout jump). Back retypes in reverse. A tap during typing finishes it at once. Reduced motion switches instantly.
+  - The slide-to-slide wipe is already a window sweep (`#wipe`); no change.
+  - Shared card look (3px #111 border, 4px hard shadow, d-up entrance, same hover/press) checked across tiles, cards, board, badges, icons and timer; fix any outliers.
+- Validation: `node --check script.js` only, by request. Not looked at in a browser.
+- Known risk: this pass changes how many slides look. A browser pass over the whole deck is the main open item.
+
 ### [In progress] Teacher requests from the chat screenshots (2026-11-19)
 - Source: screenshots from Joshua Philip (original teacher), relayed by the project owner, in Tagalog/English. The lesson-plan photos in them are too blurry to read, so anything that depends on their content is listed as open.
 - Files: script.js (`BEATS`), style.css, index.html, project-info/
