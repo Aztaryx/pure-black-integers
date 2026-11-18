@@ -99,7 +99,7 @@ const rules = items => `<div class="rules">${items.map(([l, w, t], i) => `<div c
 // badges(n): numbered group badges (blue, red, black, white).
 const badges = n => `<div class="badges" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<span style="--i:${i}">${i + 1}</span>`).join('')}</div>`;
 const labelled = (...items) => `<div class="labelled">${items.map(([cls, t]) => `<figure><span class="chip-mini ${cls}"></span><figcaption>${t}</figcaption></figure>`).join('')}</div>`;
-// ---- negatives are windows: every −digits in slide text sits in a black window pill ----
+// ---- negative numbers are color-coded: every −digits in slide text is wrapped in .neg (red, like the red chips) ----
 const NEG_SPLIT = /(−\d+(?:[.,]\d+)?(?:°[CF])?)/, NEG_HIT = /−\d/;
 function negify(root) {
   const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT), hits = [];
@@ -356,12 +356,13 @@ function stopWinSpawner() { if (winTimer) { clearTimeout(winTimer); winTimer = n
 function mk(c, t, p) { const e = document.createElement('div'); e.className = c; if (t != null) e.textContent = t; (p || stage).appendChild(e); return e }
 function put(e, x, y, o, s) { e.style.setProperty('--x', x); e.style.setProperty('--y', y); e.style.opacity = o; e.style.setProperty('--s', s || 1) }
 function build(i) {
-  stage.querySelectorAll('.chip,.win2').forEach(e => e.remove());
+  stage.querySelectorAll('.chip,.win2,.dust').forEach(e => e.remove());
   const ex = EX[i], P = sum(ex.p), N = sum(ex.n);
-  M = { ex, P, N, m: Math.min(P, N), R: P - N, B: [], W: [], R2: [], n: N ? 5 : 2 };
+  M = { ex, P, N, m: Math.min(P, N), R: P - N, B: [], W: [], R2: [], n: N ? 5 : 2, last: -1 };
   let k = 0; ex.p.forEach((n, g) => { for (let j = 0; j < n; j++)M.B.push({ e: mk('chip'), k: k++, g }) });
-  k = 0; ex.n.forEach((n, g) => { const e = mk('win2'); e.style.width = `calc(var(--u)*${n * 1.1 - .1})`; e.innerHTML = `<i>−${n}</i>`; M.W.push({ e, o: k, g }); k += n });
-  for (let j = P; j < N; j++)M.R2.push({ e: mk('chip'), k: j });
+  // each overlay carries its negative as red chips (one per cell) inside the inversion window
+  k = 0; ex.n.forEach((n, g) => { const e = mk('win2'); e.style.width = `calc(var(--u)*${n * 1.1 - .1})`; e.innerHTML = `<i>−${n}</i>` + Array.from({ length: n }, (_, j) => `<b style="--j:${j}"></b>`).join(''); M.W.push({ e, o: k, g }); k += n });
+  for (let j = P; j < N; j++)M.R2.push({ e: mk('chip r'), k: j });
   document.querySelectorAll('#tabs button').forEach((b, j) => b.classList.toggle('on', j == i));
 }
 function cap(s) {
@@ -369,21 +370,37 @@ function cap(s) {
   if (!N) return s < 4 ? 'Blue chips are positive. Two groups: ' + ex.p.join(' and ') + '.' : 'No overlay needed. Count every blue chip: ' + R + '.';
   return [
     P ? `${P} blue chip${pl(P)} on the mat: +${P}.` : 'The mat is empty.',
-    `The negative arrives as ${ex.n.length > 1 ? 'overlays' : 'an overlay'}: ${N} cells, −${N}.`,
-    !P ? `The overlay flips the empty mat: ${N} red chips appear.` : d <= 0 ? 'Overlay it. Everything under the overlay flips: blue becomes red.' : `Overlay it. ${P} chip${pl(P)} invert to red. The extra ${d === 1 ? 'cell is' : d + ' cells are'} over empty space, so ${d === 1 ? 'a red chip is' : 'red chips are'} born.`,
-    m ? 'Inverted chips cancel their cells. These are zero pairs, and they fade away.' : 'The overlays close. The red chips stay.',
+    `The negative arrives as ${ex.n.length > 1 ? 'overlays' : 'an overlay'}: ${N} red chip${pl(N)}, −${N}.`,
+    !P ? `The overlay lands on the empty mat: ${N} red chip${pl(N)}.` : d <= 0 ? 'Overlay it. Everything under the overlay flips: blue becomes red.' : `Overlay it. ${P} chip${pl(P)} invert to red. The extra ${d === 1 ? 'chip is' : d + ' chips are'} over empty space, so ${d === 1 ? 'a red chip is' : 'red chips are'} born.`,
+    m ? 'Inverted chips cancel their red partners. These are zero pairs, and they turn to dust.' : 'The overlays glitch away. The red chips stay.',
     R > 0 ? `Count what is left: ${R} blue chip${pl(R)}. Answer: ${R}.` : `Count what is left: ${-R} red chip${pl(-R)}. Answer: ${fmt(R)}.`
   ][s];
 }
+// Zero pairs turn to dust: the chip blurs away while a burst of specks (red, and the black of the window cell) drifts off it.
+function dust(x, y, k) {
+  const d = mk('dust'), rnd = (a, b) => a + Math.random() * (b - a);
+  d.style.setProperty('--x', x); d.style.setProperty('--y', y);
+  for (let j = 0; j < 24; j++) {
+    const p = document.createElement('i'), a = rnd(0, 6.283), r = Math.sqrt(Math.random()) * 45;
+    p.style.cssText = `--px:${(50 + Math.cos(a) * r).toFixed(1)}%;--py:${(50 + Math.sin(a) * r).toFixed(1)}%;--sz:${rnd(.04, .1).toFixed(3)};--dx:${(rnd(.1, .8) + Math.cos(a) * .15).toFixed(2)};--dy:${(rnd(-.7, .1) + Math.sin(a) * .15).toFixed(2)};--d:${(.3 + k * .07 + rnd(0, .25)).toFixed(2)}s;--t:${rnd(.9, 1.5).toFixed(2)}s;--c:${j % 3 ? 'var(--r)' : '#111'}`;
+    d.appendChild(p);
+  }
+  setTimeout(() => d.remove(), 2400);
+}
 function render(pre) {
   const { P, N, m, R } = M, s = pre ? -1 : (N ? st.i : (st.i ? 4 : 0));
+  // Only the forward step from the overlay (2) to the cancel (3) plays the glitch, dust and spawn; any other jump just shows the state.
+  const fresh = !pre && !reduce && M.last === 2 && s === 3;
+  if (!pre) M.last = s;
+  if (s < 3) stage.querySelectorAll('.dust').forEach(d => d.remove());
   M.B.forEach(c => {
-    const gone = N && s >= 3 && c.k < m, x = s >= 4 && c.k >= m ? X(c.k - m, 0) : X(c.k, c.g);
+    const gone = N && s >= 3 && c.k < m, x = s >= 4 && c.k >= m ? X(c.k - m, 0) : X(c.k, c.g), was = c.e.classList.contains('gone');
     c.e.classList.toggle('gone', !!gone);
-    put(c.e, x + .1, YM + .1, s < 0 || gone ? 0 : 1, gone ? 1.5 : 1)
+    if (fresh && gone && !was) dust(x + .1, YM + .1, c.k);
+    put(c.e, x + .1, YM + .1, s < 0 || gone ? 0 : 1, gone ? 1.12 : 1)
   });
-  M.W.forEach(w => put(w.e, s >= 2 ? X(w.o, 0) : X(w.o, w.g), s >= 2 ? YM : YS, s >= 1 && s < 3 ? 1 : 0));
-  M.R2.forEach(c => { const v = s >= 2, red = s >= 3; c.e.classList.toggle('r', red); put(c.e, X(s >= 4 ? c.k - P : c.k, 0) + .1, YM + .1, v ? 1 : 0, v ? 1 : .3) });
+  M.W.forEach(w => { w.e.classList.toggle('out', fresh); put(w.e, s >= 2 ? X(w.o, 0) : X(w.o, w.g), s >= 2 ? YM : YS, s >= 1 && s < 3 ? 1 : 0) });
+  M.R2.forEach(c => { const v = s >= 3; c.e.classList.toggle('spawn', fresh); put(c.e, X(s >= 4 ? c.k - P : c.k, 0) + .1, YM + .1, v ? 1 : 0, v ? 1 : .3) });
   if (pre) return;
   $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ' + (s >= 4 ? `<b>${fmt(R)}</b>` : '?');
   $('#cap').textContent = cap(s);
