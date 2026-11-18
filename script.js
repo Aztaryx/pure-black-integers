@@ -66,9 +66,9 @@ const elevator = (f0, f1) => {
   s += `<g class="el-car" style="--dy:${Y(f0) - Y(f1)}px"><rect x="98" y="${Y(f1) + 6}" width="74" height="${H - 12}" rx="6"/></g>`;
   return s + `<text class="el-lbl" x="196" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0} floors</text></svg>`;
 };
-const crossRow = (a, b, aRed) => {
+const crossRow = (a, b, aRed, on = 1) => {
   const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}"></span>`).join('');
-  return chipRow(grp(a, aRed), grp(b, !aRed)).replace('class="chip-row"', 'class="chip-row" data-on="1"');
+  return chipRow(grp(a, aRed), grp(b, !aRed)).replace('class="chip-row"', `class="chip-row" data-on="${on}"`);
 };
 // iconSvg(name, cls): flat icons on a 64x64 grid, one stroke weight. Objects and abstract shapes only: no faces, no body parts.
 // The one people shape allowed is `pair`: two faceless default-avatar silhouettes side by side.
@@ -102,6 +102,21 @@ function flipChip(c) {
   setTimeout(() => c.classList.remove('flip'), reduce ? 0 : 500);
 }
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
+// Worked-example row: equation, chips, and the answer, which stamps in on tap n.
+const exRow = (eq, chipHtml, ans, n) => `<div class="ex"><h2>${eq}</h2>${chipHtml}<h2 class="answer" data-step="${n}">${ans}</h2></div>`;
+// Grading rubric from the lesson plan. The plan's PDF is cropped after the "3 Points" column, so only 5, 4 and 3 points are here;
+// the 3-point cells complete text that the crop cut off ("2 errors in comp...") by the pattern of the other columns.
+const RUBRIC = [
+  ['Accuracy', 'Correct answer with 0 errors.', '1 minor error in computation or signs.', '2 errors in computation or signs.'],
+  ['Use of Chips', 'Correctly represented all integers using chips with 0 errors.', '1 incorrect chip or representation.', '2 incorrect chips or representations.'],
+  ['Explanation', 'Explained all steps clearly with 0 missing steps.', '1 step was missing or insufficiently explained.', '2 steps were missing or insufficiently explained.'],
+  ['Teamwork', '100% of members actively participated.', '75–99% of members actively participated.', '50–74% of members actively participated.'],
+  ['Presentation', 'Presented all parts clearly with 0 presentation issues.', '1 issue in clarity, voice, or organization.', '2 issues in clarity, voice, or organization.']
+];
+const rubric = () => `<table class="rubric"><thead><tr><th>Criteria</th><th>5 Points</th><th>4 Points</th><th>3 Points</th></tr></thead><tbody>${RUBRIC.map(r => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td colspan="3">25 points</td></tr></tfoot></table>`;
+// Group-work timer, started by hand (Start, Pause, Reset). It stops when the slide changes.
+const fmtTime = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+const timerHtml = secs => `<div class="timer" data-secs="${secs}"><div class="t-disp" role="timer">${fmtTime(secs)}</div><div class="t-btns"><button data-act="start">Start</button><button data-act="pause">Pause</button><button data-act="reset">Reset</button></div></div>`;
 // Click-order reveals. step(n, html) appears on the n-th tap; hideAt(n, html) disappears on the n-th tap.
 // Both keep their space, so the layout never jumps. Any element can also carry data-step / data-hide directly.
 const step = (n, html) => `<div class="step" data-step="${n}">${html}</div>`;
@@ -159,7 +174,10 @@ const BEATS = [
   // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
   { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
   { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p>') },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.5a', html: card('Case 1 · Examples', 'Both Positive', '<div class="ex-list">' + exRow('3 + 2 =', chipRow(chips(3), chips(2)), '5', 1) + exRow('5 + 2 =', chipRow(chips(5), chips(2)), '7', 2) + '</div>', false, { big: true }) },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.5b', html: card('Case 2 · Examples', 'Both Negative', '<div class="ex-list">' + exRow('(−4) + (−2) =', chipRow(chips(4, true), chips(2, true)), '−6', 1) + exRow('(−3) + (−1) =', chipRow(chips(3, true), chips(1, true)), '−4', 2) + '</div>', false, { big: true }) },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Case 3', 'Different Signs', '<p>Pair each positive chip with one negative chip to make zero pairs, remove them, and count what remains.</p>') },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.6a', html: card('Case 3 · Examples', 'Different Signs', '<div class="ex-list">' + exRow('4 + (−2) =', crossRow(4, 2, false, 1), '2', 2) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4) + '</div>', false, { big: true }) },
 
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
   { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve') },
@@ -176,7 +194,8 @@ const BEATS = [
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
   { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
-  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', '<div class="grid-cards"><article>Accuracy — 5 pts</article><article>Use of Chips — 5 pts</article><article>Explanation — 5 pts</article><article>Teamwork — 5 pts</article><article>Presentation — 5 pts</article></div>') },
+  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', rubric(), true) },
+  { portion: 'Portion 8 — Decide', beat: '8.3a', html: card('Group Activity', '5 Minutes', timerHtml(300)) },
   { portion: 'Portion 8 — Decide', beat: '8.4–8.5', html: card('Group 1 · Simple Expressions',
     '<span data-hide="1">4 + 3 = ?<br>(−7) + 3 = ?</span><span data-step="1">4 + 3 = <b class="ans">7</b><br>(−7) + 3 = <b class="ans">−4</b></span>', '', false, { swap: true }) },
   { portion: 'Portion 8 — Decide', beat: '8.6–8.7', html: card('Group 2 · Mathematical Phrases',
@@ -300,6 +319,7 @@ function show(n) {
   st.sl = n;
   $('#s2').classList.toggle('on', n == 2);
   $('#deck').classList.toggle('on', n == 3);
+  if (n != 3) timerStop();
   if (n != 1) {
     clearTimeout(titleT1); clearTimeout(titleT2); clearTimeout(titleT3);
     $('#s1').classList.remove('show', 'txt', 'rev');
@@ -308,7 +328,21 @@ function show(n) {
   }
 }
 
-let deckIndex = 0, deckStep = 0, deckStepMax = 0;
+let deckIndex = 0, deckStep = 0, deckStepMax = 0, timerId = 0, timerLeft = 0;
+function timerStop() { clearInterval(timerId); timerId = 0 }
+function timerAct(btn) {
+  const root = btn.closest('.timer'), disp = root.querySelector('.t-disp'), total = +root.dataset.secs, act = btn.dataset.act;
+  const paint = () => { disp.textContent = timerLeft > 0 ? fmtTime(timerLeft) : 'Time’s up!'; root.classList.toggle('done', timerLeft <= 0) };
+  if (act === 'start') {
+    if (timerId) return btn.blur();
+    if (timerLeft <= 0) timerLeft = total;
+    const end = performance.now() + timerLeft * 1000;
+    root.classList.add('run');
+    timerId = setInterval(() => { timerLeft = Math.max(0, Math.ceil((end - performance.now()) / 1000)); paint(); if (timerLeft <= 0) { timerStop(); root.classList.remove('run') } }, 200);
+  } else if (act === 'pause') { timerStop(); root.classList.remove('run') }
+  else { timerStop(); timerLeft = total; root.classList.remove('run'); paint() }
+  btn.blur();
+}
 // Reveal state: elements with data-step <= deckStep get .shown; elements with data-hide <= deckStep get .gone.
 function applySteps() {
   const root = $('#deck-content');
@@ -323,6 +357,7 @@ function deckLabel() {
 function renderDeck(full = false) {
   const beat = BEATS[deckIndex], root = $('#deck-content');
   root.innerHTML = beat.html || '';
+  timerStop(); const tm = root.querySelector('.timer'); timerLeft = tm ? +tm.dataset.secs : 0;
   deckStepMax = Math.max(0, ...[...root.querySelectorAll('[data-step],[data-on],[data-hide]')].map(e => Math.max(...['step', 'on', 'hide'].map(k => +(e.dataset[k] ?? 0)))));
   deckStep = full ? deckStepMax : 0;
   applySteps();
@@ -383,6 +418,8 @@ EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent
 $('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#s1').onclick = next;
 $('#deck-next').onclick = deckNext; $('#deck-back').onclick = deckBack;
 $('#deck-content').onclick = e => {
+  const tmr = e.target.closest('.timer');
+  if (tmr) { const tb = e.target.closest('button'); if (tb) timerAct(tb); return }
   const z = e.target.closest('.zero-pair');
   if (z) return z.classList.toggle('cancel');
   const c = e.target.closest('.chip-mini');

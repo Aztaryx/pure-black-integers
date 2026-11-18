@@ -72,4 +72,5 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-19: No opening video. The deck opens at Prayer. `intro.mp4`, its canvas fallback and the glitch code are gone from the code; the file itself is still in the repo (and `.gitattributes`/`.gitignore` still mention it) until the owner decides to delete it.
 - 2026-11-19: The title slide is a deck beat (`{ title: true }`) after Guide Question 4 (4.7), before 5.1. The slides before it are preliminary questions that lead to the topic; the title then names it. The moving windows on that slide represent negative numbers, so they are part of the lesson. Entering it plays the wipe, then the title and windows reveal; Next goes to 5.1, Back to 4.7. Replay at the end of the deck returns to Prayer.
 - 2026-11-19: No slide text says "inversion window". The chip-mat overlays are described as "overlay" in the captions. The windows themselves remain as visuals.
+- 2026-11-19: Timer is manual (Start button), per the owner. The rubric data lives in `RUBRIC` in `script.js` so extra point columns are a one-line change plus a header cell in `rubric()`.
 
