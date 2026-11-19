@@ -314,24 +314,6 @@
       background: #ffffffd9
     }
 
-    /* Poker chip, drawn once for every chip (mat, deck rows, overlay chips): a disc with a thin inner ring and eight white edge spots.
-       The colour is --c, so blue and red share one drawing. No sign on the chip; colour alone shows it. */
-    @property --c {
-      syntax: '<color>';
-      inherits: false;
-      initial-value: #1d4ed8
-    }
-
-    .chip,
-    .chip-mini,
-    .win2 b {
-      --c: var(--b);
-      border-radius: 50%;
-      background:
-        radial-gradient(circle closest-side, var(--c) 0 54%, #ffffffe6 54% 58%, var(--c) 58% 79%, transparent 80%),
-        repeating-conic-gradient(from -11deg, #fff 0 22deg, var(--c) 22deg 45deg)
-    }
-
     .chip,
     .win2 {
       position: absolute;
@@ -339,7 +321,7 @@
       top: 0;
       opacity: 0;
       transform: translate(calc(var(--x, 0)*var(--u)), calc(var(--y, 0)*var(--u))) scale(var(--s, 1));
-      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .7s, --c .8s, filter .8s
+      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .7s, background-color .8s, filter .8s
     }
 
     .nt * {
@@ -350,18 +332,22 @@
       z-index: 2;
       width: calc(var(--u)*.8);
       height: calc(var(--u)*.8);
+      border-radius: 50%;
+      background: var(--b);
+      color: #fff;
       display: grid;
       place-items: center;
-      box-shadow: inset 0 0 0 calc(var(--u)*.02) #00000033, 0 calc(var(--u)*.05) 0 color-mix(in srgb, var(--c) 55%, #000)
+      font: calc(var(--u)*.48) var(--h);
+      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
     }
 
     .chip.r {
-      --c: var(--r)
+      background: var(--r)
     }
 
     /* a zero pair turns to dust: it turns red at once (hidden under the window), then blurs away while specks drift off (see .dust) */
     .chip.gone {
-      --c: var(--r);
+      background: var(--r);
       filter: blur(3px);
       transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .8s .3s ease-in, filter .8s .3s ease-in
     }
@@ -384,13 +370,14 @@
 
     /* the overlay's cells are red chips sitting in the inversion window */
     .win2 b {
-      --c: var(--r);
       position: absolute;
       top: calc(var(--u)*.1);
       left: calc(var(--u)*(var(--j)*1.1 + .1));
       width: calc(var(--u)*.8);
       height: calc(var(--u)*.8);
-      box-shadow: inset 0 0 0 calc(var(--u)*.02) #00000033, 0 calc(var(--u)*.05) 0 color-mix(in srgb, var(--c) 55%, #000)
+      border-radius: 50%;
+      background: var(--r);
+      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
     }
 
     /* the window glitches away: slices jump, flicker and shift, then it is gone (only the black window glitches, never the red chips) */
@@ -666,13 +653,17 @@
     .chip-mini {
       width: clamp(36px, 4.4vw, 62px);
       aspect-ratio: 1;
+      border-radius: 50%;
       display: grid;
       place-items: center;
-      box-shadow: inset 0 0 0 2px #00000033, 0 3px 0 color-mix(in srgb, var(--c) 55%, #000)
+      color: #fff;
+      background: var(--b);
+      font: 800 clamp(18px, 2.2vw, 32px) var(--h);
+      box-shadow: inset 0 0 0 3px #ffffff80
     }
 
     .chip-mini.red {
-      --c: var(--r)
+      background: var(--r)
     }
 
     .chip-op {
@@ -1631,17 +1622,10 @@
       display: none
     }
 
-    /* red chip = a blue chip under a window: the same poker chip in red, set in a black window cell, as on the chip mat */
+    /* red chip = a blue chip under a window: red disc in a black window cell, as on the chip mat */
     .chip-mini.red {
       border-radius: 16%;
-      background-color: #111;
-      background-image:
-        radial-gradient(circle closest-side, var(--c) 0 54%, #ffffffe6 54% 58%, var(--c) 58% 79%, transparent 80%),
-        radial-gradient(circle closest-side, transparent 98%, #111 100%),
-        repeating-conic-gradient(from -11deg, #fff 0 22deg, var(--c) 22deg 45deg);
-      background-size: 86% 86%;
-      background-position: center;
-      background-repeat: no-repeat;
+      background: radial-gradient(circle closest-side, var(--r) 84%, #111 86%);
       box-shadow: none
     }
 

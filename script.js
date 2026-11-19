@@ -2,9 +2,7 @@ const $ = s => document.querySelector(s), stage = $('#stage');
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
 const EX = [
   { eq: ['5', '+', '(−3)'], p: [5], n: [3] },
-  { eq: ['(−4)', '+', '3'], p: [3], n: [4] },
-  { eq: ['(−4)', '+', '(−2)'], p: [], n: [4, 2] },
-  { eq: ['3', '+', '2'], p: [3, 2], n: [] }
+  { eq: ['(−4)', '+', '3'], p: [3], n: [4] }
 ];
 
 const chips = (count, red = false) =>
