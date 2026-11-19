@@ -8,7 +8,9 @@
   const past = () => BEATS.slice(0, deckIndex).filter(b => b.html && !/timer/.test(b.html));
 
   const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
-  const wave = (A, P, ph) => { let d = ''; for (let y = 0; y <= 2000; y += 8) d += (y ? 'L' : 'M') + (150 + A * Math.sin(2 * Math.PI * y / P + ph)).toFixed(1) + ' ' + y; return d };
+  // triple helix (barber-pole spiral): three strands 120 degrees apart, one turn per 1000 units (a screen height), so the spirals are far apart.
+  // Segments facing us are thicker and darker, the ones behind fainter, which gives the 3D look. It repeats every 1000 units so it can loop upward.
+  const helix = () => { let o = ''; for (let k = 0; k < 3; k++) for (let y = 0; y < 2000; y += 10) { const ph = 2 * Math.PI * k / 3, z = (Math.cos(2 * Math.PI * (y + 5) / 1000 + ph) + 1) / 2, x1 = 150 + 120 * Math.sin(2 * Math.PI * y / 1000 + ph), x2 = 150 + 120 * Math.sin(2 * Math.PI * (y + 10) / 1000 + ph); o += `<line x1="${x1.toFixed(1)}" y1="${y}" x2="${x2.toFixed(1)}" y2="${y + 10}" stroke-width="${(.8 + 3.2 * z).toFixed(2)}" stroke-opacity="${(.12 + .7 * z).toFixed(2)}"/>` } return o };
   const prep = c => { c.querySelectorAll('[data-step]').forEach(e => e.classList.add('shown')); c.querySelectorAll('[data-hide]').forEach(e => e.classList.add('gone')); c.querySelectorAll('[data-on]').forEach(e => e.classList.add('on')) };
   const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -35,8 +37,8 @@
       const w = rnd(.6, 2.2), h = rnd(3, 11), win = el('ts-win', world);
       win.style.cssText += `left:${rnd(0, 100 - w)}vw;top:${rnd(-6, 106 - h)}vh;width:${w}vw;height:${h}vh;opacity:${rnd(.25, .9)};--a:${rnd(-10, -3)}vh;--b:${rnd(3, 10)}vh;--sx:${rnd(-1, 1)}vw;--d:${rnd(10, 24)}s;--dl:${-rnd(0, 20)}s`;
     }
-    // three sine waves up the middle, flowing upward
-    scene.insertAdjacentHTML('beforeend', `<svg class="ts-waves" viewBox="0 0 300 1000" preserveAspectRatio="none" aria-hidden="true">${[[44, 250, 0, 9], [30, 200, 2, 13], [56, 500, 4, 18]].map(([A, P, ph, d]) => `<path d="${wave(A, P, ph)}" style="animation-duration:${d}s"/>`).join('')}</svg>`);
+    // a widely spaced, transparent barber-pole helix up the middle, moving upward
+    scene.insertAdjacentHTML('beforeend', `<svg class="ts-waves" viewBox="0 0 300 1000" preserveAspectRatio="none" aria-hidden="true"><g>${helix()}</g></svg>`);
     // the black bloom is drawn on a canvas of tiny cells
     const cv = document.createElement('canvas'); cv.className = 'ts-flood'; cv.width = innerWidth; cv.height = innerHeight; scene.appendChild(cv);
     ctx = cv.getContext('2d'); ctx.fillStyle = '#000';
@@ -53,7 +55,7 @@
     order = Array.from({ length: COLS * ROWS }, (_, i) => [i, Math.hypot(i % COLS + .5 - cx, Math.floor(i / COLS) + .5 - ROWS) + Math.random() * jit]).sort((a, b) => a[1] - b[1]).map(a => a[0]);
     // zoom out: the view pulls back about 10x with its origin at the bottom-right corner, swinging through a tilt on the way
     if (!reduced()) {
-      const n = 60, kf = Array.from({ length: n + 1 }, (_, i) => { const t = i / n, e = 1 - Math.pow(1 - t, 2.2); return { transform: `rotate(${(-9 * Math.sin(Math.PI * e)).toFixed(2)}deg) scale(${Math.pow(Z, 1 - e).toFixed(4)})` } });
+      const n = 60, kf = Array.from({ length: n + 1 }, (_, i) => { const t = i / n, e = 1 - Math.pow(1 - t, 2.2); return { transform: `rotate(${(-2 * Math.sin(Math.PI * e)).toFixed(2)}deg) scale(${Math.pow(Z, 1 - e).toFixed(4)})` } });
       world.animate(kf, { duration: 3800, easing: 'linear' });
       setTimeout(() => scene && scene.classList.add('in'), 2600);
     } else scene.classList.add('in');
