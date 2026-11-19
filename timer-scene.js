@@ -8,9 +8,9 @@
   const past = () => BEATS.slice(0, deckIndex).filter(b => b.html && !/timer/.test(b.html));
 
   const reduced = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
-  // triple helix (barber-pole spiral): three strands 120 degrees apart, one turn per 1000 units (a screen height), so the spirals are far apart.
-  // Segments facing us are thicker and darker, the ones behind fainter, which gives the 3D look. It repeats every 1000 units so it can loop upward.
-  const helix = () => { let o = ''; for (let k = 0; k < 3; k++) for (let y = 0; y < 2000; y += 10) { const ph = 2 * Math.PI * k / 3, z = (Math.cos(2 * Math.PI * (y + 5) / 1000 + ph) + 1) / 2, x1 = 150 + 120 * Math.sin(2 * Math.PI * y / 1000 + ph), x2 = 150 + 120 * Math.sin(2 * Math.PI * (y + 10) / 1000 + ph); o += `<line x1="${x1.toFixed(1)}" y1="${y}" x2="${x2.toFixed(1)}" y2="${y + 10}" stroke-width="${(.8 + 3.2 * z).toFixed(2)}" stroke-opacity="${(.12 + .7 * z).toFixed(2)}"/>` } return o };
+  // triple helix (barber-pole spiral): three strands 120 degrees apart, one turn per 4000 units (four screen heights), so the waves are very long and slow.
+  // Segments facing us are thicker and darker, the ones behind fainter (the 3D look). It repeats every 4000 units so it can loop upward.
+  const helix = () => { let o = ''; for (let k = 0; k < 3; k++) for (let y = 0; y < 5000; y += 20) { const ph = 2 * Math.PI * k / 3, z = (Math.cos(2 * Math.PI * (y + 10) / 4000 + ph) + 1) / 2, x1 = 150 + 120 * Math.sin(2 * Math.PI * y / 4000 + ph), x2 = 150 + 120 * Math.sin(2 * Math.PI * (y + 20) / 4000 + ph); o += `<line x1="${x1.toFixed(1)}" y1="${y}" x2="${x2.toFixed(1)}" y2="${y + 20}" stroke-width="${(.8 + 3.2 * z).toFixed(2)}" stroke-opacity="${(.12 + .7 * z).toFixed(2)}"/>` } return o };
   const prep = c => { c.querySelectorAll('[data-step]').forEach(e => e.classList.add('shown')); c.querySelectorAll('[data-hide]').forEach(e => e.classList.add('gone')); c.querySelectorAll('[data-on]').forEach(e => e.classList.add('on')) };
   const rnd = (a, b) => a + Math.random() * (b - a);
 
@@ -38,7 +38,7 @@
       win.style.cssText += `left:${rnd(0, 100 - w)}vw;top:${rnd(-6, 106 - h)}vh;width:${w}vw;height:${h}vh;opacity:${rnd(.25, .9)};--a:${rnd(-10, -3)}vh;--b:${rnd(3, 10)}vh;--sx:${rnd(-1, 1)}vw;--d:${rnd(10, 24)}s;--dl:${-rnd(0, 20)}s`;
     }
     // a widely spaced, transparent barber-pole helix up the middle, moving upward
-    scene.insertAdjacentHTML('beforeend', `<svg class="ts-waves" viewBox="0 0 300 1000" preserveAspectRatio="none" aria-hidden="true"><g>${helix()}</g></svg>`);
+    scene.insertAdjacentHTML('beforeend', `<svg class="ts-waves" viewBox="0 0 300 1000" preserveAspectRatio="none" aria-hidden="true"><g style="animation-delay:-${Math.floor(Math.random() * 180)}s">${helix()}</g></svg>`);
     // the black bloom is drawn on a canvas of tiny cells
     const cv = document.createElement('canvas'); cv.className = 'ts-flood'; cv.width = innerWidth; cv.height = innerHeight; scene.appendChild(cv);
     ctx = cv.getContext('2d'); ctx.fillStyle = '#000';

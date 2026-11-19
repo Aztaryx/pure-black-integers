@@ -11,8 +11,8 @@
 #ts .ts-clone{position:absolute;left:0;top:0;width:100vw;height:100vh;transform-origin:0 0;filter:invert(1);background:#fff;pointer-events:none}
 #ts .ts-waves{position:absolute;left:50%;top:0;width:36vw;height:100%;margin-left:-18vw;z-index:2;overflow:hidden;opacity:.5;pointer-events:none}
 #ts .ts-waves line{stroke:#111;stroke-linecap:round;vector-effect:non-scaling-stroke}
-#ts .ts-waves g{animation:ts-wave 16s linear infinite}
-@keyframes ts-wave{to{transform:translateY(-1000px)}}
+#ts .ts-waves g{animation:ts-wave 180s linear infinite}
+@keyframes ts-wave{to{transform:translateY(-4000px)}}
 #ts .ts-flood{position:absolute;inset:0;width:100%;height:100%;z-index:3}
 #ts .ts-black{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .6s;z-index:3;pointer-events:none}
 #ts.black .ts-black{opacity:1}
