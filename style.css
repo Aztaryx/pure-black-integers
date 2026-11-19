@@ -36,6 +36,27 @@
       background-size: 14px 14px, 14px 14px, 70px 70px, 70px 70px
     }
 
+    /* One grid behind the chip mat and every deck slide. It drifts up one major cell (70px) every 12s, so the pattern repeats
+       with no jump, and it keeps moving across slide changes because the slides themselves are transparent. */
+    #grid-bg {
+      position: fixed;
+      inset: -70px 0;
+      z-index: 0;
+      will-change: transform;
+      animation: grid-drift 12s linear infinite
+    }
+
+    @keyframes grid-drift {
+      to {
+        transform: translateY(-70px)
+      }
+    }
+
+    #s2.paper,
+    #deck.paper {
+      background: none
+    }
+
     .bar {
       position: fixed;
       left: 0;
@@ -293,6 +314,24 @@
       background: #ffffffd9
     }
 
+    /* Poker chip, drawn once for every chip (mat, deck rows, overlay chips): a disc with a thin inner ring and eight white edge spots.
+       The colour is --c, so blue and red share one drawing. No sign on the chip; colour alone shows it. */
+    @property --c {
+      syntax: '<color>';
+      inherits: false;
+      initial-value: #1d4ed8
+    }
+
+    .chip,
+    .chip-mini,
+    .win2 b {
+      --c: var(--b);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle closest-side, var(--c) 0 54%, #ffffffe6 54% 58%, var(--c) 58% 79%, transparent 80%),
+        repeating-conic-gradient(from -11deg, #fff 0 22deg, var(--c) 22deg 45deg)
+    }
+
     .chip,
     .win2 {
       position: absolute;
@@ -300,7 +339,7 @@
       top: 0;
       opacity: 0;
       transform: translate(calc(var(--x, 0)*var(--u)), calc(var(--y, 0)*var(--u))) scale(var(--s, 1));
-      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .7s, background-color .8s, filter .8s
+      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .7s, --c .8s, filter .8s
     }
 
     .nt * {
@@ -311,22 +350,18 @@
       z-index: 2;
       width: calc(var(--u)*.8);
       height: calc(var(--u)*.8);
-      border-radius: 50%;
-      background: var(--b);
-      color: #fff;
       display: grid;
       place-items: center;
-      font: calc(var(--u)*.48) var(--h);
-      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
+      box-shadow: inset 0 0 0 calc(var(--u)*.02) #00000033, 0 calc(var(--u)*.05) 0 color-mix(in srgb, var(--c) 55%, #000)
     }
 
     .chip.r {
-      background: var(--r)
+      --c: var(--r)
     }
 
     /* a zero pair turns to dust: it turns red at once (hidden under the window), then blurs away while specks drift off (see .dust) */
     .chip.gone {
-      background: var(--r);
+      --c: var(--r);
       filter: blur(3px);
       transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .8s .3s ease-in, filter .8s .3s ease-in
     }
@@ -349,17 +384,16 @@
 
     /* the overlay's cells are red chips sitting in the inversion window */
     .win2 b {
+      --c: var(--r);
       position: absolute;
       top: calc(var(--u)*.1);
       left: calc(var(--u)*(var(--j)*1.1 + .1));
       width: calc(var(--u)*.8);
       height: calc(var(--u)*.8);
-      border-radius: 50%;
-      background: var(--r);
-      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
+      box-shadow: inset 0 0 0 calc(var(--u)*.02) #00000033, 0 calc(var(--u)*.05) 0 color-mix(in srgb, var(--c) 55%, #000)
     }
 
-    /* the window glitches away: slices jump, flicker and shift, then it is gone */
+    /* the window glitches away: slices jump, flicker and shift, then it is gone (only the black window glitches, never the red chips) */
     @keyframes win-glitch {
       0% { opacity: 1; clip-path: inset(0); translate: 0 0 }
       8% { clip-path: inset(0 0 62% 0); translate: calc(var(--u)*-.14) 0 }
@@ -374,26 +408,54 @@
       100% { opacity: 0; clip-path: inset(50% 0 50% 0); translate: 0 0 }
     }
 
-    /* while it glitches the window is plain black (what the inversion of the white mat looks like) so the red chips under its slices keep their colour */
+    /* While it glitches the window is plain black (what the inversion of the white mat looks like), so the red chips under its slices keep their colour.
+       The glitch runs on a black layer (::before) only. The overlay's red chips are not clipped, shifted or flickered: they stay whole,
+       then blur away like the zero pairs under them. The element itself just holds still and ends hidden. */
     .win2.out {
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
-      background: #000;
+      outline: 0;
       transition: none;
+      animation: win-hold .8s steps(1, end) both
+    }
+
+    .win2.out::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #000;
+      outline: 2px solid #000;
       animation: win-glitch .8s steps(1, end) both
     }
 
-    /* red chips left over spawn as the window glitches away, in the same flicker */
+    .win2.out b {
+      animation: chip-melt .7s .1s ease-in both
+    }
+
+    .win2.out i {
+      animation: lbl-out .35s both
+    }
+
+    @keyframes win-hold {
+      0%, 99% { opacity: 1 }
+      100% { opacity: 0 }
+    }
+
+    @keyframes chip-melt {
+      to { opacity: 0; filter: blur(3px); scale: 1.12 }
+    }
+
+    @keyframes lbl-out {
+      to { opacity: 0 }
+    }
+
+    /* red chips left over appear as the window glitches away: a plain pop-in, no glitch */
     @keyframes chip-spawn {
-      0% { opacity: 0 }
-      20% { opacity: 1; clip-path: inset(0 0 60% 0); translate: calc(var(--u)*-.08) 0; filter: brightness(2) }
-      40% { opacity: .3; clip-path: inset(45% 0 0 0); translate: calc(var(--u)*.1) 0 }
-      60% { opacity: 1; clip-path: inset(0); translate: 0 0; filter: brightness(1.6) }
-      100% { opacity: 1; clip-path: inset(0); translate: 0 0; filter: none }
+      from { opacity: 0; scale: .6 }
     }
 
     .chip.spawn {
-      animation: chip-spawn .6s .35s steps(1, end) backwards
+      animation: chip-spawn .5s .35s ease-out backwards
     }
 
     /* dust: specks start inside the chip and drift up and to the right while they fade */
@@ -604,17 +666,13 @@
     .chip-mini {
       width: clamp(36px, 4.4vw, 62px);
       aspect-ratio: 1;
-      border-radius: 50%;
       display: grid;
       place-items: center;
-      color: #fff;
-      background: var(--b);
-      font: 800 clamp(18px, 2.2vw, 32px) var(--h);
-      box-shadow: inset 0 0 0 3px #ffffff80
+      box-shadow: inset 0 0 0 2px #00000033, 0 3px 0 color-mix(in srgb, var(--c) 55%, #000)
     }
 
     .chip-mini.red {
-      background: var(--r)
+      --c: var(--r)
     }
 
     .chip-op {
@@ -1573,31 +1631,29 @@
       display: none
     }
 
-    /* red chip = a blue chip under a window: red disc in a black window cell, as on the chip mat */
+    /* red chip = a blue chip under a window: the same poker chip in red, set in a black window cell, as on the chip mat */
     .chip-mini.red {
       border-radius: 16%;
-      background: radial-gradient(circle closest-side, var(--r) 84%, #111 86%);
+      background-color: #111;
+      background-image:
+        radial-gradient(circle closest-side, var(--c) 0 54%, #ffffffe6 54% 58%, var(--c) 58% 79%, transparent 80%),
+        radial-gradient(circle closest-side, transparent 98%, #111 100%),
+        repeating-conic-gradient(from -11deg, #fff 0 22deg, var(--c) 22deg 45deg);
+      background-size: 86% 86%;
+      background-position: center;
+      background-repeat: no-repeat;
       box-shadow: none
     }
 
-    /* number lines: the negative side is a black window with white axis, ticks and labels */
-    .nl-window {
-      fill: #111;
-      animation: d-sweep 1s .5s cubic-bezier(.6, 0, .2, 1) both
+    /* number lines: the negative side is marked red (axis, ticks, labels), not drawn as a window */
+    .nl-axis.ng,
+    .nl-tick.ng {
+      stroke: var(--r)
     }
 
-    .nl-axis.w,
-    .nl-tick.w {
-      stroke: #fff
-    }
-
-    .nl-head.w,
-    .nl-lbl.w {
-      fill: #fff
-    }
-
-    .nl-shade.neg {
-      opacity: .9
+    .nl-head.ng,
+    .nl-lbl.ng {
+      fill: var(--r)
     }
 
     /* right-margin ribbon of drifting windows on every deck slide; it stays inside the 6vw padding, never behind text */
