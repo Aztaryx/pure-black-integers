@@ -164,3 +164,15 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - Title slide ("Adding INTEGERS using integer chips") after Guide Question 4 (4.7): confirm what the opening becomes (intro video, then straight to Prayer?).
   - 5.2 Integer Chips: the circled "Red / Inversion Window" text with the note "May nakalagay n text" ("there is already text"): what should change?
 - 2026-11-19: Rubric complete (2-point column added from the photo). `intro.mp4` and the Git LFS rule in `.gitattributes` deleted, and the `intro.mp4` line removed from `.gitignore`, at the owner's request.
+
+### [Ready for review] Polish: red number line, moving grid, glitch, poker chips, fonts (2026-11-19)
+- Owner: Claude
+- Files: index.html (`#grid-bg`, `fonts.css` link), style.css, script.js (`numberLine`), fonts.css (new), project-info/DECISIONS.md
+- Acceptance criteria:
+  - Number lines mark negatives red instead of drawing a black window.
+  - The grid moves in the background of the chip mat and every deck slide.
+  - When the chip-mat overlay glitches, the red chips are not part of the glitch (inside the overlay or the leftover ones).
+  - Chips look like poker chips, with no + or − signs added.
+  - The supplied fonts are inlined, with no font files to load.
+- Validation: `node --check script.js` passes. Not loaded in a browser: the owner asked to skip testing.
+- Follow-up: a browser pass is still open. Look at the red chips in the black cells (86% size, corners), the glitch on the 5 + (−3) example, the grid at the seam between slides, and body weights now that 600 maps to Bold and 800 to Black.

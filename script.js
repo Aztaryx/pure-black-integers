@@ -24,15 +24,15 @@ const zeroPair = (auto = false) =>
 const numberLine = (a, b, o = {}) => {
   const f = n => (n < 0 ? '−' : '') + Math.abs(n), st = 60, pad = 40, W = (b - a) * st + pad * 2, y = 60, X = n => pad + (n - a) * st;
   const shade = (x1, x2, cls) => `<rect class="nl-shade ${cls}" x="${X(x1)}" y="${y - 9}" width="${X(x2) - X(x1)}" height="18" rx="9" style="transform-origin:${X(0)}px ${y}px"/>`;
-  const wx = Math.min(X(0) - st / 2, W - pad + 30), hasWin = a < 0, hops = o.hops || (o.hop ? [o.hop] : []), extra = Math.max(0, hops.length - 1) * 12;
+  // The negative side (a < 0) is marked red: its axis segment (up to halfway between -1 and 0), arrowhead, ticks and labels. Zero stays black.
+  const wx = Math.min(X(0) - st / 2, W - pad + 30), hasNeg = a < 0, hops = o.hops || (o.hop ? [o.hop] : []), extra = Math.max(0, hops.length - 1) * 12;
   let s = `<svg class="numline" viewBox="0 ${-extra} ${W} ${112 + extra}" role="img" aria-label="Number line from ${f(a)} to ${f(b)}">`;
-  if (hasWin) s += `<rect class="nl-window" x="${pad - 36}" y="${y - 40}" width="${wx - pad + 36}" height="88" rx="10" style="transform-origin:${wx}px ${y}px"/>`;
   if (o.shade === 'pos' || o.shade === 'both') s += shade(0, b, 'pos');
   if (o.shade === 'neg' || o.shade === 'both') s += shade(a, 0, 'neg');
-  const ax = (x1, x2, w) => `<line class="nl-axis${w ? ' w' : ''}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
-  s += hasWin ? ax(pad - 22, wx, true) + ax(wx, W - pad + 22, false) : ax(pad - 22, W - pad + 22, false);
-  s += `<path class="nl-head${hasWin ? ' w' : ''}" d="M${pad - 26} ${y} l12 -7 v14 z"/><path class="nl-head" d="M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
-  for (let n = a; n <= b; n++) s += `<line class="nl-tick${n < 0 ? ' w' : ''}" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}${n < 0 ? ' w' : ''}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
+  const ax = (x1, x2, ng) => `<line class="nl-axis${ng ? ' ng' : ''}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
+  s += hasNeg ? ax(pad - 22, wx, true) + ax(wx, W - pad + 22, false) : ax(pad - 22, W - pad + 22, false);
+  s += `<path class="nl-head${hasNeg ? ' ng' : ''}" d="M${pad - 26} ${y} l12 -7 v14 z"/><path class="nl-head" d="M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
+  for (let n = a; n <= b; n++) s += `<line class="nl-tick${n < 0 ? ' ng' : ''}" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}${n < 0 ? ' ng' : ''}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
   hops.forEach(([h1, h2], i) => {
     const x1 = X(h1), x2 = X(h2), ay = y - 14, lift = Math.min(34, Math.abs(x2 - x1) * .4) + 8 + i * 12, cx = (x1 + x2) / 2, cy = ay - lift * 2;
     const ang = Math.atan2(ay - cy, x2 - cx) * 180 / Math.PI, back = h2 < h1 ? ' back' : '', d = 1.1 + i;

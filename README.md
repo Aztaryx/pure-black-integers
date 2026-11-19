@@ -16,6 +16,7 @@ Then visit `http://localhost:4173`.
 
 - `index.html` - page structure, slides, and canvas elements
 - `style.css` - visual system, layout, animation, and responsive styles
+- `fonts.css` - Sofia Pro, subset and inlined as base64 (no font files to load)
 - `script.js` - presentation state, deck slides, chip mat, and title-slide effects
 - `project-info/` - implementation and multi-agent handoff documentation
 
