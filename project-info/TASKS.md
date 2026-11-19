@@ -184,3 +184,4 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - Needs: `test.mp4` next to `index.html` (not in the repo yet).
 - Validation: none run (owner asked to skip browser testing).
 - 2026-11-19 (revision, owner request): no zoom-out and no window at the center. The scene has a drifting grid; 12 windows, all showing inverted earlier slides (the slide before 8.3a first), sit weighted to the left and right sides and drift and sway. The black flood is a 32x18 grid of cells that turn black instantly, one at a time, from the bottom row up with a ragged front; the screen is fully black at 2:21. Only `node --check` run.
+- 2026-11-19 (revision): windows made smaller (5 to 13 vw wide, 10 to 26 vh tall) and kept in the outer 18 vw on each side; sway reduced.

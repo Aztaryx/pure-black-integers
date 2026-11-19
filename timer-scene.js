@@ -16,9 +16,9 @@
     const pool = P.slice(0, -1).sort(() => Math.random() - .5); if (P.length) pool.unshift(P[P.length - 1]);
     // windows are weighted to the two sides (the middle stays free for the timer) and keep drifting and swaying
     for (let i = 0; i < 12; i++) {
-      const w = 8 + Math.random() * 18, h = 14 + Math.random() * 34, s = Math.max(w, h) / 100 + .04 + Math.random() * .12;
-      const win = el('ts-win', world), left = i % 2 ? 1 + Math.random() * (32 - w) : 67 + Math.random() * (32 - w);
-      win.style.cssText += `left:${left}vw;top:${-6 + Math.random() * (112 - h)}vh;width:${w}vw;height:${h}vh;--a:${-4 - Math.random() * 8}vh;--b:${4 + Math.random() * 8}vh;--sx:${(Math.random() - .5) * 3}vw;--d:${12 + Math.random() * 16}s;--dl:${-Math.random() * 20}s`;
+      const w = 5 + Math.random() * 8, h = 10 + Math.random() * 16, s = Math.max(w, h) / 100 + .04 + Math.random() * .12;
+      const win = el('ts-win', world), left = i % 2 ? 1 + Math.random() * (17 - w) : 82 + Math.random() * (17 - w);
+      win.style.cssText += `left:${left}vw;top:${-6 + Math.random() * (112 - h)}vh;width:${w}vw;height:${h}vh;--a:${-4 - Math.random() * 8}vh;--b:${4 + Math.random() * 8}vh;--sx:${(Math.random() - .5) * 1.5}vw;--d:${12 + Math.random() * 16}s;--dl:${-Math.random() * 20}s`;
       if (!pool.length) continue;
       const c = el('ts-clone', win, pool[i % pool.length].html);
       c.style.transform = `scale(${s})`; c.style.left = -Math.random() * Math.random() * Math.max(0, 100 * s - w) + 'vw'; c.style.top = -Math.random() * Math.random() * Math.max(0, 100 * s - h) + 'vh';
