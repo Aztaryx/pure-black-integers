@@ -1,0 +1,21 @@
+/* Timer scene (beat 8.3a): zoom-out into a field of inverted past-slide windows, big centered timer, black takeover, test.mp4. */
+#deck.ts-on #deck-content,#deck.ts-on .deck-nav,#deck.ts-on #deck-ribbon{visibility:hidden}
+#ts{position:absolute;inset:0;overflow:hidden;z-index:5;background:#fff}
+#ts .ts-world{position:absolute;inset:0;transform-origin:50% 50%}
+#ts .ts-win{position:absolute;background:#111;overflow:hidden;animation:ts-drift var(--d,40s) linear infinite;animation-delay:var(--dl,0s)}
+#ts .ts-win.plain{opacity:.35}
+#ts .ts-clone{position:absolute;left:0;top:0;width:100vw;height:100vh;transform-origin:0 0;filter:invert(1);background:#fff;pointer-events:none}
+#ts .ts-main{left:50%;top:50%;width:calc(100vw/var(--z));height:calc(100vh/var(--z));margin:calc(-50vh/var(--z)) 0 0 calc(-50vw/var(--z));animation:none;z-index:1}
+@keyframes ts-drift{from{translate:0 6vh}to{translate:0 -14vh}}
+#ts .ts-sq{position:absolute;background:#000;transform:scale(0);animation:ts-pop .35s forwards;z-index:3}
+@keyframes ts-pop{to{transform:scale(1)}}
+#ts .ts-black{position:absolute;inset:0;background:#000;opacity:0;transition:opacity .6s;z-index:3;pointer-events:none}
+#ts.black .ts-black{opacity:1}
+#ts .ts-time{position:absolute;inset:0;display:grid;place-items:center;z-index:6;margin:0;color:#fff;mix-blend-mode:difference;font-weight:900;font-size:min(34vw,62vh);line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;pointer-events:none;opacity:0;transition:opacity .8s}
+#ts.in .ts-time{opacity:1}
+#ts video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:7;opacity:0;pointer-events:none;transition:opacity .6s}
+#ts video.on{opacity:1}
+#ts .ts-ctl{position:absolute;left:0;right:0;bottom:3vh;display:flex;gap:12px;justify-content:center;z-index:8;mix-blend-mode:difference;transition:opacity .5s}
+#ts .ts-ctl button{font:inherit;font-weight:700;font-size:18px;padding:8px 20px;color:#fff;background:transparent;border:3px solid #fff;cursor:pointer}
+#ts.locked .ts-ctl{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#ts .ts-win{animation:none}#ts .ts-sq{animation:none;transform:none}#ts .ts-time,#ts .ts-black,#ts video{transition:none}}
