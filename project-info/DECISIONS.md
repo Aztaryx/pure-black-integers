@@ -115,3 +115,5 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-19: The chip mat keeps only the first two examples: 5 + (−3) and (−4) + 3. The two later examples and their tabs were removed at the owner's request.
 
 - 2026-11-19: Red `.chip-mini` chips on deck slides are plain red discs, no black window cell (teacher request). The chip mat overlay is unchanged; this supersedes the earlier red-chip-in-black-cell rule for deck slides.
+- 2026-11-19: Follow-up question 3.8 (Positive vs. Negative) no longer shows the blue and red chips; the question stands on its own (owner request). The worked examples 6.5a, 6.5b and 6.6a already show a number line under each example with the same integers as the example (`exLine(a, b)`).
+

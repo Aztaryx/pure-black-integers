@@ -230,7 +230,7 @@ const BEATS = [
     html: card(`Word ${k + 1} of 3`, `<span data-hide="1">Unscramble the word</span><span data-step="1">${q}</span>`,
       `<div class="stack">${tiles(scr, '', 'data-hide="1"')}${tiles(word, scr, 'data-step="1"')}</div>` + step(2, numberLine(-5, 5, { shade })), true, { swap: true, delay: 100 + (word.length - 1) * 60 + 900 + 600 })
   })),
-  { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>' + labelled(['', 'Positive'], ['red', 'Negative'])) },
+  { portion: 'Portion 3 — Recall', beat: '3.8', html: card('Follow-up Question', 'Positive vs. Negative', '<h2>How do we distinguish positive integers from negative integers?</h2>') },
 
   // PORTION 4: SITUATIONAL ANALYSIS — THE SCORE BOARD
   { portion: 'Portion 4 — Situational Analysis', beat: '4.1–4.3', html: card('Activity 3 · The Score Board',
