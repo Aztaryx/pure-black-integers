@@ -1767,5 +1767,4 @@
 .thumb img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
 
 /* number line under a worked example; it appears with the answer */
-.ex-nl{grid-column:1/-1;display:flex;justify-content:center}
 .ex .numline{max-width:520px}

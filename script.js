@@ -181,9 +181,7 @@ function flipChip(c) {
 }
 // Every deck slide shares one structure: a header (kicker + title) and an optional body.
 // Worked-example row: equation, chips, and the answer, which stamps in on tap n.
-// nl (optional): a number line under the row that appears with the answer. exLine(a, b) hops 0 to a, then on by b (backward hops are red).
-const exRow = (eq, chipHtml, ans, n, nl = '') => `<div class="ex"><h2>${eq}</h2>${chipHtml}<h2 class="answer" data-step="${n}">${ans}</h2>${nl ? `<div class="ex-nl" data-step="${n}">${nl}</div>` : ''}</div>`;
-const exLine = (a, b) => { const pts = [0, a, a + b]; return numberLine(Math.min(...pts) - 1, Math.max(...pts) + 1, { hops: [[0, a], [a, a + b]] }) };
+const exRow = (eq, chipHtml, ans, n) => `<div class="ex"><h2>${eq}</h2>${chipHtml}<h2 class="answer" data-step="${n}">${ans}</h2></div>`;
 // Grading rubric from the lesson plan (5, 4, 3 and 2 points; 25 points in total).
 const RUBRIC = [
   ['Accuracy', 'Correct answer with 0 errors.', '1 minor error in computation or signs.', '2 errors in computation or signs.', '3 or more errors, resulting in an incorrect answer.'],
@@ -252,12 +250,12 @@ const BEATS = [
   { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Unlocking Vocabulary', 'Zero Pair', '<p>A combination of one positive chip and one negative chip that cancel each other out.</p>' + zeroPair(true) + '<h2>(+1) + (−1) = <span class="lit">0</span></h2>') },
 
   { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p>') },
-  { portion: 'Portion 6 — Chip Mat', beat: '6.5a', html: card('Case 1 · Examples', 'Both Positive', '<div class="ex-list">' + exRow('3 + 2 =', chipRow(chips(3), chips(2)), '5', 1, exLine(3, 2)) + exRow('5 + 2 =', chipRow(chips(5), chips(2)), '7', 2, exLine(5, 2)) + '</div>', false, { big: true }) },
-  { portion: 'Portion 6 — Chip Mat', beat: '6.5b', html: card('Case 2 · Examples', 'Both Negative', '<div class="ex-list">' + exRow('(−4) + (−2) =', chipRow(chips(4, true), chips(2, true)), '−6', 1, exLine(-4, -2)) + exRow('(−3) + (−1) =', chipRow(chips(3, true), chips(1, true)), '−4', 2, exLine(-3, -1)) + '</div>', false, { big: true }) },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.5a', html: card('Case 1 · Examples', 'Both Positive', '<div class="ex-list">' + exRow('3 + 2 =', chipRow(chips(3), chips(2)), '5', 1) + exRow('5 + 2 =', chipRow(chips(5), chips(2)), '7', 2) + '</div>', false, { big: true }) },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.5b', html: card('Case 2 · Examples', 'Both Negative', '<div class="ex-list">' + exRow('(−4) + (−2) =', chipRow(chips(4, true), chips(2, true)), '−6', 1) + exRow('(−3) + (−1) =', chipRow(chips(3, true), chips(1, true)), '−4', 2) + '</div>', false, { big: true }) },
   // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
   { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Case 3', 'Different Signs', '<p>Pair each positive chip with one negative chip to make zero pairs, remove them, and count what remains.</p>') },
-  { portion: 'Portion 6 — Chip Mat', beat: '6.6a', html: card('Case 3 · Examples', 'Different Signs', '<div class="ex-list">' + exRow('4 + (−2) =', crossRow(4, 2, false, 1), '2', 2, exLine(4, -2)) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4, exLine(-4, 3)) + '</div>', false, { big: true }) },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.6a', html: card('Case 3 · Examples', 'Different Signs', '<div class="ex-list">' + exRow('4 + (−2) =', crossRow(4, 2, false, 1), '2', 2) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4) + '</div>', false, { big: true }) },
 
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
   { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve', iconRow([['think', 'Think'], ['pair', 'Pair'], ['share', 'Share']])) },
