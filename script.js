@@ -301,7 +301,7 @@ const BEATS = [
   { portion: 'Portion 10 — Reflection', beat: '10.1', html: card('Everyday Situations', 'Where Do We Use Integers?', '<div class="grid-cards"><article>' + iconSvg('check', 'blue') + 'Attendance</article><article>' + iconSvg('thermo', 'red') + 'Temperature Changes</article><article>' + iconSvg('coin') + 'Money Transactions</article><article>' + iconSvg('ball', 'blue') + 'Basketball Scores</article></div>') },
   { portion: 'Portion 10 — Reflection', beat: '10.2', html: card('Reflective Question', 'How can we use the addition of integers to solve problems in our everyday situations?', '', true) },
   { portion: 'Portion 10 — Ways Forward', beat: '10.3', html: card('Explore Digital Learning Resources', 'Addition of Integers', '<div class="head-icons">' + iconSvg('play', 'red') + '</div><p>Grade 7 MATATAG Educational Video</p><h2><a href="https://youtu.be/gLQoEzKKTyQ?si=Y_CoLReMDYs05oWk" target="_blank" rel="noopener">youtu.be/gLQoEzKKTyQ</a></h2>') },
-  { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you!', 'Grade 7 – St. Joseph', '<p>Prepared by: Joshua Philip M. Aure</p>' + chipRow(chips(3), chips(3, true))) }
+  { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you!', 'Grade 7 – St. Joseph', '<p>Prepared by: Joshua Philip M. Aure</p>' + chipRow(chips(3), chips(3, true)) + '<a class="thumb" href="https://youtu.be/gLQoEzKKTyQ" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/gLQoEzKKTyQ/hqdefault.jpg" alt="Grade 7 MATATAG Educational Video: Addition of Integers"></a>') }
 ];
 
 const MAT_IDX = BEATS.findIndex(b => b.mat), TITLE_IDX = BEATS.findIndex(b => b.title);

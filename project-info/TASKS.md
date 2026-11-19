@@ -186,3 +186,4 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-19 (revision, owner request): no zoom-out and no window at the center. The scene has a drifting grid; 12 windows, all showing inverted earlier slides (the slide before 8.3a first), sit weighted to the left and right sides and drift and sway. The black flood is a 32x18 grid of cells that turn black instantly, one at a time, from the bottom row up with a ragged front; the screen is fully black at 2:21. Only `node --check` run.
 - 2026-11-19 (revision): windows made smaller (5 to 13 vw wide, 10 to 26 vh tall) and kept in the outer 18 vw on each side; sway reduced.
 - 2026-11-19 (revision): the timer now sits above test.mp4 (z-index 9), so it stays visible, inverted, while the video plays.
+- 2026-11-19 (revision): the last slide (10.4) shows the thumbnail of the 10.3 video, linked to it. It loads from img.youtube.com, so it needs internet; clicking it does not advance the slide.

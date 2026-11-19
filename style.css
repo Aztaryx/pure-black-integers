@@ -1764,3 +1764,6 @@
         transition-duration: .01s !important
       }
     }
+/* Video thumbnail on the last slide (links to the video from 10.3). hqdefault has black bars, so it is cropped to 16:9. */
+.thumb{display:block;width:min(36vw,50vh*1.78);margin-top:2vh;border:3px solid #111;box-shadow:4px 4px 0 #111;background:#111}
+.thumb img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
