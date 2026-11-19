@@ -1622,11 +1622,9 @@
       display: none
     }
 
-    /* red chip = a blue chip under a window: red disc in a black window cell, as on the chip mat */
+    /* red chips on the deck slides are plain red discs (no black window cell); teacher request 2026-11-19. The chip mat keeps its windows. */
     .chip-mini.red {
-      border-radius: 16%;
-      background: radial-gradient(circle closest-side, var(--r) 84%, #111 86%);
-      box-shadow: none
+      background: var(--r)
     }
 
     /* number lines: the negative side is marked red (axis, ticks, labels), not drawn as a window */
@@ -1764,3 +1762,9 @@
         transition-duration: .01s !important
       }
     }
+/* Video thumbnail on the last slide (links to the video from 10.3). hqdefault has black bars, so it is cropped to 16:9. */
+.thumb{display:block;width:min(36vw,50vh*1.78);margin-top:2vh;border:3px solid #111;box-shadow:4px 4px 0 #111;background:#111}
+.thumb img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+
+/* number line under a worked example; it appears with the answer */
+.ex .numline{max-width:520px}
