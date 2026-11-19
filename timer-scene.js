@@ -1,7 +1,7 @@
 /* Timer scene for beat 8.3a. Loaded after script.js; wraps renderDeck, deckNext and deckBack. Times below are elapsed seconds. */
 (() => {
-  const TOTAL = 300, LOCK = 120, BLACK = 141, VIDEO = 142, Z = 10, COLS = 192, ROWS = 108;
-  let scene, worldEl, X, W = 0, H = 0, stars = [], spRaf = 0, built = 0, rm = false, lastTf = '', ctx, raf = 0, tick = 0, t0 = 0, base = 0, running = false, played = false, locked = false, released = false, leaving = false, order = [], shown = 0;
+  const TOTAL = 300, LOCK = 120, VIDEO = 142;
+  let scene, worldEl, X, W = 0, H = 0, stars = [], spRaf = 0, built = 0, rm = false, lastTf = '', tick = 0, t0 = 0, base = 0, running = false, played = false, locked = false, released = false, leaving = false;
   const el = (c, p, h) => { const e = document.createElement('div'); e.className = c; if (h) e.innerHTML = h; (p || scene).appendChild(e); return e };
   const fmt = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   const elapsed = () => base + (running ? (performance.now() - t0) / 1000 : 0);
@@ -12,8 +12,8 @@
   const rnd = (a, b) => a + Math.random() * (b - a);
 
   // ---- space: the view keeps pulling back until the slide is a speck on a planet; once the timer runs we ascend through the void ----
-  // Camera (JS, not CSS): phase 1 is the 10x pull-back; phase 2 zooms out about 80x more while sliding the field onto the planet's top edge.
-  const TAU = Math.PI * 2, Z1 = 3800, Z2 = 4600, SF = .012, PR = .27, PCY = .6, PUP = 40;
+  // Camera (JS, not CSS): the slide we came from pulls back about 80x while sliding onto the planet's top edge, so it ends as a speck on the planet.
+  const TAU = Math.PI * 2, ZT = 7000, SF = .012, PR = .27, PCY = .6, PUP = 40;
   const dist = t => (t < 4 ? t * t / 8 : t - 2); // ascent distance in seconds of cruise: eases in over 4 s, then constant
   // Bodies we pass, in order. t: ascent second when the top edge enters; x: horizontal position; r: radius as a share of the short side; dur: seconds to cross.
   const BODIES = [
@@ -27,16 +27,19 @@
     { k: 'jupiter', t: 110, x: .3, r: .2, dur: 32 }
   ];
   const LAND = [[-.35, -.25, .22, .12, .5], [.2, -.1, .3, .14, -.3], [-.05, .3, .2, .1, .2], [.4, .35, .14, .08, .8], [-.5, .2, .1, .07, 0], [.1, -.55, .16, .06, .1]];
+  // Stars: SN0 are there from the start; the rest appear one by one as we climb, faster and faster (the count grows with the square of the distance),
+  // so by SDEND seconds of ascent there are SN1. Each star twinkles at its own rate.
+  const SN0 = 110, SN1 = 1100, SDEND = 140;
   function spaceInit(cv) {
     X = cv.getContext('2d'); W = cv.width; H = cv.height;
-    // three layers of stars: far ones drift slowly, near ones faster (parallax); a few are blue or red
-    stars = [[150, .6, 1, 14], [90, .9, 1.5, 32], [50, 1.3, 2.1, 70]].flatMap(([n, r0, r1, v]) => Array.from({ length: n }, () => ({ x: Math.random() * W, y: Math.random() * H, r: rnd(r0, r1), a: rnd(.35, 1), v, c: Math.random() < .08 ? (Math.random() < .5 ? '#7fa2ff' : '#ff8a8a') : '#fff' })));
+    // three layers: far ones drift slowly, near ones faster (parallax); a few are blue or red
+    const L = [[.6, 1, 14], [.9, 1.5, 32], [1.3, 2.1, 70]];
+    stars = Array.from({ length: SN1 }, (_, i) => { const l = L[Math.random() < .55 ? 0 : Math.random() < .6 ? 1 : 2]; return { x: Math.random() * W, y: Math.random() * H, r: rnd(l[0], l[1]), a: rnd(.45, 1), v: l[2], w: rnd(.8, 3.4), p: rnd(0, TAU), k: rnd(.3, .75), b: i < SN0 ? 0 : SDEND * Math.sqrt((i - SN0) / (SN1 - SN0)), c: Math.random() < .08 ? (Math.random() < .5 ? '#7fa2ff' : '#ff8a8a') : '#fff' } });
   }
   function camera(ms) {
-    if (rm) return { s: SF, u: 1, rot: 0, star: 1 };
-    if (ms < Z1) { const t = ms / Z1, e = 1 - Math.pow(1 - t, 2.2); return { s: Math.pow(Z, 1 - e), u: 0, rot: -2 * Math.sin(Math.PI * e), star: 0 } }
-    const t = Math.min(1, (ms - Z1) / Z2), e = t * t * (3 - 2 * t);
-    return { s: Math.pow(SF, e), u: e, rot: 0, star: e };
+    if (rm) return { s: SF, u: 1, star: 1 };
+    const t = Math.min(1, ms / ZT), e = t * t * (3 - 2 * t);
+    return { s: Math.pow(SF, e), u: e, star: Math.min(1, e * 1.6) };
   }
   const disc = (x, y, r) => { X.beginPath(); X.arc(x, y, r, 0, TAU); X.fill() };
   const ball = (x, y, r, c0, c1, c2) => { const g = X.createRadialGradient(x - r * .4, y - r * .45, r * .1, x, y, r); g.addColorStop(0, c0); g.addColorStop(.65, c1); g.addColorStop(1, c2); X.fillStyle = g; disc(x, y, r) };
@@ -91,10 +94,19 @@
     spRaf = requestAnimationFrame(frame);
     const c = camera(performance.now() - built), e = elapsed(), D = dist(e), shift = D * PUP;
     const Tx = c.u * (W / 2 - W + c.s * W / 2), Ty = c.u * ((PCY - PR) * H - H + c.s * H / 2) + shift;
-    const tf = `translate(${Tx.toFixed(2)}px,${Ty.toFixed(2)}px) rotate(${c.rot.toFixed(3)}deg) scale(${c.s})`;
+    const tf = `translate(${Tx.toFixed(2)}px,${Ty.toFixed(2)}px) scale(${c.s})`;
     if (tf !== lastTf) { lastTf = tf; worldEl.style.transform = tf }
     X.fillStyle = '#000'; X.fillRect(0, 0, W, H);
-    if (c.star > 0) { stars.forEach(s => { X.globalAlpha = s.a * c.star; X.fillStyle = s.c; X.fillRect(s.x, (s.y + D * s.v) % H, s.r, s.r) }); X.globalAlpha = 1 }
+    if (c.star > 0) {
+      const T = performance.now() / 1000;
+      stars.forEach(s => {
+        const age = D - s.b; if (!rm && age < 0) return;
+        const tw = rm ? 1 : 1 - s.k * (.5 + .5 * Math.sin(T * s.w + s.p)), al = s.a * c.star * tw * (rm ? 1 : Math.min(1, age / 1.2)), y = (s.y + D * s.v) % H;
+        X.globalAlpha = al; X.fillStyle = s.c; X.fillRect(s.x, y, s.r, s.r);
+        if (!rm && s.r > 1.5 && tw > .85) { X.globalAlpha = al * .5; X.fillRect(s.x - s.r * 1.6, y + s.r * .4, s.r * 4.2, s.r * .25); X.fillRect(s.x + s.r * .4, y - s.r * 1.6, s.r * .25, s.r * 4.2) } // sparkle at the brightest moment
+      });
+      X.globalAlpha = 1;
+    }
     if (c.u > 0) { const Rw = PR * H / SF; drawPlanet(W + Tx + c.s * (W / 2 - W), H + Ty + c.s * (H / 2 + Rw - H), Rw * c.s) }
     if (!rm && c.u >= 1) BODIES.forEach(b => drawBody(b, e, D));
   }
@@ -102,31 +114,12 @@
   function build() {
     const deck = document.getElementById('deck'), P = past();
     deck.classList.add('ts-on');
-    scene = el('', deck); scene.id = 'ts'; scene.style.setProperty('--z', Z);
+    scene = el('', deck); scene.id = 'ts';
     const sc = document.createElement('canvas'); sc.className = 'ts-space'; sc.width = innerWidth; sc.height = innerHeight; scene.appendChild(sc); spaceInit(sc);
-    const world = el('ts-world'); worldEl = world; el('ts-grid', world);
-    // a handful of earlier slides, not all: the one we came from plus four random ones
-    const pool = P.length ? [P[P.length - 1], ...P.slice(0, -1).sort(() => Math.random() - .5).slice(0, 4)] : [];
-    // the slide we came from collapses into the bottom-right corner
-    const main = el('ts-win ts-main', world);
-    if (pool.length) { const c = el('ts-clone', main, pool[0].html); c.style.transform = `scale(${1 / Z})`; prep(c) }
-    // side windows (left and right edges) hold large crops of those slides, inverted; they drift and sway
-    for (let i = 0; i < 8; i++) {
-      const w = rnd(5, 13), h = rnd(10, 26), s = rnd(.55, .85), win = el('ts-win', world), left = i % 2 ? rnd(1, 18 - w) : rnd(82, 99 - w);
-      win.style.cssText += `left:${left}vw;top:${rnd(-6, 106 - h)}vh;width:${w}vw;height:${h}vh;--a:${rnd(-12, -4)}vh;--b:${rnd(4, 12)}vh;--sx:${rnd(-.75, .75)}vw;--d:${rnd(12, 28)}s;--dl:${-rnd(0, 20)}s`;
-      if (!pool.length) continue;
-      const c = el('ts-clone', win, pool[i % pool.length].html); prep(c);
-      c.style.transform = `scale(${s})`; c.style.left = -Math.random() * Math.random() * Math.max(0, 100 * s - w) + 'vw'; c.style.top = -Math.random() * Math.random() * Math.max(0, 100 * s - h) + 'vh';
-    }
-    // small empty windows, anywhere
-    for (let i = 0; i < 14; i++) {
-      const w = rnd(.6, 2.2), h = rnd(3, 11), win = el('ts-win', world);
-      win.style.cssText += `left:${rnd(0, 100 - w)}vw;top:${rnd(-6, 106 - h)}vh;width:${w}vw;height:${h}vh;opacity:${rnd(.25, .9)};--a:${rnd(-10, -3)}vh;--b:${rnd(3, 10)}vh;--sx:${rnd(-1, 1)}vw;--d:${rnd(10, 24)}s;--dl:${-rnd(0, 20)}s`;
-    }
-    // the black bloom is drawn on a canvas of tiny cells
-    const cv = document.createElement('canvas'); cv.className = 'ts-flood'; cv.width = innerWidth; cv.height = innerHeight; scene.appendChild(cv);
-    ctx = cv.getContext('2d'); ctx.fillStyle = '#000';
-    el('ts-black'); el('ts-time').textContent = fmt(TOTAL);
+    // the slide we came from (all its steps shown) is what pulls back, onto the planet
+    const world = el('ts-world'); worldEl = world;
+    if (P.length) { const c = el('ts-clone', world, P[P.length - 1].html); prep(c) }
+    el('ts-time').textContent = fmt(TOTAL);
     const v = document.createElement('video'); v.src = 'test.mp4'; v.playsInline = true; v.preload = 'auto'; scene.appendChild(v);
     // the video stays on screen until it ends (its last frame is black); then the slide is released
     const release = () => { released = true; locked = false; scene.classList.remove('locked') };
@@ -134,41 +127,29 @@
     const ctl = el('ts-ctl', null, '<button data-a="back">Back</button><button data-a="start">Start</button><button data-a="pause">Pause</button><button data-a="reset">Reset</button><button data-a="next">Next</button>');
     ctl.onclick = e => { const a = e.target.dataset.a; if (!a || locked) return; if (a === 'start') start(); else if (a === 'pause') stop(); else if (a === 'reset') reset(); else if (a === 'next') go(1); else go(-1) };
     scene.onclick = e => e.stopPropagation();
-    // bloom order: cells die by distance from the bottom center, with a ragged front
-    const cx = COLS / 2, jit = Math.hypot(cx, ROWS) * .05;
-    order = Array.from({ length: COLS * ROWS }, (_, i) => [i, Math.hypot(i % COLS + .5 - cx, Math.floor(i / COLS) + .5 - ROWS) + Math.random() * jit]).sort((a, b) => a[1] - b[1]).map(a => a[0]);
-    // the camera (frame) pulls back from the slide, to the whole field, to the whole planet; the timer shows once the field is in view
+    // the camera (frame) pulls back from the slide to the whole planet; the timer shows once the pull-back is under way
     rm = reduced(); built = performance.now(); lastTf = '';
     if (rm) scene.classList.add('in'); else setTimeout(() => scene && scene.classList.add('in'), 2600);
     spRaf = requestAnimationFrame(frame);
   }
-  // draw the cells that should be dead by now
-  function sync() {
-    if (!ctx) return;
-    const e = elapsed(), want = Math.min(order.length, Math.floor(e / BLACK * order.length)), cv = ctx.canvas, cw = cv.width / COLS, ch = cv.height / ROWS;
-    for (; shown < want; shown++) { const k = order[shown]; ctx.fillRect(Math.floor((k % COLS) * cw), Math.floor(Math.floor(k / COLS) * ch), Math.ceil(cw) + 1, Math.ceil(ch) + 1) }
-  }
-  const loop = () => { if (!running) { raf = 0; return } sync(); raf = requestAnimationFrame(loop) };
   function paint() {
     const e = elapsed(), left = Math.max(0, Math.ceil(TOTAL - e));
     scene.querySelector('.ts-time').textContent = left > 0 ? fmt(left) : 'Time\u2019s up!';
     if (e >= LOCK && !locked && !released) { locked = true; scene.classList.add('locked') }
-    sync();
-    if (e >= BLACK) scene.classList.add('black');
     if (e >= VIDEO && !played) { played = true; const v = scene.querySelector('video'); v.classList.add('on'); v.play().catch(() => {}) }
     if (left <= 0) stop();
   }
-  function start() { if (running) return; running = true; t0 = performance.now(); tick = setInterval(paint, 200); raf = requestAnimationFrame(loop) }
-  function stop() { if (!running) return; base = elapsed(); running = false; clearInterval(tick); cancelAnimationFrame(raf) }
-  function reset() { stop(); base = 0; shown = 0; played = false; released = false; scene.classList.remove('black'); ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); const v = scene.querySelector('video'); v.pause(); v.currentTime = 0; v.classList.remove('on'); paint() }
-  function leave() { clearInterval(tick); cancelAnimationFrame(raf); cancelAnimationFrame(spRaf); spRaf = 0; X = null; worldEl = null; ctx = null; running = false; base = 0; shown = 0; played = false; locked = false; released = false; leaving = false; if (scene) { const v = scene.querySelector('video'); v && v.pause(); scene.remove(); scene = null } document.getElementById('deck').classList.remove('ts-on') }
+  function start() { if (running) return; running = true; t0 = performance.now(); tick = setInterval(paint, 200) }
+  function stop() { if (!running) return; base = elapsed(); running = false; clearInterval(tick) }
+  function reset() { stop(); base = 0; played = false; released = false; const v = scene.querySelector('video'); v.pause(); v.currentTime = 0; v.classList.remove('on'); paint() }
+  function leave() { clearInterval(tick); cancelAnimationFrame(spRaf); spRaf = 0; X = null; worldEl = null; running = false; base = 0; played = false; locked = false; released = false; leaving = false; if (scene) { const v = scene.querySelector('video'); v && v.pause(); scene.remove(); scene = null } document.getElementById('deck').classList.remove('ts-on') }
 
   const orig = { renderDeck, deckNext, deckBack };
   renderDeck = function (full) {
     leave(); orig.renderDeck(full);
     if (BEATS[deckIndex] && BEATS[deckIndex].beat === '8.3a') build();
   };
-  // After the video, leaving the slide dissolves the black scene to white (the paper behind it), then moves on.
+  // After the video, leaving the slide dissolves the scene to white (the paper behind it), then moves on.
   const go = dir => {
     if (leaving) return;
     const f = dir > 0 ? orig.deckNext : orig.deckBack;
