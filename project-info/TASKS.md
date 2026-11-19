@@ -188,3 +188,4 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-19 (revision): the timer now sits above test.mp4 (z-index 9), so it stays visible, inverted, while the video plays.
 - 2026-11-19 (revision): the last slide (10.4) shows the thumbnail of the 10.3 video, linked to it. It loads from img.youtube.com, so it needs internet; clicking it does not advance the slide.
 - 2026-11-19 (revision, teacher request from the chat): red chips on the deck slides lost their black window cell and are plain red discs again (`.chip-mini.red` in style.css). The chip mat (`.win2`) is unchanged. This replaces the "red disc inside a black window cell" rule from the consistency pass.
+- 2026-11-19 (revision): after the video, Next/Back dissolves the black scene to white over 1 s before changing slide. If test.mp4 is missing or fails, the slide is released instead of staying locked.

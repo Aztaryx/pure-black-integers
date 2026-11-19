@@ -1,7 +1,7 @@
 /* Timer scene for beat 8.3a. Loaded after script.js; wraps renderDeck, deckNext and deckBack. Times below are elapsed seconds. */
 (() => {
   const TOTAL = 300, LOCK = 120, BLACK = 141, VIDEO = 142, COLS = 32, ROWS = 18;
-  let scene, tick = 0, t0 = 0, base = 0, running = false, played = false, locked = false, released = false, order = [], shown = 0;
+  let scene, tick = 0, t0 = 0, base = 0, running = false, played = false, locked = false, released = false, leaving = false, order = [], shown = 0;
   const el = (c, p, h) => { const e = document.createElement('div'); e.className = c; if (h) e.innerHTML = h; (p || scene).appendChild(e); return e };
   const fmt = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
   const elapsed = () => base + (running ? (performance.now() - t0) / 1000 : 0);
@@ -27,9 +27,10 @@
     el('ts-black'); el('ts-time').textContent = fmt(TOTAL);
     const v = document.createElement('video'); v.src = 'test.mp4'; v.playsInline = true; v.preload = 'auto'; scene.appendChild(v);
     // the video stays on screen until it ends (its last frame is black); then the slide is released
-    v.onended = () => { released = true; locked = false; scene.classList.remove('locked') };
+    const release = () => { released = true; locked = false; scene.classList.remove('locked') };
+    v.onended = release; v.onerror = release; // if the video is missing or fails, the slide is not left locked
     const ctl = el('ts-ctl', null, '<button data-a="back">Back</button><button data-a="start">Start</button><button data-a="pause">Pause</button><button data-a="reset">Reset</button><button data-a="next">Next</button>');
-    ctl.onclick = e => { const a = e.target.dataset.a; if (!a || locked) return; if (a === 'start') start(); else if (a === 'pause') stop(); else if (a === 'reset') reset(); else if (a === 'next') orig.deckNext(); else orig.deckBack() };
+    ctl.onclick = e => { const a = e.target.dataset.a; if (!a || locked) return; if (a === 'start') start(); else if (a === 'pause') stop(); else if (a === 'reset') reset(); else if (a === 'next') go(1); else go(-1) };
     scene.onclick = e => e.stopPropagation();
     // the black flood: cells die one by one from the bottom row up, with a ragged front (about 3 rows deep)
     order = Array.from({ length: COLS * ROWS }, (_, i) => [i, ROWS - 1 - Math.floor(i / COLS) + Math.random() * 3]).sort((a, b) => a[1] - b[1]).map(a => a[0]);
@@ -48,13 +49,21 @@
   function start() { if (running) return; running = true; t0 = performance.now(); tick = setInterval(paint, 200) }
   function stop() { if (!running) return; base = elapsed(); running = false; clearInterval(tick) }
   function reset() { stop(); base = 0; shown = 0; played = false; released = false; scene.classList.remove('black'); scene.querySelectorAll('.ts-sq').forEach(q => q.remove()); const v = scene.querySelector('video'); v.pause(); v.currentTime = 0; v.classList.remove('on'); paint() }
-  function leave() { clearInterval(tick); running = false; base = 0; shown = 0; played = false; locked = false; released = false; if (scene) { const v = scene.querySelector('video'); v && v.pause(); scene.remove(); scene = null } document.getElementById('deck').classList.remove('ts-on') }
+  function leave() { clearInterval(tick); running = false; base = 0; shown = 0; played = false; locked = false; released = false; leaving = false; if (scene) { const v = scene.querySelector('video'); v && v.pause(); scene.remove(); scene = null } document.getElementById('deck').classList.remove('ts-on') }
 
   const orig = { renderDeck, deckNext, deckBack };
   renderDeck = function (full) {
     leave(); orig.renderDeck(full);
     if (BEATS[deckIndex] && BEATS[deckIndex].beat === '8.3a') build();
   };
-  deckNext = function () { if (!locked) orig.deckNext() };
-  deckBack = function () { if (!locked) orig.deckBack() };
+  // After the video, leaving the slide dissolves the black scene to white (the paper behind it), then moves on.
+  const go = dir => {
+    if (leaving) return;
+    const f = dir > 0 ? orig.deckNext : orig.deckBack;
+    if (!(scene && released)) return f();
+    leaving = true; scene.style.transition = 'opacity 1s ease'; scene.style.opacity = 0;
+    setTimeout(f, matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 1000);
+  };
+  deckNext = function () { if (!locked) go(1) };
+  deckBack = function () { if (!locked) go(-1) };
 })();
