@@ -176,3 +176,10 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - The supplied fonts are inlined, with no font files to load.
 - Validation: `node --check script.js` passes. Not loaded in a browser: the owner asked to skip testing.
 - Follow-up: a browser pass is still open. Look at the red chips in the black cells (86% size, corners), the glitch on the 5 + (−3) example, the grid at the seam between slides, and body weights now that 600 maps to Bold and 800 to Black.
+
+### [Ready for review] Timer scene on 8.3a (2026-11-19)
+- Owner: Claude
+- Files: timer-scene.js and timer-scene.css (new, loaded after `script.js`; they wrap `renderDeck`, `deckNext` and `deckBack`), index.html (two tags)
+- Behavior: the slide before 8.3a zooms out about 40x into a field of drifting windows (big ones hold inverted past slides); the timer is huge, centered and always inverted (difference blend); no slide title. Times are elapsed seconds since Start: black squares arrive from 0:00 so the screen is fully black at 2:21; Back/Next/Start/Pause/Reset and keyboard navigation lock at 2:00; `test.mp4` plays at 2:22 and stays on screen until it ends (its last frame is black), then the slide is released.
+- Needs: `test.mp4` next to `index.html` (not in the repo yet).
+- Validation: none run (owner asked to skip browser testing).
