@@ -251,11 +251,11 @@ const BEATS = [
   { portion: 'Portion 5 — Vocabulary', beat: '5.2', html: card('Unlocking Vocabulary', 'Integer Chips', '<p>Concrete models or counters used to represent integers.</p>' + labelled(['', '+1'], ['red', '−1']) + '<p>Blue = Positive (+1) · Red = Negative (−1)</p>') },
   { portion: 'Portion 5 — Vocabulary', beat: '5.3', html: card('Unlocking Vocabulary', 'Zero Pair', '<p>A combination of one positive chip and one negative chip that cancel each other out.</p>' + zeroPair(true) + '<h2>(+1) + (−1) = <span class="lit">0</span></h2>') },
 
-  // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
-  { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
   { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p>') },
   { portion: 'Portion 6 — Chip Mat', beat: '6.5a', html: card('Case 1 · Examples', 'Both Positive', '<div class="ex-list">' + exRow('3 + 2 =', chipRow(chips(3), chips(2)), '5', 1) + exRow('5 + 2 =', chipRow(chips(5), chips(2)), '7', 2) + '</div>', false, { big: true }) },
   { portion: 'Portion 6 — Chip Mat', beat: '6.5b', html: card('Case 2 · Examples', 'Both Negative', '<div class="ex-list">' + exRow('(−4) + (−2) =', chipRow(chips(4, true), chips(2, true)), '−6', 1) + exRow('(−3) + (−1) =', chipRow(chips(3, true), chips(1, true)), '−4', 2) + '</div>', false, { big: true }) },
+  // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
+  { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Case 3', 'Different Signs', '<p>Pair each positive chip with one negative chip to make zero pairs, remove them, and count what remains.</p>') },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6a', html: card('Case 3 · Examples', 'Different Signs', '<div class="ex-list">' + exRow('4 + (−2) =', crossRow(4, 2, false, 1), '2', 2) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4) + '</div>', false, { big: true }) },
 

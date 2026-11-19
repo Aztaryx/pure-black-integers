@@ -66,6 +66,7 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-19: `data-on="n"` switches the class `.on` on at step n without hiding the element. Crossed zero-pair rows (`crossRow`) use it so the crossing marks and rings start when the presenter taps, not on load. Step counts are the highest of `data-step`, `data-on` and `data-hide` on the slide. `.big` also enlarges answers, chips, the thermometer and the elevator.
 - 2026-11-19: The opening glitch transition is removed at the teacher's request. `begin()` goes straight to black and the intro video; the canvas fallback is unchanged.
 - 2026-11-19: Deck opens with Prayer, then Good Morning. Same Signs (6.5) shows only its one-line rule; the method (keep the sign) and worked number lines are left for the students to find.
+- 2026-11-19: Portion 6 order is same-sign rule and examples first, then the interactive chip mat, then the different-sign rule and examples.
 
 ## Storyboard change (2026-11-19, teacher request)
 
