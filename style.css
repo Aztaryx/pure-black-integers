@@ -52,7 +52,6 @@
       }
     }
 
-    #s2.paper,
     #deck.paper {
       background: none
     }
@@ -194,15 +193,6 @@
       transition: visibility 0s 1.8s
     }
 
-    #s2 {
-      z-index: 3;
-      visibility: hidden
-    }
-
-    #s2.on {
-      visibility: visible
-    }
-
     #wave {
       position: absolute;
       inset: 0;
@@ -274,238 +264,6 @@
       font: clamp(54px, 13.5vw, 230px)/.95 var(--h);
       letter-spacing: .05em;
       margin: 1.2vh -.05em 2vh 0
-    }
-
-    #s2 {
-      padding: 7vh 6vw 6vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      gap: 2vh
-    }
-
-    #s2 .kicker {
-      margin-bottom: 0
-    }
-
-    #eq {
-      font: clamp(36px, 6vw, 92px)/1.1 var(--h);
-      white-space: nowrap
-    }
-
-    #eq b {
-      border-bottom: .09em solid #000
-    }
-
-    .stage {
-      position: relative;
-      width: calc(var(--u)*8);
-      height: calc(var(--u)*3.3);
-      cursor: pointer
-    }
-
-    .mat {
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: calc(var(--u)*1.55);
-      height: calc(var(--u)*1.55);
-      border: 3px solid #000;
-      background: #ffffffd9
-    }
-
-    .chip,
-    .win2 {
-      position: absolute;
-      left: 0;
-      top: 0;
-      opacity: 0;
-      transform: translate(calc(var(--x, 0)*var(--u)), calc(var(--y, 0)*var(--u))) scale(var(--s, 1));
-      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .7s, background-color .8s, filter .8s
-    }
-
-    .nt * {
-      transition: none !important
-    }
-
-    .chip {
-      z-index: 2;
-      width: calc(var(--u)*.8);
-      height: calc(var(--u)*.8);
-      border-radius: 50%;
-      background: var(--b);
-      color: #fff;
-      display: grid;
-      place-items: center;
-      font: calc(var(--u)*.48) var(--h);
-      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
-    }
-
-    .chip.r {
-      background: var(--r)
-    }
-
-    /* a zero pair turns to dust: it turns red at once (hidden under the window), then blurs away while specks drift off (see .dust) */
-    .chip.gone {
-      background: var(--r);
-      filter: blur(3px);
-      transition: transform .9s cubic-bezier(.6, 0, .2, 1), opacity .8s .3s ease-in, filter .8s .3s ease-in
-    }
-
-    .win2 {
-      z-index: 3;
-      height: var(--u);
-      backdrop-filter: invert(1) hue-rotate(-57deg) saturate(3);
-      -webkit-backdrop-filter: invert(1) hue-rotate(-57deg) saturate(3);
-      outline: 2px solid #000
-    }
-
-    .win2 i {
-      position: absolute;
-      left: 0;
-      top: calc(var(--u)*-.5);
-      font: normal calc(var(--u)*.34) var(--h);
-      color: var(--r)
-    }
-
-    /* the overlay's cells are red chips sitting in the inversion window */
-    .win2 b {
-      position: absolute;
-      top: calc(var(--u)*.1);
-      left: calc(var(--u)*(var(--j)*1.1 + .1));
-      width: calc(var(--u)*.8);
-      height: calc(var(--u)*.8);
-      border-radius: 50%;
-      background: var(--r);
-      box-shadow: inset 0 0 0 calc(var(--u)*.04) #ffffff80
-    }
-
-    /* the window glitches away: slices jump, flicker and shift, then it is gone (only the black window glitches, never the red chips) */
-    @keyframes win-glitch {
-      0% { opacity: 1; clip-path: inset(0); translate: 0 0 }
-      8% { clip-path: inset(0 0 62% 0); translate: calc(var(--u)*-.14) 0 }
-      16% { clip-path: inset(48% 0 18% 0); translate: calc(var(--u)*.18) 0 }
-      24% { opacity: .2; clip-path: inset(0); translate: 0 0 }
-      32% { opacity: 1; clip-path: inset(12% 0 55% 0); translate: calc(var(--u)*.1) calc(var(--u)*-.03) }
-      42% { opacity: 0; clip-path: inset(0); translate: 0 0 }
-      50% { opacity: 1; clip-path: inset(70% 0 0 0); translate: calc(var(--u)*-.22) 0 }
-      62% { opacity: .4; clip-path: inset(30% 0 40% 0); translate: calc(var(--u)*.06) 0 }
-      74% { opacity: 1; clip-path: inset(0 0 85% 0); translate: calc(var(--u)*-.1) 0 }
-      86% { opacity: .3; clip-path: inset(40% 0 40% 0); translate: 0 0 }
-      100% { opacity: 0; clip-path: inset(50% 0 50% 0); translate: 0 0 }
-    }
-
-    /* While it glitches the window is plain black (what the inversion of the white mat looks like), so the red chips under its slices keep their colour.
-       The glitch runs on a black layer (::before) only. The overlay's red chips are not clipped, shifted or flickered: they stay whole,
-       then blur away like the zero pairs under them. The element itself just holds still and ends hidden. */
-    .win2.out {
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      outline: 0;
-      transition: none;
-      animation: win-hold .8s steps(1, end) both
-    }
-
-    .win2.out::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: #000;
-      outline: 2px solid #000;
-      animation: win-glitch .8s steps(1, end) both
-    }
-
-    .win2.out b {
-      animation: chip-melt .7s .1s ease-in both
-    }
-
-    .win2.out i {
-      animation: lbl-out .35s both
-    }
-
-    @keyframes win-hold {
-      0%, 99% { opacity: 1 }
-      100% { opacity: 0 }
-    }
-
-    @keyframes chip-melt {
-      to { opacity: 0; filter: blur(3px); scale: 1.12 }
-    }
-
-    @keyframes lbl-out {
-      to { opacity: 0 }
-    }
-
-    /* red chips left over appear as the window glitches away: a plain pop-in, no glitch */
-    @keyframes chip-spawn {
-      from { opacity: 0; scale: .6 }
-    }
-
-    .chip.spawn {
-      animation: chip-spawn .5s .35s ease-out backwards
-    }
-
-    /* dust: specks start inside the chip and drift up and to the right while they fade */
-    .dust {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 4;
-      width: calc(var(--u)*.8);
-      height: calc(var(--u)*.8);
-      pointer-events: none;
-      transform: translate(calc(var(--x, 0)*var(--u)), calc(var(--y, 0)*var(--u)))
-    }
-
-    .dust i {
-      position: absolute;
-      left: var(--px);
-      top: var(--py);
-      width: calc(var(--u)*var(--sz));
-      height: calc(var(--u)*var(--sz));
-      margin: calc(var(--u)*var(--sz)*-.5) 0 0 calc(var(--u)*var(--sz)*-.5);
-      border-radius: 50%;
-      background: var(--c, var(--r));
-      opacity: 0;
-      animation: dust-fly var(--t, 1.2s) var(--d, .3s) cubic-bezier(.25, .6, .35, 1) both
-    }
-
-    @keyframes dust-fly {
-      0% { opacity: 0; transform: translate(0, 0) scale(1) }
-      12% { opacity: 1 }
-      100% { opacity: 0; transform: translate(calc(var(--dx)*var(--u)), calc(var(--dy)*var(--u))) scale(.3) }
-    }
-
-    #cap {
-      font-weight: 600;
-      font-size: clamp(16px, 1.9vw, 26px);
-      min-height: 2.6em;
-      max-width: 36em;
-      line-height: 1.3
-    }
-
-    .ctl {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap
-    }
-
-    .ctl button {
-      border: 2px solid #000;
-      background: #fff;
-      padding: 8px 16px;
-      font: 15px var(--h)
-    }
-
-    .ctl button.go2,
-    .ctl button.on {
-      background: #000;
-      color: #fff
-    }
-
-    .ctl .gap {
-      width: 18px
     }
 
     /* ---------- deck slides: one left-aligned header + body system ---------- */
@@ -1065,8 +823,7 @@
       content: counter(n)
     }
 
-    .deck-nav button.nudge,
-    .ctl button.nudge {
+    .deck-nav button.nudge {
       animation: d-nudge 1.6s ease-in-out infinite
     }
 
@@ -1738,7 +1495,6 @@
     @keyframes slide-fade-in { from { opacity: 0 } }
 
     #deck.dissolve #deck-content,
-    #s2.dissolve>*,
     #s1.dissolve .ttl,
     #s1.dissolve #hero,
     #s1.dissolve .par {
@@ -1747,10 +1503,6 @@
 
     #deck-content.fade-in {
       animation: slide-fade-in .22s ease-out backwards
-    }
-
-    #s2.fade-in>* {
-      animation: slide-fade-in .35s ease-out backwards
     }
 
     @media(prefers-reduced-motion:reduce) {

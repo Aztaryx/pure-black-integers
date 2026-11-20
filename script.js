@@ -1,10 +1,5 @@
-const $ = s => document.querySelector(s), stage = $('#stage');
+const $ = s => document.querySelector(s);
 const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
-const EX = [
-  { eq: ['5', '+', '(−3)'], p: [5], n: [3] },
-  { eq: ['(−4)', '+', '3'], p: [3], n: [4] }
-];
-
 const chips = (count, red = false) =>
   Array.from({ length: count }, (_, i) => `<span class="chip-mini${red ? ' red' : ''}" style="--i:${i}"></span>`).join('');
 const chipRow = (...parts) => `<div class="chip-row">${parts.join('<span class="chip-op">+</span>')}</div>`;
@@ -252,8 +247,7 @@ const BEATS = [
   { portion: 'Portion 6 — Chip Mat', beat: '6.5', html: card('Cases 1 & 2', 'Same Signs', '<p>Both positive or both negative: combine all chips and count the total.</p>') },
   { portion: 'Portion 6 — Chip Mat', beat: '6.5a', html: card('Case 1 · Examples', 'Both Positive', '<div class="ex-list">' + exRow('3 + 2 =', chipRow(chips(3), chips(2)), '5', 1) + exRow('5 + 2 =', chipRow(chips(5), chips(2)), '7', 2) + '</div>', false, { big: true }) },
   { portion: 'Portion 6 — Chip Mat', beat: '6.5b', html: card('Case 2 · Examples', 'Both Negative', '<div class="ex-list">' + exRow('(−4) + (−2) =', chipRow(chips(4, true), chips(2, true)), '−6', 1) + exRow('(−3) + (−1) =', chipRow(chips(3, true), chips(1, true)), '−4', 2) + '</div>', false, { big: true }) },
-  // PORTION 6: THE INTERACTIVE CHIP MAT (#s2)
-  { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', mat: true },
+  { portion: 'Portion 6 — Chip Mat', beat: '6.1–6.4', html: card('Chip Mat · Examples', 'Positive and Negative', '<div class="ex-list">' + exRow('5 + (−3) =', crossRow(5, 3, false, 1), '2', 2) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4) + '</div>', false, { big: true }) },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6', html: card('Case 3', 'Different Signs', '<p>Pair each positive chip with one negative chip to make zero pairs, remove them, and count what remains.</p>') },
   { portion: 'Portion 6 — Chip Mat', beat: '6.6a', html: card('Case 3 · Examples', 'Different Signs', '<div class="ex-list">' + exRow('4 + (−2) =', crossRow(4, 2, false, 1), '2', 2) + exRow('(−4) + 3 =', crossRow(4, 3, true, 3), '−1', 4) + '</div>', false, { big: true }) },
 
@@ -304,10 +298,8 @@ const BEATS = [
   { portion: 'Portion 10 — Closing', beat: '10.4', html: card('Thank you!', 'Grade 7 – St. Joseph', '<p>Prepared by: Joshua Philip M. Aure</p>' + chipRow(chips(3), chips(3, true)) + '<a class="thumb" href="https://youtu.be/gLQoEzKKTyQ" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/gLQoEzKKTyQ/hqdefault.jpg" alt="Grade 7 MATATAG Educational Video: Addition of Integers"></a>') }
 ];
 
-const MAT_IDX = BEATS.findIndex(b => b.mat), TITLE_IDX = BEATS.findIndex(b => b.title);
-const sum = a => a.reduce((x, y) => x + y, 0), fmt = n => (n < 0 ? '−' : '') + Math.abs(n);
-const X = (k, g) => .6 + k * 1.1 + g * .35, YS = .3, YM = 1.825;
-let st = { sl: 3, ex: 0, i: 0 }, M;
+const TITLE_IDX = BEATS.findIndex(b => b.title);
+let st = { sl: 3 };
 
 /* ---------- title slide: a deck beat between Guide Question 4 and the vocabulary ---------- */
 let titleT1 = 0, titleT2 = 0, titleT3 = 0;
@@ -350,80 +342,11 @@ function startWinSpawner() {
 }
 function stopWinSpawner() { if (winTimer) { clearTimeout(winTimer); winTimer = null } }
 
-/* ---------- chip mat: real inversion windows ---------- */
-function mk(c, t, p) { const e = document.createElement('div'); e.className = c; if (t != null) e.textContent = t; (p || stage).appendChild(e); return e }
-function put(e, x, y, o, s) { e.style.setProperty('--x', x); e.style.setProperty('--y', y); e.style.opacity = o; e.style.setProperty('--s', s || 1) }
-function build(i) {
-  stage.querySelectorAll('.chip,.win2,.dust').forEach(e => e.remove());
-  const ex = EX[i], P = sum(ex.p), N = sum(ex.n);
-  M = { ex, P, N, m: Math.min(P, N), R: P - N, B: [], W: [], R2: [], n: N ? 5 : 2, last: -1 };
-  let k = 0; ex.p.forEach((n, g) => { for (let j = 0; j < n; j++)M.B.push({ e: mk('chip'), k: k++, g }) });
-  // each overlay carries its negative as red chips (one per cell) inside the inversion window
-  k = 0; ex.n.forEach((n, g) => { const e = mk('win2'); e.style.width = `calc(var(--u)*${n * 1.1 - .1})`; e.innerHTML = `<i>−${n}</i>` + Array.from({ length: n }, (_, j) => `<b style="--j:${j}"></b>`).join(''); M.W.push({ e, o: k, g }); k += n });
-  for (let j = P; j < N; j++)M.R2.push({ e: mk('chip r'), k: j });
-  document.querySelectorAll('#tabs button').forEach((b, j) => b.classList.toggle('on', j == i));
-}
-function cap(s) {
-  const { P, N, m, R, ex } = M, d = N - P, pl = n => n > 1 ? 's' : '';
-  if (!N) return s < 4 ? 'Blue chips are positive. Two groups: ' + ex.p.join(' and ') + '.' : 'No overlay needed. Count every blue chip: ' + R + '.';
-  return [
-    P ? `${P} blue chip${pl(P)} on the mat: +${P}.` : 'The mat is empty.',
-    `The negative arrives as ${ex.n.length > 1 ? 'overlays' : 'an overlay'}: ${N} red chip${pl(N)}, −${N}.`,
-    !P ? `The overlay lands on the empty mat: ${N} red chip${pl(N)}.` : d <= 0 ? 'Overlay it. Everything under the overlay flips: blue becomes red.' : `Overlay it. ${P} chip${pl(P)} invert to red. The extra ${d === 1 ? 'chip is' : d + ' chips are'} over empty space, so ${d === 1 ? 'a red chip is' : 'red chips are'} born.`,
-    m ? 'Inverted chips cancel their red partners. These are zero pairs, and they turn to dust.' : 'The overlays glitch away. The red chips stay.',
-    R > 0 ? `Count what is left: ${R} blue chip${pl(R)}. Answer: ${R}.` : `Count what is left: ${-R} red chip${pl(-R)}. Answer: ${fmt(R)}.`
-  ][s];
-}
-// Zero pairs turn to dust: the chip blurs away while a burst of specks (red, and the black of the window cell) drifts off it.
-function dust(x, y, k) {
-  const d = mk('dust'), rnd = (a, b) => a + Math.random() * (b - a);
-  d.style.setProperty('--x', x); d.style.setProperty('--y', y);
-  for (let j = 0; j < 24; j++) {
-    const p = document.createElement('i'), a = rnd(0, 6.283), r = Math.sqrt(Math.random()) * 45;
-    p.style.cssText = `--px:${(50 + Math.cos(a) * r).toFixed(1)}%;--py:${(50 + Math.sin(a) * r).toFixed(1)}%;--sz:${rnd(.04, .1).toFixed(3)};--dx:${(rnd(.1, .8) + Math.cos(a) * .15).toFixed(2)};--dy:${(rnd(-.7, .1) + Math.sin(a) * .15).toFixed(2)};--d:${(.3 + k * .07 + rnd(0, .25)).toFixed(2)}s;--t:${rnd(.9, 1.5).toFixed(2)}s;--c:${j % 3 ? 'var(--r)' : '#111'}`;
-    d.appendChild(p);
-  }
-  setTimeout(() => d.remove(), 2400);
-}
-function render(pre) {
-  const { P, N, m, R } = M, s = pre ? -1 : (N ? st.i : (st.i ? 4 : 0));
-  // Only the forward step from the overlay (2) to the cancel (3) plays the glitch, dust and spawn; any other jump just shows the state.
-  const fresh = !pre && !reduce && M.last === 2 && s === 3;
-  if (!pre) M.last = s;
-  if (s < 3) stage.querySelectorAll('.dust').forEach(d => d.remove());
-  M.B.forEach(c => {
-    const gone = N && s >= 3 && c.k < m, x = s >= 4 && c.k >= m ? X(c.k - m, 0) : X(c.k, c.g), was = c.e.classList.contains('gone');
-    c.e.classList.toggle('gone', !!gone);
-    if (fresh && gone && !was) dust(x + .1, YM + .1, c.k);
-    put(c.e, x + .1, YM + .1, s < 0 || gone ? 0 : 1, gone ? 1.12 : 1)
-  });
-  M.W.forEach(w => { w.e.classList.toggle('out', fresh); put(w.e, s >= 2 ? X(w.o, 0) : X(w.o, w.g), s >= 2 ? YM : YS, s >= 1 && s < 3 ? 1 : 0) });
-  M.R2.forEach(c => { const v = s >= 3; c.e.classList.toggle('spawn', fresh); put(c.e, X(s >= 4 ? c.k - P : c.k, 0) + .1, YM + .1, v ? 1 : 0, v ? 1 : .3) });
-  if (pre) return;
-  $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ' + (s >= 4 ? `<b>${fmt(R)}</b>` : '?');
-  $('#cap').textContent = cap(s);
-  armNudge($('#nx'));
-  $('#nx').textContent = st.i < M.n - 1 ? 'Next' : st.ex < EX.length - 1 ? 'Next example' : 'Continue';
-}
-// Moving to another example on the chip mat uses the same dissolve as a wipe: every element fades out (background stays),
-// the next example is built while nothing is visible, then everything fades in, so nothing snaps. Taps meanwhile are ignored.
-let exBusy = false;
-function goEx(ex, i) {
-  if (exBusy) return;
-  exBusy = true;
-  dissolve(350, () => { enter(ex, i); fadeIn($('#s2')); exBusy = false });
-}
-function enter(ex, i) {
-  st.ex = ex; st.i = i; stage.classList.add('nt'); build(ex); render(true); void stage.offsetWidth; stage.classList.remove('nt');
-  $('#eq').innerHTML = M.ex.eq.join(' ') + ' = ?';
-  requestAnimationFrame(() => requestAnimationFrame(() => render()));
-}
 // The header rule draws once per entry into the deck (load, wipe in, replay); later slides keep it static.
 let ruleSeen = false;
 function show(n) {
   st.sl = n;
   if (n != 3) ruleSeen = false;
-  $('#s2').classList.toggle('on', n == 2);
   $('#deck').classList.toggle('on', n == 3);
   if (n != 3) timerStop();
   if (n != 1) {
@@ -481,18 +404,13 @@ function openDeck(index, full = false) {
   deckIndex = index; ruleSeen = false;
   wipe(() => { show(3); renderDeck(full) });
 }
-function enterMat(ex, i) {
-  deckIndex = MAT_IDX;
-  wipe(() => { show(2); enter(ex, i); fadeIn($('#s2')) });
-}
 function openTitle() { deckIndex = TITLE_IDX; wipe(showTitle) }
 function deckNext() {
   flushSwap();
   if (deckStep < deckStepMax) { deckStep++; applySteps(true, 1); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex < BEATS.length - 1) {
     deckIndex++;
-    if (BEATS[deckIndex].mat) enterMat(0, 0);
-    else if (BEATS[deckIndex].title) openTitle();
+    if (BEATS[deckIndex].title) openTitle();
     else swapDeck();
   } else openDeck(0);
 }
@@ -501,10 +419,7 @@ function deckBack() {
   if (deckStep > 0) { deckStep--; applySteps(true, -1); armNudge($('#deck-next')); return deckLabel() }
   if (deckIndex > 0) {
     deckIndex--;
-    if (BEATS[deckIndex].mat) {
-      const last = EX.length - 1;
-      enterMat(last, EX[last].n.length ? 4 : 1);
-    } else if (BEATS[deckIndex].title) {
+    if (BEATS[deckIndex].title) {
       openTitle();
     } else {
       swapDeck(true);
@@ -512,7 +427,7 @@ function deckBack() {
   }
 }
 // Every wipe (the window sweep) dissolves all elements of the slide on screen, background excepted, then runs cb.
-const SLIDE_EL = { 1: '#s1', 2: '#s2', 3: '#deck' };
+const SLIDE_EL = { 1: '#s1', 3: '#deck' };
 function dissolve(ms, then) {
   const el = $(SLIDE_EL[st.sl]);
   if (reduce || !el) return setTimeout(then, 0);
@@ -533,22 +448,14 @@ function swapDeck(full) {
 }
 function next() {
   if (st.sl == 1) return openDeck(TITLE_IDX + 1);
-  if (st.sl == 3) return deckNext();
-  if (st.i < M.n - 1) { st.i++; render() }
-  else if (st.ex < EX.length - 1) goEx(st.ex + 1, 0);
-  else openDeck(MAT_IDX + 1);
+  deckNext();
 }
 function prev() {
-  if (st.sl == 3) return deckBack();
   if (st.sl == 1) return openDeck(TITLE_IDX - 1, true);
-  if (st.sl < 2) return;
-  if (st.i > 0) { st.i--; render() }
-  else if (st.ex > 0) goEx(st.ex - 1, EX[st.ex - 1].n.length ? 4 : 1);
-  else openDeck(MAT_IDX - 1, true);
+  deckBack();
 }
 
-EX.forEach((e, j) => { const b = document.createElement('button'); b.textContent = e.eq.join(' '); b.onclick = () => goEx(j, 0); $('#tabs').appendChild(b) });
-$('#nx').onclick = next; $('#bk').onclick = prev; stage.onclick = next; $('#s1').onclick = next;
+$('#s1').onclick = next;
 $('#deck-next').onclick = deckNext; $('#deck-back').onclick = deckBack;
 $('#deck-content').onclick = e => {
   const tmr = e.target.closest('.timer');

@@ -87,7 +87,7 @@ Progress (dated notes; not browser-tested, only `node --check` run):
   - Interactive demos (chip flip, zero pair) still do not advance the slide when clicked.
   - Reduced motion: steps still reveal one per tap, with no animation. The Next nudge still waits 8 s.
   - Sparse slides (a title plus one asset, with little or no text) get a `.big` modifier that scales the asset to fill the free area: larger dot arrays, chips, number lines, thermometer and elevator, with sizes from viewport units, not fixed pixels.
-  - Merged slides keep the first beat id as a range (for example `2.10–2.11`, like `6.1–6.4`), so notes and `MAT_IDX` still work.
+  - Merged slides keep the first beat id as a range (for example `2.10–2.11`, like `6.1–6.4`), so notes still work (`MAT_IDX` is gone since the mat was removed on 2026-11-20).
   - No faces, people or body parts, except the `pair` silhouette (see DECISIONS.md).
 - Validation: `node --check script.js` only, by request. No browser testing.
 - Merge list (slides before, then after):
@@ -193,3 +193,5 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-19 (revision, owner request): the zoom-out is back, but it pulls back about 10x with its origin at the bottom-right corner (the previous slide collapses into that corner) and a short tilt on the way. Windows show larger crops (0.55 to 0.85 scale) of five slides, not all. Added three sine waves flowing up the middle and 14 small empty moving windows. The black flood is now a 192x108 canvas of 10 px cells (about 20k) that blooms outward from the bottom center, full black at 2:21. Only `node --check` run.
 - 2026-11-19 (revision, owner request): the three sine waves are now a transparent triple helix (barber-pole spiral) with depth shading, one turn per screen height, moving up; the zoom tilt is 2 degrees (was 9). Only `node --check` run.
 - 2026-11-19 (revision, owner request): helix frequency lowered a lot: one turn per four screen heights (was one), drifting up over 180 s per turn (was 16 s), starting at a random point each time. Only `node --check` run.
+
+- 2026-11-20: Timer scene: Earth accuracy, ADOFAI fire-and-ice dance, helix back, rolling clock, panel dissolves while zooming. Chip mat removed; 6.1–6.4 is a plain worked-example slide. See DECISIONS.md. Not checked in a browser.
