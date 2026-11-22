@@ -26,4 +26,4 @@ curl -I http://127.0.0.1:4173/script.js
 curl -I http://127.0.0.1:4173/style.css
 ```
 
-Also load the page in a browser and verify the deck, the title slide after Guide Question 4, the chip mat, and Back/Next controls.
+Also load the page in a browser and verify the deck, the title slide after Guide Question 4, and Back/Next controls.

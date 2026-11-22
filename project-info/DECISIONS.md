@@ -137,3 +137,5 @@ Order of work: shared helpers, then Portions 4 to 7 (most chip content), then Po
 - 2026-11-20: The clock animates: digits that change roll in (`.roll`), the colon blinks while running. Pause stops the blink.
 - 2026-11-20: The slide panel no longer ends as a speck on the planet: it dissolves (opacity to 0) while it zooms out and is hidden once gone. This supersedes the "speck on the limb" notes above.
 - 2026-11-20: The interactive chip mat (`#s2`, beats 6.1–6.4) is removed. Beat 6.1–6.4 is now a plain worked-example slide like 6.5a, 6.5b and 6.6a (`5 + (−3)` and `(−4) + 3` with `crossRow()`, answers on tap). Everything that served the mat is gone: `#s2` markup and styles, `EX`, `build()`/`render()`/`dust()`/`goEx()`, the tabs and the mat controls. Earlier notes about the mat, its overlays and dust are historical. `st` is now just `{ sl }` (1 title, 3 deck). The second example, `(−4) + 3`, repeats the one on 6.6a; change one if that is unwanted.
+- 2026-11-19: The chip mat is removed from the deck entirely (no interactive mat, no mat-style example slide). Mixed-sign examples are covered by the Case 3 slide (`6.6a`).
+

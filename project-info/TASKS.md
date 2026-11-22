@@ -195,3 +195,4 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-19 (revision, owner request): helix frequency lowered a lot: one turn per four screen heights (was one), drifting up over 180 s per turn (was 16 s), starting at a random point each time. Only `node --check` run.
 
 - 2026-11-20: Timer scene: Earth accuracy, ADOFAI fire-and-ice dance, helix back, rolling clock, panel dissolves while zooming. Chip mat removed; 6.1–6.4 is a plain worked-example slide. See DECISIONS.md. Not checked in a browser.
+- 2026-11-19: Chip mat removed at the owner's request. The interactive mat code was already gone; the leftover "Chip Mat · Examples" slide (`6.1–6.4`, mixed-sign examples) is deleted, "Chip Mat" is gone from the Portion 6 labels, and README/AGENTS no longer mention it. Portion 6 is now Same Signs, the Case 1 and 2 examples, Different Signs, and the Case 3 examples.
