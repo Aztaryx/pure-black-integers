@@ -195,3 +195,4 @@ Progress (dated notes; not browser-tested, only `node --check` run):
 - 2026-11-19 (revision, owner request): helix frequency lowered a lot: one turn per four screen heights (was one), drifting up over 180 s per turn (was 16 s), starting at a random point each time. Only `node --check` run.
 
 - 2026-11-20: Timer scene: Earth accuracy, ADOFAI fire-and-ice dance, helix back, rolling clock, panel dissolves while zooming. Chip mat removed; 6.1–6.4 is a plain worked-example slide. See DECISIONS.md. Not checked in a browser.
+- 2026-11-22: Removed the 6.1–6.4 "Chip Mat · Examples" slide (owner request). Not loaded in a browser; `node --check script.js` passes.
