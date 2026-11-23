@@ -185,7 +185,7 @@ const RUBRIC = [
   ['Teamwork', '100% of members actively participated.', '75–99% of members actively participated.', '50–74% of members actively participated.', 'Below 50% of members actively participated.'],
   ['Presentation', 'Presented all parts clearly with 0 presentation issues.', '1 issue in clarity, voice, or organization.', '2 issues in clarity, voice, or organization.', '3 or more issues in clarity, voice, or organization.']
 ];
-const rubric = () => `<table class="rubric"><thead><tr><th>Criteria</th><th>5 Points</th><th>4 Points</th><th>3 Points</th><th>2 Points</th></tr></thead><tbody>${RUBRIC.map(r => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody><tfoot><tr><th scope="row">Total</th><td colspan="4">25 points</td></tr></tfoot></table>`;
+const rubric = (from = 0, to = RUBRIC.length, total = true) => `<table class="rubric"><thead><tr><th>Criteria</th><th>5 Points</th><th>4 Points</th><th>3 Points</th><th>2 Points</th></tr></thead><tbody>${RUBRIC.slice(from, to).map(r => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>${total ? '<tfoot><tr><th scope="row">Total</th><td colspan="4">25 points</td></tr></tfoot>' : ''}</table>`;
 // Group-work timer, started by hand (Start, Pause, Reset). It stops when the slide changes.
 const fmtTime = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 const timerHtml = secs => `<div class="timer" data-secs="${secs}"><div class="t-disp" role="timer">${fmtTime(secs)}</div><div class="t-btns"><button data-act="start">Start</button><button data-act="pause">Pause</button><button data-act="reset">Reset</button></div></div>`;
@@ -265,7 +265,8 @@ const BEATS = [
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
   { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', badges(4) + '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
-  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', rubric(), true, { compact: true }) },
+  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric · 1 of 2', '25 Points', rubric(0, 3, false), true, { compact: true }) },
+  { portion: 'Portion 8 — Decide', beat: '8.3.2', html: card('Grading Rubric · 2 of 2', '25 Points', rubric(3, 5, true), true, { compact: true }) },
   { portion: 'Portion 8 — Decide', beat: '8.3a', html: card('Group Activity', '5 Minutes', timerHtml(300)) },
   { portion: 'Portion 8 — Decide', beat: '8.4–8.5', html: card('Group 1 · Simple Expressions',
     '<span data-hide="1">4 + 3 = ?<br>(−7) + 3 = ?</span><span data-step="1">4 + 3 = <b class="ans">7</b><br>(−7) + 3 = <b class="ans">−4</b></span>', '', false, { swap: true }) },

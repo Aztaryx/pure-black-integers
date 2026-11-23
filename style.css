@@ -291,7 +291,7 @@
       display: block;
       margin-bottom: 1.2vh;
       color: var(--r);
-      font-size: clamp(18px, 2vw, 30px);
+      font-size: clamp(20px, 2.3vw, 34px);
       font-weight: 800;
       letter-spacing: .12em;
       text-transform: uppercase
@@ -1251,8 +1251,8 @@
       background: #fff;
       border: 3px solid #111;
       box-shadow: 4px 4px 0 #111;
-      font-size: clamp(14px, 1.55vw, 25px);
-      line-height: 1.2
+      font-size: clamp(18px, 2.05vw, 34px);
+      line-height: 1.25
     }
 
     .rubric th,
