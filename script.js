@@ -51,7 +51,7 @@ function armNudge(btn) {
 const sgn = n => (n < 0 ? '−' : '') + Math.abs(n);
 const thermo = (t0, t1) => {
   const Y = t => 20 + (4 - t) * 28, base = 370, s0 = ((base - Y(t0)) / (base - Y(t1))).toFixed(3);
-  let s = `<svg class="thermo" viewBox="-30 0 250 410" role="img" aria-label="Thermometer rising from ${sgn(t0)} to ${sgn(t1)} degrees Celsius"><rect class="th-tube" x="60" y="14" width="40" height="${base - 14}" rx="20"/><circle class="th-tube" cx="80" cy="${base}" r="30"/><circle class="th-hg" cx="80" cy="${base}" r="22"/><rect class="th-merc" x="70" y="${Y(t1)}" width="20" height="${base - Y(t1)}" style="transform-origin:80px ${base}px"/>`;
+  let s = `<svg class="thermo" viewBox="-130 0 350 410" role="img" aria-label="Thermometer rising from ${sgn(t0)} to ${sgn(t1)} degrees Celsius"><rect class="th-tube" x="60" y="14" width="40" height="${base - 14}" rx="20"/><circle class="th-tube" cx="80" cy="${base}" r="30"/><circle class="th-hg" cx="80" cy="${base}" r="22"/><rect class="th-merc" x="70" y="${Y(t1)}" width="20" height="${base - Y(t1)}" style="transform-origin:80px ${base}px"/>`;
   for (let t = -8; t <= 4; t += 2) s += `<line class="th-tick" x1="104" y1="${Y(t)}" x2="116" y2="${Y(t)}"/><text class="th-lbl" x="122" y="${Y(t) + 5}">${sgn(t)}</text>`;
   return s + `<text class="th-end" x="52" y="${Y(t1) + 8}" text-anchor="end">${sgn(t1)}°C</text></svg>`;
 };
@@ -60,7 +60,7 @@ const elevator = (f0, f1) => {
   let s = `<svg class="elevator" viewBox="0 0 370 ${T + 20}" role="img" aria-label="Elevator moving from floor ${sgn(f0)} to floor ${sgn(f1)}"><rect class="el-shaft" x="90" y="20" width="90" height="${T - 20}"/>`;
   for (let n = hi; n >= lo; n--) s += `<line class="el-floor" x1="40" y1="${Y(n) + H}" x2="230" y2="${Y(n) + H}"/><text class="el-lbl" x="76" y="${Y(n) + H / 2 + 6}" text-anchor="end">${sgn(n)}</text>`;
   s += `<g class="el-car" style="--dy:${Y(f0) - Y(f1)}px"><rect x="98" y="${Y(f1) + 6}" width="74" height="${H - 12}" rx="6"/></g>`;
-  return s + `<text class="el-lbl" x="242" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0} floors</text></svg>`;
+  return s + `<text class="el-lbl" x="242" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0}</text></svg>`;
 };
 const crossRow = (a, b, aRed, on = 1) => {
   const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}"></span>`).join('');
@@ -87,8 +87,13 @@ const iconSvg = (name, cls = '') => `<svg class="icon${cls ? ' ' + cls : ''}" vi
 const iconRow = items => `<div class="icon-row">${items.map(([n, l], i) => `<figure style="--i:${i}">${iconSvg(n)}<figcaption>${l}</figcaption></figure>`).join('')}</div>`;
 // duo(textHtml, visualHtml): text left, graphic right in .deck-visual; stacks on narrow viewports.
 const duo = (text, visual) => `<div class="duo"><div class="duo-text">${text}</div><div class="deck-visual">${visual}</div></div>`;
-// rules(items): the MATH rules in one slide. Each [letter, word, text] row appears on its own tap (data-step 1, 2, ...).
-const rules = items => `<div class="rules">${items.map(([l, w, t], i) => `<div class="rule" data-step="${i + 1}"><b aria-hidden="true">${l}</b><div><h2>${w}</h2><p>${t}</p></div></div>`).join('')}</div>`;
+// pager(items): items share one spot and show one at a time, a tap each. Item 0 is on screen first.
+const pager = items => `<div class="stack pager">${items.map((h, i) => {
+  const a = [i > 0 && `data-step="${i}"`, i < items.length - 1 && `data-hide="${i + 1}"`].filter(Boolean).join(' ');
+  return `<div class="blk"${a ? ' ' + a : ''}>${h}</div>`;
+}).join('')}</div>`;
+// rules(items): the MATH rules, one per tap in the same spot. Each item is [letter, word, text].
+const rules = items => pager(items.map(([l, w, t]) => `<div class="rule"><b aria-hidden="true">${l}</b><div><h2>${w}</h2><p>${t}</p></div></div>`));
 // badges(n): numbered group badges (blue, red, black, white).
 const badges = n => `<div class="badges" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<span style="--i:${i}">${i + 1}</span>`).join('')}</div>`;
 const labelled = (...items) => `<div class="labelled">${items.map(([cls, t]) => `<figure><span class="chip-mini ${cls}"></span><figcaption>${t}</figcaption></figure>`).join('')}</div>`;
@@ -185,7 +190,6 @@ const RUBRIC = [
   ['Teamwork', '100% of members actively participated.', '75–99% of members actively participated.', '50–74% of members actively participated.', 'Below 50% of members actively participated.'],
   ['Presentation', 'Presented all parts clearly with 0 presentation issues.', '1 issue in clarity, voice, or organization.', '2 issues in clarity, voice, or organization.', '3 or more issues in clarity, voice, or organization.']
 ];
-const rubric = (from = 0, to = RUBRIC.length, total = true) => `<table class="rubric"><thead><tr><th>Criteria</th><th>5 Points</th><th>4 Points</th><th>3 Points</th><th>2 Points</th></tr></thead><tbody>${RUBRIC.slice(from, to).map(r => `<tr><th scope="row">${r[0]}</th>${r.slice(1).map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody>${total ? '<tfoot><tr><th scope="row">Total</th><td colspan="4">25 points</td></tr></tfoot>' : ''}</table>`;
 // Group-work timer, started by hand (Start, Pause, Reset). It stops when the slide changes.
 const fmtTime = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 const timerHtml = secs => `<div class="timer" data-secs="${secs}"><div class="t-disp" role="timer">${fmtTime(secs)}</div><div class="t-btns"><button data-act="start">Start</button><button data-act="pause">Pause</button><button data-act="reset">Reset</button></div></div>`;
@@ -252,21 +256,32 @@ const BEATS = [
 
   // PORTION 7: FAMILIARIZE — THINK-PAIR-SHARE
   { portion: 'Portion 7 — Familiarize', beat: '7.1', html: card('Think-Pair-Share', 'Think, Model, and Solve', iconRow([['think', 'Think'], ['pair', 'Pair'], ['share', 'Share']])) },
-  { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Mechanics', 'How We Work', '<ol><li>Model and solve the problem independently using integer chips.</li><li>Pair up to compare representations and explain your solutions.</li><li>Selected pairs share with the class.</li></ol>' + iconRow([['think', 'Think'], ['pair', 'Pair'], ['share', 'Share']])) },
-  { portion: 'Portion 7 — Familiarize', beat: '7.3–7.4', html: card('Problem 1',
-    '<span data-hide="1">Laboratory Temperature</span><span data-step="1">−2°C</span>',
-    duo('<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>' +
-      '<div class="blk" data-step="1">' + chipRow(chips(6, true), chips(4)) + '<h2>(−6) + 4 = −2</h2></div>', step(2, thermo(-6, -2))), false, { swap: true, big: true, delay: 1000 }) },
-  { portion: 'Portion 7 — Familiarize', beat: '7.5–7.6', html: card('Problem 2',
-    '<span data-hide="1">The Elevator</span><span data-step="1">3rd Floor</span>',
-    duo('<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>' +
-      '<div class="blk" data-step="1">' + chipRow(chips(2, true), chips(5)) + '<h2>(−2) + 5 = 3</h2></div>', step(2, elevator(-2, 3))), false, { swap: true, big: true, delay: 1000 }) },
+  { portion: 'Portion 7 — Familiarize', beat: '7.2', html: card('Mechanics', 'How We Work', rules([
+    ['1', 'Think', 'Model and solve the problem on your own with integer chips.'],
+    ['2', 'Pair', 'Compare your models and explain your solutions.'],
+    ['3', 'Share', 'Selected pairs share with the class.']
+  ])) },
+  { portion: 'Portion 7 — Familiarize', beat: '7.3', html: card('Problem 1', 'Laboratory Temperature', '<p>The temperature in a laboratory was −6°C in the morning. By noon, it increased by 4°C. What was the temperature at noon?</p>') },
+  { portion: 'Portion 7 — Familiarize', beat: '7.4', html: card('Problem 1 · Solution',
+    '<span data-hide="1">Model It</span><span data-step="1">−2°C</span>',
+    duo(chipRow(chips(6, true), chips(4)) + '<h2 data-step="1">(−6) + 4 = −2</h2>', step(2, thermo(-6, -2))), false, { swap: true, big: true, delay: 1000 }) },
+  { portion: 'Portion 7 — Familiarize', beat: '7.5', html: card('Problem 2', 'The Elevator', '<p>An elevator is on the 2nd basement level (−2). It moves up 5 floors. On which floor does it stop?</p>') },
+  { portion: 'Portion 7 — Familiarize', beat: '7.6', html: card('Problem 2 · Solution',
+    '<span data-hide="1">Model It</span><span data-step="1">3rd Floor</span>',
+    duo(chipRow(chips(2, true), chips(5)) + '<h2 data-step="1">(−2) + 5 = 3</h2>', step(2, elevator(-2, 3))), false, { swap: true, big: true, delay: 1000 }) },
 
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
-  { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', badges(4) + '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
-  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric · 1 of 2', '25 Points', rubric(0, 3, false), true, { compact: true }) },
-  { portion: 'Portion 8 — Decide', beat: '8.3.2', html: card('Grading Rubric · 2 of 2', '25 Points', rubric(3, 5, true), true, { compact: true }) },
+  { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', badges(4) + pager([
+    '<p>Each group receives a problem suited to its level.</p>',
+    '<p>Represent and solve using colored integer chips.</p>',
+    '<p>Present your chip model and explain your process.</p>'
+  ])) },
+  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', '<p>Five criteria, 5 points each.</p><ol class="crit">' + RUBRIC.map(r => `<li>${r[0]}</li>`).join('') + '</ol>') },
+  ...RUBRIC.map((r, k) => ({
+    portion: 'Portion 8 — Decide', beat: `8.3.${k + 1}`,
+    html: card(`Grading Rubric · ${k + 1} of ${RUBRIC.length}`, r[0], '<div class="rules pts">' + r.slice(1).map((t, n) => `<div class="rule"><b aria-hidden="true">${5 - n}</b><p>${t}</p></div>`).join('') + '</div>', false, { compact: true })
+  })),
   { portion: 'Portion 8 — Decide', beat: '8.3a', html: card('Group Activity', '5 Minutes', timerHtml(300)) },
   { portion: 'Portion 8 — Decide', beat: '8.4–8.5', html: card('Group 1 · Simple Expressions',
     '<span data-hide="1">4 + 3 = ?<br>(−7) + 3 = ?</span><span data-step="1">4 + 3 = <b class="ans">7</b><br>(−7) + 3 = <b class="ans">−4</b></span>', '', false, { swap: true }) },
@@ -286,9 +301,9 @@ const BEATS = [
   { portion: 'Portion 9 — Assessment', beat: '9.4', html: card('Quiz · Item 2 of 5', '(−5) + (−3)', chipRow(chips(5, true), chips(3, true)) + '<h2 class="answer" data-step="1">−8</h2>', false, { big: true }) },
   { portion: 'Portion 9 — Assessment', beat: '9.5', html: card('Quiz · Item 3 of 5', '(−2) + (+6)', crossRow(2, 6, true) + '<h2 class="answer" data-step="2">4</h2>', false, { big: true }) },
   { portion: 'Portion 9 — Assessment', beat: '9.6', html: card('Quiz · Item 4 of 5', '(+4) + (−1)', crossRow(4, 1, false) + '<h2 class="answer" data-step="2">3</h2>', false, { big: true }) },
-  { portion: 'Portion 9 — Assessment', beat: '9.7', html: card('Quiz · Item 5 of 5',
+  { portion: 'Portion 9 — Assessment', beat: '9.7', html: card('Quiz · Item 5 of 5', '(+7) + (+2) + (−6) = ?', '<p>Traveler drove 7 km, then 2 km more, then went back 6 km. How far to return to start?</p>' + chipRow(chips(7), chips(2), chips(6, true))) },
+  { portion: 'Portion 9 — Assessment', beat: '9.8', html: card('Quiz · Item 5 of 5',
     '<span data-hide="2">(+7) + (+2) + (−6) = ?</span><span data-step="2">(+7) + (+2) + (−6) = +3</span>',
-    '<p>Traveler drove 7 km, then 2 km more, then went back 6 km. How far to return to start?</p>' + chipRow(chips(7), chips(2), chips(6, true)) +
     '<div class="step cap-680" data-step="1">' + numberLine(0, 10, { hops: [[0, 7], [7, 9], [9, 3]] }) + '</div><h2 class="answer" data-step="2">3 km back to start</h2>', false, { swap: true }) },
 
   // PORTION 10: REFLECTION & EXTENDED LEARNING
@@ -385,6 +400,21 @@ function deckLabel() {
   $('#deck-next').textContent = deckIndex === BEATS.length - 1 && deckStep >= deckStepMax ? 'Replay' : 'Next';
 }
 // full = true shows every step at once (arriving with Back).
+// SVG text is sized in the drawing's own units, so it shrinks with the drawing. Raise every label so it
+// is never smaller than the deck's minimum (--min, 60px at 1920 wide) as drawn on screen.
+function fitSvgText(root) {
+  const minPx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--min')) / 100 * innerWidth || 0;
+  root.querySelectorAll('svg').forEach(svg => {
+    const vb = svg.viewBox && svg.viewBox.baseVal, box = svg.getBoundingClientRect();
+    if (!vb || !vb.width || !box.width || !box.height) return;
+    const scale = Math.min(box.width / vb.width, box.height / vb.height);
+    svg.querySelectorAll('text').forEach(t => {
+      t.style.fontSize = '';
+      const own = parseFloat(getComputedStyle(t).fontSize);
+      if (own * scale < minPx) t.style.fontSize = (minPx / scale).toFixed(2) + 'px';
+    });
+  });
+}
 function renderDeck(full = false) {
   const beat = BEATS[deckIndex], root = $('#deck-content');
   root.innerHTML = beat.html || '';
@@ -397,6 +427,7 @@ function renderDeck(full = false) {
   applySteps();
   startRibbon();
   runDemos(root);
+  fitSvgText(root);
   armNudge($('#deck-next'));
   deckLabel();
 }
@@ -498,4 +529,5 @@ function loop(t) { if (st.sl < 2) draw(t); requestAnimationFrame(loop) }
 reduce ? (draw(0), addEventListener('resize', () => draw(0))) : requestAnimationFrame(loop);
 
 /* ---------- start: the deck opens at the first slide (Prayer) ---------- */
+addEventListener('resize', () => fitSvgText($('#deck-content')));
 show(3); renderDeck();
