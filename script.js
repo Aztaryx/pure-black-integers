@@ -25,7 +25,7 @@ const numberLine = (a, b, o = {}) => {
   const ax = (x1, x2, ng) => `<line class="nl-axis${ng ? ' ng' : ''}" x1="${x1}" y1="${y}" x2="${x2}" y2="${y}"/>`;
   s += hasNeg ? ax(pad - 22, wx, true) + ax(wx, W - pad + 22, false) : ax(pad - 22, W - pad + 22, false);
   s += `<path class="nl-head${hasNeg ? ' ng' : ''}" d="M${pad - 26} ${y} l12 -7 v14 z"/><path class="nl-head" d="M${W - pad + 26} ${y} l-12 -7 v14 z"/>`;
-  for (let n = a; n <= b; n++) s += `<line class="nl-tick${n < 0 ? ' ng' : ''}" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}${n < 0 ? ' ng' : ''}" x="${X(n)}" y="${y + 36}" text-anchor="middle">${f(n)}</text>`;
+  for (let n = a; n <= b; n++) s += `<line class="nl-tick${n < 0 ? ' ng' : ''}" x1="${X(n)}" y1="${y - (n ? 9 : 14)}" x2="${X(n)}" y2="${y + (n ? 9 : 14)}"/><text class="nl-lbl${n ? '' : ' zero'}${n < 0 ? ' ng' : ''}" x="${X(n)}" y="${y + 42}" text-anchor="middle">${f(n)}</text>`;
   hops.forEach(([h1, h2], i) => {
     const x1 = X(h1), x2 = X(h2), ay = y - 14, lift = Math.min(34, Math.abs(x2 - x1) * .4) + 8 + i * 12, cx = (x1 + x2) / 2, cy = ay - lift * 2;
     const ang = Math.atan2(ay - cy, x2 - cx) * 180 / Math.PI, back = h2 < h1 ? ' back' : '', d = 1.1 + i;
@@ -51,16 +51,16 @@ function armNudge(btn) {
 const sgn = n => (n < 0 ? '−' : '') + Math.abs(n);
 const thermo = (t0, t1) => {
   const Y = t => 20 + (4 - t) * 28, base = 370, s0 = ((base - Y(t0)) / (base - Y(t1))).toFixed(3);
-  let s = `<svg class="thermo" viewBox="0 0 220 410" role="img" aria-label="Thermometer rising from ${sgn(t0)} to ${sgn(t1)} degrees Celsius"><rect class="th-tube" x="60" y="14" width="40" height="${base - 14}" rx="20"/><circle class="th-tube" cx="80" cy="${base}" r="30"/><circle class="th-hg" cx="80" cy="${base}" r="22"/><rect class="th-merc" x="70" y="${Y(t1)}" width="20" height="${base - Y(t1)}" style="transform-origin:80px ${base}px"/>`;
+  let s = `<svg class="thermo" viewBox="-30 0 250 410" role="img" aria-label="Thermometer rising from ${sgn(t0)} to ${sgn(t1)} degrees Celsius"><rect class="th-tube" x="60" y="14" width="40" height="${base - 14}" rx="20"/><circle class="th-tube" cx="80" cy="${base}" r="30"/><circle class="th-hg" cx="80" cy="${base}" r="22"/><rect class="th-merc" x="70" y="${Y(t1)}" width="20" height="${base - Y(t1)}" style="transform-origin:80px ${base}px"/>`;
   for (let t = -8; t <= 4; t += 2) s += `<line class="th-tick" x1="104" y1="${Y(t)}" x2="116" y2="${Y(t)}"/><text class="th-lbl" x="122" y="${Y(t) + 5}">${sgn(t)}</text>`;
   return s + `<text class="th-end" x="52" y="${Y(t1) + 8}" text-anchor="end">${sgn(t1)}°C</text></svg>`;
 };
 const elevator = (f0, f1) => {
   const lo = -2, hi = 3, H = 54, Y = n => 20 + (hi - n) * H, T = 20 + (hi - lo + 1) * H;
-  let s = `<svg class="elevator" viewBox="0 0 270 ${T + 20}" role="img" aria-label="Elevator moving from floor ${sgn(f0)} to floor ${sgn(f1)}"><rect class="el-shaft" x="90" y="20" width="90" height="${T - 20}"/>`;
+  let s = `<svg class="elevator" viewBox="0 0 370 ${T + 20}" role="img" aria-label="Elevator moving from floor ${sgn(f0)} to floor ${sgn(f1)}"><rect class="el-shaft" x="90" y="20" width="90" height="${T - 20}"/>`;
   for (let n = hi; n >= lo; n--) s += `<line class="el-floor" x1="40" y1="${Y(n) + H}" x2="230" y2="${Y(n) + H}"/><text class="el-lbl" x="76" y="${Y(n) + H / 2 + 6}" text-anchor="end">${sgn(n)}</text>`;
   s += `<g class="el-car" style="--dy:${Y(f0) - Y(f1)}px"><rect x="98" y="${Y(f1) + 6}" width="74" height="${H - 12}" rx="6"/></g>`;
-  return s + `<text class="el-lbl" x="196" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0} floors</text></svg>`;
+  return s + `<text class="el-lbl" x="242" y="${(Y(f0) + Y(f1)) / 2 + H / 2 + 6}">${f1 > f0 ? '+' : ''}${f1 - f0} floors</text></svg>`;
 };
 const crossRow = (a, b, aRed, on = 1) => {
   const m = Math.min(a, b), grp = (n, red) => Array.from({ length: n }, (_, i) => `<span class="chip-mini${red ? ' red' : ''} ${i < m ? 'x' : 'keep'}" style="--i:${i}"></span>`).join('');
@@ -196,7 +196,7 @@ const hideAt = (n, html) => `<div class="step-out" data-hide="${n}">${html}</div
 // o: { center } centers the slide; { big } enlarges the asset; { swap } stacks the title's step variants in one spot.
 const card = (kicker, title, body = '', q = false, o = {}) => {
   const hc = [q && 'q', o.swap && 'swap'].filter(Boolean).join(' ');
-  return `<article class="deck-card${body ? '' : ' solo'}${o.center ? ' center' : ''}${o.big ? ' big' : ''}"><header class="deck-head">${kicker ? `<span class="kicker">${kicker}</span>` : ''}<h1${hc ? ` class="${hc}"` : ''}${o.delay ? ` data-delay="${o.delay}"` : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
+  return `<article class="deck-card${body ? '' : ' solo'}${o.center ? ' center' : ''}${o.big ? ' big' : ''}${o.compact ? ' compact' : ''}"><header class="deck-head">${kicker ? `<span class="kicker">${kicker}</span>` : ''}<h1${hc ? ` class="${hc}"` : ''}${o.delay ? ` data-delay="${o.delay}"` : ''}>${title}</h1></header>${body ? `<div class="deck-body">${body}</div>` : ''}</article>`;
 };
 
 const BEATS = [
@@ -265,7 +265,7 @@ const BEATS = [
   // PORTION 8: DECIDE — CHIP IT, SOLVE IT!
   { portion: 'Portion 8 — Decide', beat: '8.1', html: card('Group Activity', 'Chip It, Solve It!') },
   { portion: 'Portion 8 — Decide', beat: '8.2', html: card('Mechanics', 'Work in 4 Groups', badges(4) + '<ul><li>Each group receives a problem suited to its level.</li><li>Represent and solve using colored integer chips.</li><li>Present your chip model and explain your process.</li></ul>') },
-  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', rubric(), true) },
+  { portion: 'Portion 8 — Decide', beat: '8.3', html: card('Grading Rubric', '25 Points', rubric(), true, { compact: true }) },
   { portion: 'Portion 8 — Decide', beat: '8.3a', html: card('Group Activity', '5 Minutes', timerHtml(300)) },
   { portion: 'Portion 8 — Decide', beat: '8.4–8.5', html: card('Group 1 · Simple Expressions',
     '<span data-hide="1">4 + 3 = ?<br>(−7) + 3 = ?</span><span data-step="1">4 + 3 = <b class="ans">7</b><br>(−7) + 3 = <b class="ans">−4</b></span>', '', false, { swap: true }) },
